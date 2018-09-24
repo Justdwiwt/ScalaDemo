@@ -54,6 +54,8 @@ class Counter {
       this.age = age
     }
 
+    override def toString = s"Person($name, $addr, $age)"
+
   }
 
   // 主构造器参数写在类名后
@@ -61,6 +63,8 @@ class Counter {
 
     // 主构造器参数
     def description = s"$name is $age years old"
+
+    override def toString = s"Student($name, $age, $description)"
 
   }
 
