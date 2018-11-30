@@ -20,7 +20,7 @@ case class Point(x: Double, y: Double) {
 
   def distance(that: Point): Double = (this - that).pointLength
 
-  def format(str: String, x: Double, y: Double): String = _
+  def format(str: String, x: Double, y: Double): String = ""
 
   override def toString: String = format("(%.3f, %.3f)", x, y)
 

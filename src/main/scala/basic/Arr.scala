@@ -12,7 +12,7 @@ object Arr {
   val b = new ArrayBuffer[Int]
   b += 1
   b += (2, 3, 4, 5)
-  b += nums(8, 13, 12)
+  //  b += nums(8, 13, 12)
   b.trimEnd(3)
   b.insert(2, 6)
   b.remove(3)

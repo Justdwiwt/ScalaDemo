@@ -7,7 +7,7 @@ import scala.util.Random
 object LocalKMeans {
 
   def main(args: Array[String]) {
-    val fileName = "algorithm/kmeans_data.txt"
+    val fileName = "D:\\BIG\\BIG_Project_Web_idea\\ScalaProject\\src\\main\\scala\\algorithm\\kmeans_data.txt"
     val knumbers = 3
     val rand = new Random()
 
