@@ -14,6 +14,8 @@ object Demo {
 
     println(fun4(2, 2))
 
+    println(fun5(Array(4, 5, 6, 1, 2, 3)).toString)
+
   }
 
   /**
@@ -63,8 +65,9 @@ object Demo {
     * @return
     */
   def countdown(n: Int): Unit = {
-    for (i <- 0 to n)
+    for (i <- 0 to n reverse)
       print(i + " ")
+    println()
   }
 
   /**
@@ -73,14 +76,26 @@ object Demo {
     * @param x num
     * @param n num * num (n)
     **/
-  def fun4(x: Int, n: Int): Unit = {
-    var res = 0.0
-    if (x == 0) return 0
-    if (n == 0) return x
-    if (x > 0)
-      for (i <- 0 to n; if i < n)
-        res = x * x
-    else res = 1 / x * n
+  def fun4(x: Int, n: Int): Double = {
+    if (n == 0) 1
+    else if (n > 0 && n % 2 == 0) fun4(x, n / 2) * fun4(x, n / 2)
+    else if (n > 0 && n % 2 == 1) x * fun4(x, n - 1)
+    else 1 / fun4(x, -n)
   }
+
+  /**
+    * 将整数数组中相邻的元素置换
+    *
+    * @param arr Array
+    */
+  def fun5(arr: Array[Int]): Unit = {
+    for (i <- 0 until(arr.length - 1, 2)) {
+      val t = arr(i)
+      arr(i) = arr(i + 1)
+      arr(i + 1) = t
+    }
+  }
+
+  var m1 = Map("book" -> 10, "gun" -> 100, "iPad" -> 1000)
 
 }
