@@ -26,3 +26,12 @@ libraryDependencies += "org.apache.spark" %% "spark-hive" % "2.4.0" % "provided"
 
 // https://mvnrepository.com/artifact/org.apache.spark/spark-streaming-kafka
 //libraryDependencies += "org.apache.spark" %% "spark-streaming-kafka" % "1.6.3"
+
+// https://mvnrepository.com/artifact/org.apache.spark/spark-hive
+libraryDependencies += "org.apache.spark" %% "spark-hive" % "2.4.0" % "provided"
+
+// https://mvnrepository.com/artifact/org.apache.spark/spark-graphx
+libraryDependencies += "org.apache.spark" %% "spark-graphx" % "2.4.0"
+
+// https://mvnrepository.com/artifact/org.apache.spark/spark-yarn
+libraryDependencies += "org.apache.spark" %% "spark-yarn" % "2.4.0"
