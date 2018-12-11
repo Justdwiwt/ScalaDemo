@@ -23,3 +23,6 @@ libraryDependencies += "org.apache.spark" %% "spark-mllib" % "2.4.0" % "runtime"
 
 // https://mvnrepository.com/artifact/org.apache.spark/spark-hive
 libraryDependencies += "org.apache.spark" %% "spark-hive" % "2.4.0" % "provided"
+
+// https://mvnrepository.com/artifact/org.apache.spark/spark-streaming-kafka
+//libraryDependencies += "org.apache.spark" %% "spark-streaming-kafka" % "1.6.3"
