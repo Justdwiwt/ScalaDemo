@@ -16,7 +16,7 @@ object LabelDriver {
 
     val conf = new SparkConf().setMaster("local").setAppName("label")
     val sc = new SparkContext(conf)
-    val data = sc.textFile("labeled.txt")
+    val data = sc.textFile("D://BIG//BIG_Project_Web_idea//ScalaProject//src//main//resources/labeled.txt")
 
     val parseData = data.map {
       _.split(" ").map {

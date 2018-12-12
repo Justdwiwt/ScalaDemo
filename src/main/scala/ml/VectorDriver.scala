@@ -16,7 +16,7 @@ object VectorDriver {
 
     val conf = new SparkConf().setMaster("local").setAppName("Vector")
     val sc = new SparkContext(conf)
-    val data = sc.textFile("D:\\BIG\\BIG_Project_Web_idea\\ScalaProject\\src\\main\\scala\\algorithm\\kmeans_data.txt")
+    val data = sc.textFile("D://BIG//BIG_Project_Web_idea//ScalaProject//src//main//resources/labeled-parse.txt")
 
     val parseData = data.map {
       _.split(" ").map {
