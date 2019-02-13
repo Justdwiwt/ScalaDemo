@@ -10,7 +10,7 @@ object RecDriver {
     val conf = new SparkConf().setMaster("local").setAppName("rec")
     val sc = new SparkContext(conf)
 
-    val data = sc.textFile("D://BIG//BIG_Project_Web_idea//ScalaProject//src//main//resources/als.txt", 2)
+    val data = sc.textFile("E://workspace//idea//ScalaDemo//src//main//resources/als.txt", 2)
 
     //--接下来要建立推荐系统模型
     //--line->Rating(userId(int),productId(int),score(double))

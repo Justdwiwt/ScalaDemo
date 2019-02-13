@@ -14,7 +14,7 @@ object Driver {
     val sc = new SparkContext(conf)
     val sqc = new SQLContext(sc)
 
-    val data = sc.textFile("D://BIG//BIG_Project_Web_idea//ScalaProject//src//main//resources/lritem.txt", 2)
+    val data = sc.textFile("D://data/lritem.txt", 2)
     val parseData = data.map { line =>
       val info = line.split("\\|")
       val Y = info(0).toDouble
@@ -51,7 +51,7 @@ object Driver {
     val testResult = model.transform(testVector)
     testResult.show
 
-    val testData2 = sc.textFile("D://BIG//BIG_Project_Web_idea//ScalaProject//src//main//resources/lritem-demo.txt", 2)
+    val testData2 = sc.textFile("D://data/lritem-demo.txt", 2)
     val parseData2 = testData2.map { line =>
       val info = line.split(" ")
       val X1 = info(0).toDouble

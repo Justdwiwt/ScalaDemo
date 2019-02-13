@@ -10,9 +10,9 @@ object MovieDriver {
     val conf = new SparkConf().setMaster("local").setAppName("movie")
     val sc = new SparkContext(conf)
 
-    val data = sc.textFile("D://BIG//BIG_Project_Web_idea//ScalaProject//src//main//resources/u.data", 5)
+    val data = sc.textFile("E://workspace//idea//ScalaDemo//src//main//resources/u.data", 5)
     //--电影文件数据
-    val movieData = sc.textFile("D://BIG//BIG_Project_Web_idea//ScalaProject//src//main//resources/u.item", 4)
+    val movieData = sc.textFile("E://workspace//idea//ScalaDemo//src//main//resources/u.item", 4)
     //--把电影文件数据封装成一个Map[movieId,movieName]
     //--collectAsMap此方法要求数据类型:(k,v)
     //--最后转成一个Map

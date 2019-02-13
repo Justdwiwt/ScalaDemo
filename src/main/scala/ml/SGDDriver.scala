@@ -11,7 +11,7 @@ object SGDDriver {
 
     val conf = new SparkConf().setMaster("local").setAppName("SGD")
     val sc = new SparkContext(conf)
-    val data = sc.textFile("D://BIG//BIG_Project_Web_idea//ScalaProject//src//main//resources/testSGD.txt")
+    val data = sc.textFile("E://workspace//idea//ScalaDemo//src//main//resources/testSGD.txt")
 
     //--接下来要通过SparkMLlib提供的SGD(随机梯度下降法)建模
     //--要求:RDD里元素类型是LabeledPoint类型
