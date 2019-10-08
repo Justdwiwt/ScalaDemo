@@ -4,3 +4,7 @@
 *.log
 
 .idea
+target
+project
+
+src/main/resources/metadata/
