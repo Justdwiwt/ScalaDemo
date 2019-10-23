@@ -9,5 +9,7 @@ object Solution_470 {
     -1
   }
 
-  def rand7(): Int = _
+  def rand7(): Int = {
+    1
+  }
 }
