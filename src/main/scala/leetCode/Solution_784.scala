@@ -17,7 +17,7 @@ object Solution_784 {
     }
     func(s, i + 1, res)
     if (isAlpha(s(i))) {
-      s(i).toInt ^= (1 << 5)
+      //      s(i).toInt ^= (1 << 5)   upper <=> lower
       println(s)
       func(s, i + 1, res)
     }
