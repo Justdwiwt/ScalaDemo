@@ -21,9 +21,7 @@ object LocalKMeans {
 
     //  随机初始化k个质心
     val centroids = new Array[Point](knumbers)
-    for (i <- 0 until knumbers) {
-      centroids(i) = points(new Random().nextInt(points.length))
-    }
+    (0 until knumbers).foreach(i => centroids(i) = points(new Random().nextInt(points.length)))
     val startTime = System.currentTimeMillis()
     println("initialize centroids:\n" + centroids.mkString("\n") + "\n")
     println("test points: \n" + points.mkString("\n") + "\n")
@@ -36,6 +34,7 @@ object LocalKMeans {
   }
 
   //  算法的核心函数
+  @scala.annotation.tailrec
   def kmeans(points: Seq[Point], centroids: Seq[Point], epsilon: Double): Seq[Point] = {
     //  最近质心为key值，将数据集分簇
     val clusters = points.groupBy(closestCentroid(centroids, _))
@@ -53,10 +52,8 @@ object LocalKMeans {
       + "\nto\n" + newCentroids.mkString(", ") + "\n")
     //  根据偏移值大小决定是否继续迭代，epsilon为最小偏移值
     //noinspection RemoveRedundantReturn
-    if (movement.exists(_ > epsilon))
-      kmeans(points, newCentroids, epsilon)
-    else
-      return newCentroids
+    if (movement.exists(_ > epsilon)) kmeans(points, newCentroids, epsilon)
+    else return newCentroids
   }
 
   //  计算最近质心

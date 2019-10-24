@@ -25,6 +25,7 @@ object Demo {
     * @param sum sum
     * @return
     */
+  @scala.annotation.tailrec
   def fun1(num: Int, sum: Int): Int = {
     if (num > 50) return sum
     if (num % 2 == 0) fun1(num + 1, sum + num)

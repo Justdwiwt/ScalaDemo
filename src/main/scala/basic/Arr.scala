@@ -20,11 +20,9 @@ object Arr {
   // 数组遍历
   // until排除最后一个元素，0->a.length-1
   //noinspection RangeToIndices
-  for (i <- 0 until a.length)
-    println(s"$i:${a(i)}")
+  (0 until a.length).foreach(i => println(s"$i:${a(i)}"))
 
-  for (i <- nums.indices)
-    println(s"$i:${nums(i)}")
+  nums.indices.foreach(i => println(s"$i:${nums(i)}"))
 
   // 数组与数组缓冲转换
   b.toArray

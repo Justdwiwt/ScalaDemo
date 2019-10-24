@@ -7,7 +7,7 @@ object Solution_16 {
   def threeSumClosest(nums: Array[Int], target: Int): Int = {
     var res: Long = Int.MaxValue
     quickSort(nums)
-    for (i <- nums.indices) {
+    nums.indices.foreach(i => {
       var pStart = i + 1
       var pEnd = nums.length - 1
       while (pStart < pEnd) {
@@ -20,7 +20,7 @@ object Solution_16 {
         else pStart += 1
         if (abs(sum - target) < abs(res - target)) res = sum
       }
-    }
+    })
     res.toInt
   }
 }

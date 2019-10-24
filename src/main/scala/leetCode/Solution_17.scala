@@ -18,23 +18,23 @@ object Solution_17 {
     if (digits == "") return res
     var head = ""
     val q = mutable.Queue[String]()
-    for (i <- 0 until m(digits(0)).length) {
+    (0 until m(digits(0)).length).foreach(i => {
       var str = ""
       str = str + i
       q.enqueue(str)
-    }
-    for (j <- 1 until digits.length) {
+    })
+    (1 until digits.length).foreach(j => {
       var qSize = q.size
       while (qSize > 0) {
-        for (i <- 0 until m(digits(j)).length) {
+        (0 until m(digits(j)).length).foreach(i => {
           head = q.front
           head = head + i
           q.enqueue(head)
-        }
+        })
         q.dequeue()
         qSize -= 1
       }
-    }
+    })
     while (q.nonEmpty) {
       res.:+(q.front)
       q.dequeue()

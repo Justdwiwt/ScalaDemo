@@ -5,12 +5,12 @@ object Solution_724 {
     val len = nums.length
     var sum = 0
     var cur = 0
-    for (i <- 0 until len) sum += nums(i)
-    for (i <- 0 until len) {
+    (0 until len).foreach(i => sum += nums(i))
+    (0 until len).foreach(i => {
       if (i == 0) cur = 0
       else cur += nums(i - 1)
       if (cur << 1 == sum - nums(i)) return i
-    }
+    })
     -1
   }
 }

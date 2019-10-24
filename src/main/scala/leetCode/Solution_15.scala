@@ -11,7 +11,7 @@ object Solution_15 {
     if (nums.length < 3 || nums.head > 0 || nums.last < 0)
       return List[List[Int]]()
     breakable {
-      for (i <- nums.indices) {
+      nums.indices.foreach(i => {
         val fix = nums(i)
         if (fix > 0) break
         if (i > 0 && fix == nums(i - 1)) flag = 1
@@ -36,7 +36,7 @@ object Solution_15 {
           }
         }
         flag = 0
-      }
+      })
     }
     res
   }
