@@ -16,7 +16,7 @@ object Solution_18 {
   def f(i: Int, nums: Array[Int], target: Int): List[List[Int]] = {
     (i until nums.length).flatMap(i =>
       g(i + 1, nums, target - nums(i)) match {
-        case l => for (li <- l) yield nums(i) :: li
+        case l => l.map(li => nums(i) :: li)
       }).filter(_.nonEmpty).toList
   }
 
