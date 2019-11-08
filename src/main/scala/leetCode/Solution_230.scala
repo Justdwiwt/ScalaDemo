@@ -1,11 +1,5 @@
 package leetCode
 
-class TreeNode(var _value: Int) {
-  var value: Int = _value
-  var left: TreeNode = _
-  var right: TreeNode = _
-}
-
 object Solution_230 {
 
   var time = 0

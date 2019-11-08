@@ -1,10 +1,5 @@
 package leetCode
 
-class ListNode(var _x: Int = 0) {
-  var next: ListNode = _
-  var x: Int = _x
-}
-
 object Solution_234 {
   def isPalindrome(head: ListNode): Boolean = {
     if (head == null || head.next == null) return true

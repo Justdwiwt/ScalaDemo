@@ -1,10 +1,5 @@
 package leetCode
 
-class ListNode(var _x: Int = 0) {
-  var next: ListNode = _
-  var x: Int = _x
-}
-
 object Solution_21 {
   def mergeTwoLists(l1: ListNode, l2: ListNode): ListNode = {
     var l: ListNode = new ListNode()

@@ -35,3 +35,5 @@ libraryDependencies += "org.apache.spark" %% "spark-graphx" % "2.4.0"
 
 // https://mvnrepository.com/artifact/org.apache.spark/spark-yarn
 libraryDependencies += "org.apache.spark" %% "spark-yarn" % "2.4.0"
+
+libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
