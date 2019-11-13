@@ -53,6 +53,7 @@ object Demo {
     * @param scope max
     * @return
     */
+  @scala.annotation.tailrec
   def fun3(n: Int, sum: Int, scope: Int): Int = {
     if (sum > 12) return sum
     if (n - 1 == scope) sum
@@ -66,8 +67,7 @@ object Demo {
     * @return
     */
   def countdown(n: Int): Unit = {
-    for (i <- 0 to n reverse)
-      print(i + " ")
+    (0 to n reverse).foreach(i => print(i + " "))
     println()
   }
 
@@ -90,14 +90,14 @@ object Demo {
     * @param arr Array
     */
   def fun5(arr: Array[Int]): Unit = {
-    for (i <- 0 until(arr.length - 1, 2)) {
+    (0 until(arr.length - 1, 2)).foreach(i => {
       val t = arr(i)
       arr(i) = arr(i + 1)
       arr(i + 1) = t
-    }
+    })
   }
 
-  var var2 = Map("book" -> 10, "gun" -> 100, "iPad" -> 1000)
+  private val var2 = Map("book" -> 10, "gun" -> 100, "iPad" -> 1000)
   var var3: Map[String, Double] = for ((k, v) <- var2) yield (k, v * 0.9)
 
 }

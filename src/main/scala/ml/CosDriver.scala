@@ -30,7 +30,7 @@ object CosDriver {
   //noinspection ScalaUnusedSymbol
   def cos(v1: Map[String, Int], v2: Map[String, Int]): Double = {
     val v1v2 = v1 zip v2
-    val v1v2Fenzi = v1v2.map { x => x._1._2 * x._2._2 }.sum
+    val v1v2Fenzi = v1v2.map(x => x._1._2 * x._2._2).sum
     val v1Fenmu = Math.sqrt(v1.map { case (k, v) => v * v }.sum)
     val v2Fenmu = Math.sqrt(v2.map { case (k, v) => v * v }.sum)
     val v1v2cos = v1v2Fenzi / (v1Fenmu * v2Fenmu)

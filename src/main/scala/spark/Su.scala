@@ -2,6 +2,7 @@ package spark
 
 import org.apache.spark.rdd.RDD
 
+import scala.collection.mutable
 import scala.reflect.ClassTag
 
 /**
@@ -19,11 +20,9 @@ object Su {
     */
   def debug[T: ClassTag](rdd: RDD[T]): Unit = {
     rdd.mapPartitionsWithIndex((i: Int, iter: Iterator[T]) => {
-      val m = scala.collection.mutable.Map[Int, List[T]]()
+      val m = mutable.Map[Int, List[T]]()
       var list = List[T]()
-      while (iter.hasNext) {
-        list = list :+ iter.next
-      }
+      while (iter.hasNext) list = list :+ iter.next
       m(i) = list
       m.iterator
     }).collect().foreach((x: (Int, List[T])) => {

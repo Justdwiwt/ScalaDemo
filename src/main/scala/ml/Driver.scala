@@ -15,13 +15,13 @@ object Driver {
     val sqc = new SQLContext(sc)
 
     val data = sc.textFile("D://data/lritem.txt", 2)
-    val parseData = data.map { line =>
+    val parseData = data.map(line => {
       val info = line.split("\\|")
       val Y = info(0).toDouble
       val X1 = info(1).split(" ")(0).toDouble
       val X2 = info(1).split(" ")(1).toDouble
       (X1, X2, Y)
-    }
+    })
 
     val df = sqc.createDataFrame(parseData).toDF("X1", "X2", "Y")
 
@@ -52,13 +52,13 @@ object Driver {
     testResult.show
 
     val testData2 = sc.textFile("D://data/lritem-demo.txt", 2)
-    val parseData2 = testData2.map { line =>
+    val parseData2 = testData2.map(line => {
       val info = line.split(" ")
       val X1 = info(0).toDouble
       val X2 = info(1).toDouble
       val Y = info(2).toDouble
       (X1, X2, Y)
-    }
+    })
 
     val testDF2 = sqc.createDataFrame(parseData2).toDF("X1", "X2", "Y")
     val testVector2 = ass.transform(testDF2)

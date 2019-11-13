@@ -47,15 +47,15 @@ object MovieDriver {
     //--然后和推荐的10部电影做比对，看是否有相似的题材电影
 
     //--获取到789号用户所有打分的电影
-    val u789AllMovies = parseData.keyBy { x => x.user }.lookup(789)
+    val u789AllMovies = parseData.keyBy(x => x.user).lookup(789)
 
     //--获取789号用户最喜爱的前10部电影
-    val u789Top10 = u789AllMovies.sortBy { x => -x.rating }.take(10).map { x =>
+    val u789Top10 = u789AllMovies.sortBy(x => -x.rating).take(10).map(x => {
       val userId = x.user
       val productId = x.product
       val rating = x.rating
       (userId, movieMap(productId), rating)
-    }
+    })
 
     u789Top10.foreach {
       println

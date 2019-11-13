@@ -17,11 +17,7 @@ object LogisticDriver {
     val data = sc.textFile("E://workspace//idea//ScalaDemo//src//main//resources/logistic.txt")
 
     //--line->Array[String]-Array[Double]->LabeledPoint
-    val pareseData = data.map {
-      _.split("\t").map {
-        _.toDouble
-      }
-    }.map { arr => LabeledPoint(arr.last, Vectors.dense(arr.take(3))) }
+    val pareseData = data.map(_.split("\t").map(_.toDouble)).map(arr => LabeledPoint(arr.last, Vectors.dense(arr.take(3))))
 
     val splits = pareseData.randomSplit(Array(0.7, 0.3), seed = 12)
     //--取出70%的数据用于训练模型
@@ -35,7 +31,7 @@ object LogisticDriver {
     println(model.intercept)
 
     //--代入测试集，进行分类
-    val testResult = model.predict(testData.map { label => label.features })
+    val testResult = model.predict(testData.map(label => label.features))
 
     testResult.foreach {
       println
@@ -46,7 +42,7 @@ object LogisticDriver {
     //--优势在于比随机梯度下降法迭代速度更快
     //--劣势在于会耗费更多的计算性能
     val model2 = new LogisticRegressionWithLBFGS().setNumClasses(2).run(trainData)
-    val testResult2 = model2.predict(testData.map { label => label.features })
+    val testResult2 = model2.predict(testData.map(label => label.features))
 
     testResult2.foreach {
       println

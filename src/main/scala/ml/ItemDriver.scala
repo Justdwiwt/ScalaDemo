@@ -17,20 +17,20 @@ object ItemDriver {
 
     val movieData = sc.textFile("E://workspace//idea//ScalaDemo//src//main//resources/u.item", 4)
 
-    val movieMap = movieData.map { line =>
+    val movieMap = movieData.map(line => {
       val info = line.split("\\|")
       val movieId = info(0).toInt
       val movieName = info(1)
       (movieId, movieName)
-    }.collectAsMap
+    }).collectAsMap
 
-    val parseData = data.map { line =>
+    val parseData = data.map(line => {
       val info = line.split("\t")
       val userId = info(0).toInt
       val productId = info(1).toInt
       val rating = info(2).toDouble
       Rating(userId, productId, rating)
-    }
+    })
     //--当前模型没有 基于物品来推荐物品的方法，需要自己实现
     val model = ALS.train(parseData, 50, 10, 0.01)
 
@@ -44,13 +44,13 @@ object ItemDriver {
     //--核心是获取物品(电影)因子矩阵
     //--[(Int, Array[Double])]
     val product123Feature = model.productFeatures.lookup(123).head
-    val cosResults = model.productFeatures.map { case (id, fatcor) =>
+    val cosResults = model.productFeatures map { case (id, fatcor) =>
       //--计算123号电影和当前电影的余弦距离
       val cosResult = cos(product123Feature, fatcor)
       (movieMap(id), cosResult)
     }
 
-    val product123Top10 = cosResults.sortBy { x => -x._2 }.take(10)
+    val product123Top10 = cosResults.sortBy(x => -x._2).take(10)
 
     product123Top10.foreach {
       println
@@ -60,9 +60,9 @@ object ItemDriver {
 
   def cos(a1: Array[Double], a2: Array[Double]): Double = {
     val a12 = a1 zip a2
-    val a12Fenzi = a12.map { x => x._1 * x._2 }.sum
-    val a1Fenmu = Math.sqrt(a1.map { x => x * x }.sum)
-    val a2Fenmu = Math.sqrt(a2.map { x => x * x }.sum)
+    val a12Fenzi = a12.map(x => x._1 * x._2).sum
+    val a1Fenmu = Math.sqrt(a1.map(x => x * x).sum)
+    val a2Fenmu = Math.sqrt(a2.map(x => x * x).sum)
     val a12cos = a12Fenzi / (a1Fenmu * a2Fenmu)
     a12cos
   }

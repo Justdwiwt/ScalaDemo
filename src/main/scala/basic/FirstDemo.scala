@@ -10,10 +10,10 @@ object FirstDemo {
     // 生成的集合与它的第一个生成器是类型兼容的
     (1 to 3).foreach(i => (1 to 3).foreach(j => print(f"${10 * i + j}%3d")))
     (1 to 3).foreach(i => (1 to 3).withFilter(j => i != j).foreach(j => print(f"${10 * i + j}%3d")))
-    (1 to 3).foreach { i =>
+    (1 to 3).foreach(i => {
       val from = 4 - i
       (from to 3).foreach(j => print(f"${10 * i + j}%3d"))
-    }
+    })
     (1 to 10).map(i => i % 3)
     "test".flatMap(c => (0 to 1).map(i => (c + i).toChar))
     (0 to 1).flatMap(i => "refactor".map(c => (c + i).toChar))

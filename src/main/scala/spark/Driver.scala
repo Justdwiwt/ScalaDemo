@@ -11,15 +11,8 @@ object Driver {
       .setAppName("wordcount")
     val sc = new SparkContext(conf)
     val data = sc.textFile("hdfs://hadoop01:9000/word.txt", 3)
-    val result = data.flatMap {
-      _.split(" ")
-    }.map {
-      (_, 1)
-    }.reduceByKey {
-      _ + _
-    }
+    val result = data.flatMap(_.split(" ")).map((_, 1)).reduceByKey(_ + _)
     result.saveAsTextFile("hdfs://hadoop01:9000/r2")
-
   }
 
 }

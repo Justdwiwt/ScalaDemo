@@ -18,11 +18,7 @@ object LabelDriver {
     val sc = new SparkContext(conf)
     val data = sc.textFile("E://workspace//idea//ScalaDemo//src//main//resources/labeled.txt")
 
-    val parseData = data.map {
-      _.split(" ").map {
-        _.toDouble
-      }
-    }.map { arr => Vectors.dense(arr) }
+    val parseData = data.map(_.split(" ").map(_.toDouble)).map(arr => Vectors.dense(arr))
     parseData.foreach {
       println
     }

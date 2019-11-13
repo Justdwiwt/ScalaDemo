@@ -30,9 +30,7 @@ object SGDDriver {
     println(model.weights) //获取自变量系数
     println(model.intercept) //获取截距项系数
 
-    val result = model.predict(parseData.map {
-      _.features
-    })
+    val result = model.predict(parseData.map(_.features))
     result.foreach {
       println
     }
