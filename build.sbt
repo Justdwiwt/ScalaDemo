@@ -18,6 +18,9 @@ libraryDependencies += "org.apache.spark" %% "spark-sql" % "2.4.0"
 // https://mvnrepository.com/artifact/org.apache.spark/spark-streaming
 libraryDependencies += "org.apache.spark" %% "spark-streaming" % "2.4.0" % "provided"
 
+// https://mvnrepository.com/artifact/org.apache.spark/spark-streaming-kafka-0-10
+libraryDependencies += "org.apache.spark" %% "spark-streaming-kafka-0-10" % "2.4.0"
+
 // https://mvnrepository.com/artifact/org.apache.spark/spark-mllib
 libraryDependencies += "org.apache.spark" %% "spark-mllib" % "2.4.0"
 

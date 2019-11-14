@@ -1,6 +1,6 @@
 package spark
 
-import org.apache.log4j.{Logger, Level}
+import org.apache.log4j.{Level, Logger}
 import org.apache.spark.SparkConf
 import org.apache.spark.streaming._
 //import org.apache.spark.streaming.kafka._

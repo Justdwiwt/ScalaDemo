@@ -14,7 +14,7 @@ object LogisticDriver {
 
     val sc = new SparkContext(conf)
 
-    val data = sc.textFile("E://workspace//idea//ScalaDemo//src//main//resources/logistic.txt")
+    val data = sc.textFile("../resources/logistic.txt")
 
     //--line->Array[String]-Array[Double]->LabeledPoint
     val pareseData = data.map(_.split("\t").map(_.toDouble)).map(arr => LabeledPoint(arr.last, Vectors.dense(arr.take(3))))

@@ -51,7 +51,7 @@ object Driver {
     val testResult = model.transform(testVector)
     testResult.show
 
-    val testData2 = sc.textFile("D://data/lritem-demo.txt", 2)
+    val testData2 = sc.textFile("../resources/lritem-demo.txt", 2)
     val parseData2 = testData2.map(line => {
       val info = line.split(" ")
       val X1 = info(0).toDouble

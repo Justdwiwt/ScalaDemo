@@ -13,9 +13,9 @@ object ItemDriver {
     val conf = new SparkConf().setMaster("local").setAppName("movie")
     val sc = new SparkContext(conf)
 
-    val data = sc.textFile("E://workspace//idea//ScalaDemo//src//main//resources/u.data", 5)
+    val data = sc.textFile("../resources/u.data", 5)
 
-    val movieData = sc.textFile("E://workspace//idea//ScalaDemo//src//main//resources/u.item", 4)
+    val movieData = sc.textFile("../resources/u.item", 4)
 
     val movieMap = movieData.map(line => {
       val info = line.split("\\|")
@@ -36,7 +36,7 @@ object ItemDriver {
 
     //--模型存储，目的是避免每次推荐时重新去训练模型
     //--模型存储完之后，用的时候再加载
-    model.save(sc, "E://workspace//idea//ScalaDemo//src//main//resources")
+    model.save(sc, "../resources")
     //--实现思路
     //--某用户看了123号电影，要求我们的模型推荐10部电影
     //--①计算123号电影和所有电影的相似度

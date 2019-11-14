@@ -1,8 +1,8 @@
 package ml
 
-import org.apache.spark.{SparkConf, SparkContext}
 import org.apache.spark.mllib.linalg.Vectors
 import org.apache.spark.mllib.regression.LabeledPoint
+import org.apache.spark.{SparkConf, SparkContext}
 
 object LabelDriver {
 
@@ -16,7 +16,7 @@ object LabelDriver {
 
     val conf = new SparkConf().setMaster("local").setAppName("label")
     val sc = new SparkContext(conf)
-    val data = sc.textFile("E://workspace//idea//ScalaDemo//src//main//resources/labeled.txt")
+    val data = sc.textFile("../resources/labeled.txt")
 
     val parseData = data.map(_.split(" ").map(_.toDouble)).map(arr => Vectors.dense(arr))
     parseData.foreach {

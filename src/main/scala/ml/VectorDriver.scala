@@ -16,7 +16,7 @@ object VectorDriver {
 
     val conf = new SparkConf().setMaster("local").setAppName("Vector")
     val sc = new SparkContext(conf)
-    val data = sc.textFile("D://data/labeled-parse.txt")
+    val data = sc.textFile("../resources/labeled-parse.txt")
 
     val parseData = data.map(_.split(" ").map(_.toDouble)).map(arr => Vectors.dense(arr))
     parseData.foreach {
