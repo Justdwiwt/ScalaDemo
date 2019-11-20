@@ -1,21 +1,18 @@
 package leetCode
 
 object Solution_922 {
-
-  class RecentCounter() {
-
-    private var times = List[Int]()
-
-    def ping(t: Int): Int = {
-      times ::= t
-      count(t, times, 0)
-    }
-
-    def count(t: Int, times: List[Int], acc: Int): Int = times match {
-      case Nil => acc
-      case head :: tail => if (t - head <= 3000) count(t, tail, acc + 1) else acc
-    }
-
+  def sortArrayByParityII(A: Array[Int]): Array[Int] = {
+    val res = Array.fill(A.length)(0)
+    var t = 0
+    A.foreach(i => if (i % 2 == 0) {
+      res(t) = i
+      t += 2
+    })
+    t = 1
+    A.foreach(i => if (i % 2 == 1) {
+      res(t) = i
+      t += 2
+    })
+    res
   }
-
 }
