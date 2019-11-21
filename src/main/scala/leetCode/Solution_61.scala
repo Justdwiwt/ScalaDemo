@@ -1,9 +1,20 @@
 package leetCode
 
 object Solution_61 {
-  def search(nums: Array[Int], target: Int): Boolean = {
-    nums.indices.foreach(i => if (nums(i) == target) return true
-    else if (i < nums.length - 1) if ((nums(i) < target) & (nums(i) > nums(i + 1))) return false)
-    false
+  def rotateRight(head: ListNode, k: Int): ListNode = head match {
+    case null => null
+    case _ =>
+      var n = 1
+      var cur = head
+      while (cur.next != null) {
+        n += 1
+        cur = cur.next
+      }
+      cur.next = head
+      val m = n - k % n
+      (0 until m).foreach(_ => cur = cur.next)
+      val newHead = cur.next
+      cur.next = null
+      newHead
   }
 }
