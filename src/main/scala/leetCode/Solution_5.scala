@@ -16,7 +16,7 @@ object Solution_5 {
     var flag2 = true
     val indices = s.indices
     //暴力穷举
-    for (i <- indices) {
+    indices.foreach(i => {
       step1 = 0
       flag1 = true
       while (flag1) {
@@ -26,8 +26,7 @@ object Solution_5 {
         flag1 = indices.contains(left1) && indices.contains(right1) && s(left1) == s(right1)
         if (!flag1) {
           val resultTmp = s.substring(left1 + 1, right1)
-          if (resultTmp.length > result1.length)
-            result1 = resultTmp
+          if (resultTmp.length > result1.length) result1 = resultTmp
         }
       }
       step2 = 0
@@ -39,12 +38,10 @@ object Solution_5 {
         flag2 = indices.contains(left2) && indices.contains(right2) && s(left2) == s(right2)
         if (!flag2) {
           val resultTmp2 = s.substring(left2 + 1, right2)
-          if (resultTmp2.length > result2.length)
-            result2 = resultTmp2
+          if (resultTmp2.length > result2.length) result2 = resultTmp2
         }
       }
-    }
-    if (result1.length >= result2.length) result1
-    else result2
+    })
+    if (result1.length >= result2.length) result1 else result2
   }
 }

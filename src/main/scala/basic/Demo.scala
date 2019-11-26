@@ -98,6 +98,6 @@ object Demo {
   }
 
   private val var2 = Map("book" -> 10, "gun" -> 100, "iPad" -> 1000)
-  var var3: Map[String, Double] = for ((k, v) <- var2) yield (k, v * 0.9)
+  var var3: Map[String, Double] = var2.map { case (k, v) => (k, v * 0.9) }
 
 }
