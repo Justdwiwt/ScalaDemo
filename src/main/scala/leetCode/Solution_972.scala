@@ -16,5 +16,4 @@ object Solution_972 {
       p + p2
     } else S.toDouble
   }
-
 }

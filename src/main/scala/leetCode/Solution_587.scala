@@ -24,7 +24,7 @@ object Solution_587 {
         var nextX = 0
         var nextY = 0
         var cosMx = -Float.MaxValue
-        var lenMin = Int.MaxValue.toLong
+        var lenMn = Int.MaxValue.toLong
         points.foreach(i => {
           breakable {
             if (i(0) == curX && i(1) == curY) break
@@ -33,10 +33,10 @@ object Solution_587 {
           val vY = i(1) - curY
           val vLen = vX * vX + vY * vY
           val cos = (vecX * vX + vecY * vY) / (math.sqrt(vecX * vecX + vecY * vecY) * math.sqrt(vLen)).toFloat
-          if ((cos > cosMx) || (cos == cosMx && lenMin > vLen)) {
+          if ((cos > cosMx) || (cos == cosMx && lenMn > vLen)) {
             nextX = i(0)
             nextY = i(1)
-            lenMin = vLen
+            lenMn = vLen
             cosMx = cos
           }
         })
