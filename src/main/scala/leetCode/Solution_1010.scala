@@ -3,7 +3,13 @@ package leetCode
 object Solution_1010 {
   def numPairsDivisibleBy60(time: Array[Int]): Int = {
     var res = 0
-    time.indices.foreach(i => (i + 1 until time.length).foreach(j => if ((time(i) + time(j)) % 60 == 0) res += 1))
+    val arr = Array.fill(60)(0)
+    time.foreach(i => {
+      val idx = i % 60
+      if (idx != 0) res += arr(60 - idx)
+      else res += arr(idx)
+      arr(idx) += 1
+    })
     res
   }
 }
