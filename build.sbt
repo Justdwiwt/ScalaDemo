@@ -43,3 +43,6 @@ libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
 
 // https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor
 libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.17"
+
+// https://mvnrepository.com/artifact/com.typesafe.akka/akka-remote
+libraryDependencies += "com.typesafe.akka" %% "akka-remote" % "2.4.17"
