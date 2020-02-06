@@ -40,3 +40,6 @@ libraryDependencies += "org.apache.spark" %% "spark-graphx" % "2.4.0"
 libraryDependencies += "org.apache.spark" %% "spark-yarn" % "2.4.0"
 
 libraryDependencies += "org.scalatest" %% "scalatest" % "3.0.5" % "test"
+
+// https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor
+libraryDependencies += "com.typesafe.akka" %% "akka-actor" % "2.4.17"
