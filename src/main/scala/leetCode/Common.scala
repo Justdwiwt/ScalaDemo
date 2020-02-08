@@ -60,4 +60,8 @@ object Common {
     -1
   }
 
+  def wordCount(list: List[String]): List[(String, Int)] = {
+    list.flatMap(_.split(" ")).map((_, 1)).groupBy(_._1).map(x => (x._1, x._2.length)).toList.sortBy(_._2).reverse
+  }
+
 }
