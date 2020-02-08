@@ -8,14 +8,14 @@ import spark.common.{HeartBear, RegisterWorkerInfo, SendHeartBeat}
 
 import scala.concurrent.duration._
 
-class SparkWorker(masterHost: String, masterPort: Int) extends Actor {
+class SparkWorker(masterHost: String, masterPort: Int, masterName: String) extends Actor {
 
   var masterProxy: ActorSelection = _
   val id: String = UUID.randomUUID().toString
 
   override def preStart(): Unit = {
     println("preStart start ...")
-    masterProxy = context.actorSelection(s"akka.tcp://SparkMaster@$masterHost:$masterPort/user/SparkMaster-01")
+    masterProxy = context.actorSelection(s"akka.tcp://SparkMaster@$masterHost:$masterPort/user/$masterName")
     println("masterProxy = " + masterProxy)
   }
 
@@ -35,21 +35,27 @@ class SparkWorker(masterHost: String, masterPort: Int) extends Actor {
 
 object SparkWorker extends App {
 
-  val workerHost = "127.0.0.1"
-  val port = 10001
-  val masterHost = "127.0.0.1"
-  val masterPort = 10005
+  if (args.length != 6) {
+    println("input workerHost, workerPort, workerName, masterHost, masterPort, masterName")
+    sys.exit()
+  }
+
+  val workerHost = args(0)
+  val workerPort = args(1)
+  val workerName = args(2)
+  val masterHost = args(3)
+  val masterPort = args(4)
+  val masterName = args(5)
 
   val config = ConfigFactory.parseString(
     s"""
        |akka.actor.provider="akka.remote.RemoteActorRefProvider"
-       |akka.remote.netty.tcp.hostname=127.0.0.1
-       |akka.remote.netty.tcp.port=10002
+       |akka.remote.netty.tcp.hostname=$workerHost
+       |akka.remote.netty.tcp.port=$workerPort
        |""".stripMargin)
 
-  private val sparkWorkerSystem: ActorSystem = ActorSystem("SparkWorker", config)
-  private val sparkWorkerRef: ActorRef = sparkWorkerSystem.actorOf(Props(new SparkWorker(masterHost, masterPort)), "SparkWorker-01")
-
+  private val sparkWorkerSystem: ActorSystem = ActorSystem(s"$workerName", config)
+  private val sparkWorkerRef: ActorRef = sparkWorkerSystem.actorOf(Props(new SparkWorker(masterHost, masterPort.toInt, masterName)), s"$workerName")
 
   sparkWorkerRef ! "start"
 

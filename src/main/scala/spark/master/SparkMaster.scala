@@ -40,15 +40,24 @@ class SparkMaster extends Actor {
 
 object SparkMaster extends App {
 
+  if (args.length != 3) {
+    println("input host, port, sparkMasterActorName")
+    sys.exit()
+  }
+
+  val host = args(0)
+  val port = args(1)
+  val name = args(2)
+
   val config = ConfigFactory.parseString(
     s"""
        |akka.actor.provider="akka.remote.RemoteActorRefProvider"
-       |akka.remote.netty.tcp.hostname=127.0.0.1
-       |akka.remote.netty.tcp.port=10005
+       |akka.remote.netty.tcp.hostname=$host
+       |akka.remote.netty.tcp.port=$port
        |""".stripMargin)
 
   private val sparkMasterSystem: ActorSystem = ActorSystem("SparkMaster", config)
-  private val sparkMasterRef: ActorRef = sparkMasterSystem.actorOf(Props[SparkMaster], "SparkMaster-01")
+  private val sparkMasterRef: ActorRef = sparkMasterSystem.actorOf(Props[SparkMaster], s"$name")
 
   sparkMasterRef ! "start"
 
