@@ -11,3 +11,7 @@ case object RegisterWorkerInfo
 case object SendHeartBeat
 
 case class HeartBear(id: String)
+
+case object StartTimeOutWorker
+
+case object RemoveTimeOutWorker
