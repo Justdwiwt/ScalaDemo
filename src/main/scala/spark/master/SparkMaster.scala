@@ -2,7 +2,7 @@ package spark.master
 
 import akka.actor.{Actor, ActorRef, ActorSystem, Props}
 import com.typesafe.config.ConfigFactory
-import spark.common.{RegisterWorkerInfo, WorkerInfo}
+import spark.common.{HeartBear, RegisterWorkerInfo, WorkerInfo}
 
 import scala.collection.mutable
 
@@ -19,6 +19,10 @@ class SparkMaster extends Actor {
         println("Server workers = " + workers)
         sender() ! RegisterWorkerInfo
       }
+    case HeartBear(id) =>
+      val workerInfo = workers(id)
+      workerInfo.lastHeartBeat = System.currentTimeMillis()
+      println("master update " + id + " hearBeat ...")
   }
 }
 

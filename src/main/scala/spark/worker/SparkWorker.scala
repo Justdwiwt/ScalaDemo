@@ -4,7 +4,9 @@ import java.util.UUID
 
 import akka.actor.{Actor, ActorRef, ActorSelection, ActorSystem, Props}
 import com.typesafe.config.ConfigFactory
-import spark.common.RegisterWorkerInfo
+import spark.common.{HeartBear, RegisterWorkerInfo, SendHeartBeat}
+
+import scala.concurrent.duration._
 
 class SparkWorker(masterHost: String, masterPort: Int) extends Actor {
 
@@ -23,6 +25,11 @@ class SparkWorker(masterHost: String, masterPort: Int) extends Actor {
       masterProxy ! RegisterWorkerInfo(id, 16, 16 * 1024)
     case RegisterWorkerInfo =>
       println("workerId = " + id + "success")
+      import context.dispatcher
+      context.system.scheduler.schedule(0 millis, 3000 millis, self, SendHeartBeat)
+    case SendHeartBeat =>
+      println("worker = " + id + " send to master ...")
+      masterProxy ! HeartBear(id)
   }
 }
 
