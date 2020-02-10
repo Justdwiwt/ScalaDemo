@@ -64,4 +64,8 @@ object Common {
     list.flatMap(_.split(" ")).map((_, 1)).groupBy(_._1).map(x => (x._1, x._2.length)).toList.sortBy(_._2).reverse
   }
 
+  def tuple2ToList[T](t: (T, T)): List[T] = List(t._1, t._2)
+
+  def tuple2ToArray[T](t: (T, T)): Array[T] = Array(t._1, t._2)
+
 }
