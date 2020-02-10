@@ -66,6 +66,4 @@ object Common {
 
   def tuple2ToList[T](t: (T, T)): List[T] = List(t._1, t._2)
 
-  def tuple2ToArray[T](t: (T, T)): Array[T] = Array(t._1, t._2)
-
 }
