@@ -1,6 +1,6 @@
 package leetCode
 
-object SOlution_1314 {
+object Solution_1314 {
   def matrixBlockSum(mat: Array[Array[Int]], K: Int): Array[Array[Int]] = {
     val res = Array.ofDim[Int](mat.length, mat(0).length)
     val dp = Array.ofDim[Int](mat.length + 1, mat(0).length + 1)
