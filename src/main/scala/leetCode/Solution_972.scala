@@ -12,7 +12,7 @@ object Solution_972 {
       val l = S.indexOf("(")
       val r = S.indexOf(")")
       val p = S.split('(').head.toDouble
-      val p2 = S.substring(l + 1, r).toDouble / Array.fill(r - l - 1)("9").reduce(_ + _).toDouble / Math.pow(10, l - dot - 1)
+      val p2 = S.substring(l + 1, r).toDouble / Array.fill(r - l - 1)("9").reduce(_ + _).toDouble / math.pow(10, l - dot - 1)
       p + p2
     } else S.toDouble
   }

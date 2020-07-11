@@ -15,7 +15,7 @@ object Solution_51 {
   }
 
   def valid(l: List[Int]): Boolean = {
-    l.indices.foreach(x => (x + 1 until l.length).foreach(y => if (Math.abs((x - y).toDouble / (l(x) - l(y)).toDouble) == 1) return false))
+    l.indices.foreach(x => (x + 1 until l.length).foreach(y => if (((x - y).toDouble / (l(x) - l(y)).toDouble).abs == 1) return false))
     true
   }
 }

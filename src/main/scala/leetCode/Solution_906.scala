@@ -3,7 +3,7 @@ package leetCode
 object Solution_906 {
   def superpalindromesInRange(L: String, R: String): Int = {
     var ans = 0
-    (1 to Math.pow(10, (R.length + 1) / 2).toInt)
+    (1 to math.pow(10, (R.length + 1) / 2).toInt)
       .withFilter(i => isPalindrome(i.toString))
       .withFilter(i => func(BigInt(i) * BigInt(i), BigInt(L)))
       .foreach(i => {
