@@ -21,7 +21,7 @@ object Solution_1156 {
     def solve(xs: List[E], acc: Int): Int = xs match {
       case E(a, n1) :: E(_, n2) :: E(c, n3) :: _ =>
         if (n2 == 1 && a == c) solve(xs.tail, acc.max(m(a).min(n1 + n3 + 1)))
-        else solve(xs.tail, acc.max(m(a) min n1 + 1))
+        else solve(xs.tail, acc.max(m(a).min(n1 + 1)))
       case E(a, n1) :: E(_, n2) :: Nil => acc.max(m(a).min(n1 + 1)).max(m(a).min(n2 + 1))
       case E(_, n1) :: Nil => acc.max(n1)
       case Nil => acc
