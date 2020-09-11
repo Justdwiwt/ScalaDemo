@@ -1,22 +1,21 @@
 package leetCode
 
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable
 
 object Solution_216 {
   def combinationSum3(k: Int, n: Int): List[List[Int]] = {
-    val res = ListBuffer[List[Int]]()
-    val out = ListBuffer[Int]()
-    dfs(k, n, 1, out, res)
-    res.toList
-  }
-
-  def dfs(k: Int, n: Int, level: Int, out: ListBuffer[Int], res: ListBuffer[List[Int]]): Unit = {
-    if (n < 0) return
-    if (n == 0 && out.length == k) res.append(out.toList)
-    (level to 9).foreach(i => {
-      out.append(i)
-      dfs(k, n - i, i + 1, out, res)
-      out.dropRight(1)
+    val m = mutable.Map[(Int, Int), List[List[Int]]]()
+    m ++= (1 to n).map(i => ((1, i), List(List(i)))).toMap
+    (2 to k).foreach(i => {
+      (1 to n).foreach(j => {
+        val all = (1 until j).flatMap(k => {
+          m((i - 1, k)).flatMap(v => {
+            if (v.last < j - k && j - k < 10) Some(v :+ (j - k)) else None
+          })
+        }).toList
+        m += (i, j) -> all
+      })
     })
+    m((k, n))
   }
 }
