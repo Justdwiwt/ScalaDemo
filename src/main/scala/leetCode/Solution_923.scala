@@ -25,7 +25,7 @@ object Solution_923 {
 
   private def solveFor2(data: Map[Int, Long], vals: Array[Int], id3: Int, target: Int) = {
     val idL = bS(vals, target / 2)
-    val idR = bS(vals, target) min id3
+    val idR = bS(vals, target).min(id3)
 
     val start =
       if ((target & 1) == 0) {
