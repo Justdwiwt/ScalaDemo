@@ -1,23 +1,28 @@
 package leetCode
 
-object Solution_969 {
-  def pancakeSort(A: Array[Int]): List[Int] = pancake(A.toList, flag = false)
+import scala.collection.mutable.ListBuffer
 
-  def pancake(A: List[Int], flag: Boolean = true): List[Int] = {
-    if (A.isEmpty) return List[Int]()
-    var res = List[Int]()
-    val max_idx = A.indexWhere(_ == A.max)
-    if (max_idx == 0) {
-      res = A.length :: res
-      val B = A.reverse
-      res = res ::: pancake(B.dropRight(1), flag)
+object Solution_969 {
+  def pancakeSort(A: Array[Int]): List[Int] = {
+    @scala.annotation.tailrec
+    def flip(input: Array[Int], k: Int, start: Int = 0): Array[Int] =
+      if (start >= k) input
+      else {
+        val flipped = input
+        flipped(start) = flipped(start) ^ flipped(k)
+        flipped(k) = flipped(start) ^ flipped(k)
+        flipped(start) = flipped(start) ^ flipped(k)
+        flip(flipped, k - 1, start + 1)
+      }
+
+    @scala.annotation.tailrec
+    def sort(input: Array[Int], res: ListBuffer[Int], elem: Int): List[Int] = input.indexOf(elem) match {
+      case -1 => res.toList
+      case idx if idx == elem - 1 => sort(input, res, elem - 1)
+      case idx if idx == 0 => sort(flip(input, elem - 1), res += elem, elem - 1)
+      case idx => sort(flip(input, idx), res += (idx + 1), elem)
     }
-    else {
-      val pre = A.slice(0, max_idx + 1).reverse
-      val left = A.slice(max_idx + 1, A.length)
-      val B = pre ::: left
-      res = List(max_idx + 1, B.length) ::: res ::: pancake(B.reverse.dropRight(1), flag)
-    }
-    res
+
+    sort(A, ListBuffer.empty[Int], A.length)
   }
 }
