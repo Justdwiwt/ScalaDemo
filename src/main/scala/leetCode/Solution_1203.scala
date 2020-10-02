@@ -4,7 +4,7 @@ import scala.collection.mutable
 
 object Solution_1203 {
   def sortItems(n: Int, m: Int, group: Array[Int], beforeItems: List[List[Int]]): Array[Int] = {
-    def topologicalSort(graph: Map[Int, List[Int]], inDegrees: Array[Int]) = {
+    def topologicalSort(graph: Map[Int, List[Int]], inDegrees: Array[Int]): Array[_ <: Int] = {
       val q = new mutable.Queue[Int]()
       graph.keys.withFilter(node => inDegrees(node) == 0).foreach(node => q += node)
       val res = new Array[Int](inDegrees.length)
