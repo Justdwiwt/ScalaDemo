@@ -6,16 +6,33 @@ object Solution_1261 {
 
   class FindElements(_root: TreeNode) {
 
-    if (_root != null) dfs(_root, 1)
+    val s = mutable.Set.empty[Int]
 
-    private val s = new mutable.HashSet[Int]()
-
-    def dfs(root: TreeNode, v: Int): Unit = {
-      root.value = v - 1
-      s.add(root.value)
-      if (root.left != null) dfs(root.left, 2 * v)
-      if (root.right != null) dfs(root.right, 2 * v + 1)
+    def recover(root: TreeNode): TreeNode = {
+      if (root == null) return null
+      else {
+        s.add(root.value)
+        if (root.left != null) {
+          root.left.value = root.value * 2 + 1
+          recover(root.left)
+        }
+        if (root.right != null) {
+          root.right.value = root.value * 2 + 2
+          recover(root.right)
+        }
+      }
+      root
     }
+
+    def addChildren(node: TreeNode, list: List[TreeNode]): List[TreeNode] = {
+      List(node.left, node.right).foldLeft(list) {
+        (acc, child) => if (child != null) acc :+ child else acc
+      }
+    }
+
+    _root.value = 0
+
+    val recovered: TreeNode = recover(_root)
 
     def find(target: Int): Boolean = s.contains(target)
 
