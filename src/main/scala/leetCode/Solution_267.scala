@@ -38,7 +38,7 @@ object Solution_267 {
     }
 
     if (!vis(s, m)) return Nil
-    var ch = 0.toChar
+    var ch = '0'
     var k = 0
     m.indices.foreach(i => {
       if (m(i) % 2 == 1) ch = i.toChar
@@ -48,6 +48,6 @@ object Solution_267 {
       })
     })
     permute(st, 0, ch)
-    set.toList.reverse
+    set.toList
   }
 }
