@@ -2,7 +2,7 @@ package leetCode
 
 object Solution_361 {
   def maxKilledEnemies(grid: Array[Array[Char]]): Int = {
-    if (grid.isEmpty || grid.head.isEmpty) return 0
+    if (grid == null || grid.isEmpty || grid.head.isEmpty) return 0
     var res = 0
     grid.indices.foreach(i => grid.head.indices.foreach(j => if (grid(i)(j) == '0') res = res.max(cnt(grid, i, j))))
     res
