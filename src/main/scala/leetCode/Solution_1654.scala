@@ -15,7 +15,7 @@ object Solution_1654 {
 
     val q = mutable.Queue[Data]()
     val visited = mutable.HashSet[Data]()
-    q enqueue Data(0)
+    q += Data(0)
     while (q.nonEmpty) {
       val k = q.size
       (0 until k).foreach(_ => {
