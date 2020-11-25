@@ -2,21 +2,19 @@ package leetCode
 
 object Solution_1370 {
   def sortString(s: String): String = {
-    val arr = Array.fill(26)(0)
-    s.indices.foreach(i => arr(s(i) - 'a') += 1)
+    val mn = s.min.toInt - 'a'.toInt
+    val mx = s.max.toInt - 'a'.toInt
+    val arr = Array.fill[Int]('z'.toInt - 'a'.toInt + 1)(0)
+    s.foreach(i => arr(i.toInt - 'a'.toInt) += 1)
     var res = ""
     while (res.length < s.length) {
-      (0 until 26).foreach(i => {
-        if (arr(i) > 0) {
-          res += (i + 'a').toChar
-          arr(i) -= 1
-        }
+      (mn to mx).foreach(i => if (arr(i) > 0) {
+        res += (i + 'a'.toInt).toChar
+        arr(i) -= 1
       })
-      (0 until 26).reverse.foreach(i => {
-        if (arr(i) > 0) {
-          res += (i + 'a').toChar
-          arr(i) -= 1
-        }
+      (mn to mx).reverse.foreach(i => if (arr(i) > 0) {
+        res += (i + 'a'.toInt).toChar
+        arr(i) -= 1
       })
     }
     res
