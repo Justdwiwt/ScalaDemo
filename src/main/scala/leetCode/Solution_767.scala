@@ -1,24 +1,20 @@
 package leetCode
 
+import scala.collection.mutable
+
 object Solution_767 {
   def reorganizeString(S: String): String = {
-    var idx = 1
-    val s = new StringBuilder
-    s.append(S)
-    val cnt = Array.fill(26)(0)
-    s.foreach(i => cnt(i - 'a') += 100)
-    (0 until 26).foreach(i => cnt(i) += i)
-    util.Sorting.quickSort(cnt)
-    cnt.foreach(i => {
-      val t = i / 100
-      val ch: Char = ('a' + (i % 100).toChar).toChar
-      if (t > (s.length + 1) / 2) return ""
-      (0 until t).foreach(_ => {
-        if (idx >= s.length) idx = 0
-        s(idx) = ch
-        idx += 2
-      })
-    })
-    s.toString
+    if (S.length <= 1) return S
+    val pq = new mutable.PriorityQueue[(Char, Int)]()(Ordering.by(_._2))
+    val cnt = S.groupBy(identity).mapValues(_.length)
+    cnt.foreach(pq += _)
+    val op: Option[(Char, Int)] = None
+    S.indices./:("", op) { case ((acc, opt), _) =>
+      if (pq.isEmpty) return ""
+      val next = pq.dequeue
+      if (opt.nonEmpty) pq += opt.get
+      val nextOp = if (next._2 > 1) Some((next._1, next._2 - 1)) else None
+      (acc + next._1, nextOp)
+    }._1
   }
 }
