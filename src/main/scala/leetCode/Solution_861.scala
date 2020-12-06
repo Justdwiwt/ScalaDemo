@@ -2,12 +2,10 @@ package leetCode
 
 object Solution_861 {
   def matrixScore(A: Array[Array[Int]]): Int = {
-    var res = (1 << (A(0).length - 1)) * A.length
-    (1 until A(0).length).foreach(j => {
-      var cnt = 0
-      A.indices.foreach(i => cnt += A(i)(j) ^ A(i)(0))
-      res += cnt.max(A.length - cnt) * (1 << (A(0).length - 1 - j))
-    })
-    res
+    val flipped = A.map(line => if (line.head == 0) line.map(1 - _) else line)
+    A.head.indices.map(col => {
+      val toggled = flipped.map(_ (col)).sum
+      (1 << (A.head.length - col - 1)) * (toggled max (A.length - toggled))
+    }).sum
   }
 }
