@@ -2,9 +2,10 @@ package leetCode
 
 object Solution_628 {
   def maximumProduct(nums: Array[Int]): Int = {
-    util.Sorting.quickSort(nums)
-    val a = nums(0) * nums(1) * nums(nums.length - 1)
-    val b = nums(nums.length - 3) * nums(nums.length - 2) * nums(nums.length - 1)
-    math.max(a, b)
+    val withIdx = nums.sorted.zipWithIndex
+    (withIdx.take(3) ++ withIdx.takeRight(3))
+      .toSet.toList.combinations(3)
+      .map(_.map(_._1).product)
+      .max
   }
 }

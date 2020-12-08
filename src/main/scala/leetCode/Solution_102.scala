@@ -1,25 +1,13 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_102 {
   def levelOrder(root: TreeNode): List[List[Int]] = {
-    var res = List.empty[List[Int]]
-    if (root == null) return res
-    val q = new mutable.Queue[TreeNode]()
-    var p: TreeNode = null
-    q.enqueue(root)
-    while (q.nonEmpty) {
-      var t = List.empty[Int]
-      q.indices.foreach(_ => {
-        p = q.front
-        t :+= p.value
-        q.dequeue()
-        if (p.left != null) q.enqueue(p.left)
-        if (p.right != null) q.enqueue(p.right)
-      })
-      res :+= t
-    }
-    res
+    f(if (root == null) Nil else List(root), Nil)
+  }
+
+  @scala.annotation.tailrec
+  def f(queue: List[TreeNode], res: List[List[Int]]): List[List[Int]] = {
+    if (queue.isEmpty) res
+    else f(queue.flatMap(n => List(n.left, n.right)).filter(_ != null), res :+ queue.map(_.value))
   }
 }

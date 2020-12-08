@@ -2,7 +2,12 @@ package leetCode
 
 object Solution_961 {
   def repeatedNTimes(A: Array[Int]): Int = {
-    val t = A.sorted
-    if (t(t.length / 2) == t(t.length - 1)) t(t.length / 2) else t(t.length / 2 - 1)
+    @scala.annotation.tailrec
+    def f(l: List[Int], s: Set[Int]): Int = l match {
+      case head :: tail => if (s.contains(head)) head else f(tail, s + head)
+      case Nil => 0
+    }
+
+    f(A.toList, Set())
   }
 }

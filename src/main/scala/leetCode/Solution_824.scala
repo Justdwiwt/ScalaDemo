@@ -1,9 +1,9 @@
 package leetCode
 
 object Solution_824 {
-  def toGoatLatin(S: String): String = S.split(" ").map(transWord).zipWithIndex.map(addTailA).mkString(" ")
-
-  def transWord(x: String): String = if (x matches "[aeiouAEIOU][a-zA-Z]*") x + "ma" else x.tail + x.head + "ma"
-
-  def addTailA(x: (String, Int)): String = x._1 + List.fill(x._2 + 1)("a").mkString
+  def toGoatLatin(S: String): String = S.split("\\s+").zipWithIndex.map(t => t._1.take(1) match {
+    case "a" | "i" | "o" | "u" | "e" => t._1 + "ma" + "a" * (1 + t._2)
+    case "A" | "I" | "O" | "U" | "E" => t._1 + "ma" + "a" * (1 + t._2)
+    case x => t._1.tail + x + "ma" + "a" * (1 + t._2)
+  }).mkString(" ")
 }
