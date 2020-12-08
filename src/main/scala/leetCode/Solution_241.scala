@@ -1,47 +1,38 @@
 package leetCode
 
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 
 object Solution_241 {
   def diffWaysToCompute(input: String): List[Int] = {
-    val symbols = mutable.Set("+", "-", "*")
-    var in = Array.empty[String]
-    var i = 0
-    while (i < input.length) {
-      if (symbols.contains(input.charAt(i) + "")) {
-        in :+= (input.charAt(i) + "")
-        i += 1
-      } else {
-        var j = i
-        while (j < input.length && !symbols.contains(input.charAt(j) + "")) j += 1
-        in :+= input.substring(i, j)
-        i = j
-      }
+    val (operands, operations) = parse(input)
+    if (operands.length <= 1) operands
+    else diffWays(0, operands.length - 1, operands, operations, mutable.Map.empty[(Int, Int), List[Int]])
+  }
+
+  def diffWays(start: Int, end: Int, operands: List[Int], operations: List[Char], m: mutable.Map[(Int, Int), List[Int]]): List[Int] =
+    if (operands.isEmpty) Nil
+    else if (operands.length == 1) operands
+    else {
+      var res = List.empty[Int]
+      operands.indices.drop(1).foreach(i => {
+        val lefts = diffWays(start, start + i, operands.take(i), operations, m)
+        val rights = diffWays(start + i + 1, end, operands.drop(i), operations.drop(i), m)
+        res = res ++ lefts.flatMap(l => rights.map(r => compute(l, r, operations(i - 1))))
+      })
+      m((start, end)) = res
+      res
     }
 
-    val g = (a: Int, b: Int, c: String) => c match {
-      case "+" => a + b
-      case "-" => a - b
-      case _ => a * b
-    }
+  def parse(input: String): (List[Int], List[Char]) = {
+    val operands = input.split(Array('+', '-', '*')).map(Integer.parseInt).toList
+    var operations = List.empty[Char]
+    input.indices.reverse.foreach(i => if (!input(i).isDigit) operations = input(i) :: operations)
+    (operands, operations)
+  }
 
-    def f(start: Int, end: Int): List[Int] = {
-      if (start == end) return List(in(start).toInt)
-      if (start > end) return Nil
-      if (start + 2 == end) return List(g(in(start).toInt, in(end).toInt, in(start + 1)))
-      val ls = ListBuffer.empty[Int]
-      (start to end)
-        .withFilter(i => symbols.contains(in(i)))
-        .foreach(i => {
-          val left = f(start, i - 1)
-          val right = f(i + 1, end)
-          left.foreach(l => right.foreach(r => ls.append(g(l, r, in(i)))))
-        })
-      ls.toList
-    }
-
-    f(0, in.length - 1)
-
+  def compute(left: Int, right: Int, operation: Char): Int = operation match {
+    case '+' => left + right
+    case '-' => left - right
+    case '*' => left * right
   }
 }

@@ -2,23 +2,20 @@ package leetCode
 
 object Solution_777 {
   def canTransform(start: String, end: String): Boolean = {
-    val n = start.length
-    var i = 0
-    var j = 0
-    while (i < n && j < n) {
-      while (i < n && start(i) == 'X') i += 1
-      while (j < n && end(j) == 'X') j += 1
-      if (i < n && j < n) {
-        if (start(i) != end(j) || (start(i) == 'L' && i < j) || (start(i) == 'R' && i > j)) return false
-        else {
-          i += 1
-          j += 1
-        }
+    var L = 0
+    var R = 0
+    start.indices.foreach(i => {
+      if (start(i) == 'L') L -= 1
+      else if (start(i) == 'R') {
+        if (L > 0) return false
+        R += 1
       }
-    }
-    while (i < n && start(i) == 'X') i += 1
-    while (j < n && end(j) == 'X') j += 1
-    if (i != j) return false
-    true
+      if (end(i) == 'L') {
+        if (R > 0) return false
+        L += 1
+      } else if (end(i) == 'R') R -= 1
+      if (L < 0 || R < 0 || L > 0 && R > 0) return false
+    })
+    L == 0 && R == 0
   }
 }

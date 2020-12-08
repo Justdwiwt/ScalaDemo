@@ -5,11 +5,11 @@ object Solution_994 {
 
   @scala.annotation.tailrec
   def solver(grid: Array[Array[Int]], acc: Int): Int = {
-    val tbr = grid.indices.map(x => grid(0).indices.withFilter(y => grid(x)(y) == 1 && isAdjRot((x, y), grid)).map(y => (x, y)).toList).toList.reduce(_ ::: _)
+    val tbr = grid.indices.map(x => grid.head.indices.withFilter(y => grid(x)(y) == 1 && isAdjRot((x, y), grid)).map(y => (x, y)).toList).toList.reduce(_ ::: _)
 
-    if (tbr.isEmpty) {
-      if (grid.map(x => x.contains(1)).reduce(_ || _)) -1 else acc
-    } else {
+    if (tbr.isEmpty)
+      if (grid.map(_.contains(1)).reduce(_ || _)) -1 else acc
+    else {
       tbr.foreach(x => grid(x._1)(x._2) = 2)
       solver(grid, acc + 1)
     }
@@ -23,8 +23,6 @@ object Solution_994 {
     }).reduce(_ || _)
   }
 
-  def isInbound(np: (Int, Int), grid: Array[Array[Int]]): Boolean = {
-    np._1 >= 0 && np._2 >= 0 && np._1 < grid.length && np._2 < grid(0).length
-  }
+  def isInbound(np: (Int, Int), grid: Array[Array[Int]]): Boolean = np._1 >= 0 && np._2 >= 0 && np._1 < grid.length && np._2 < grid.head.length
 
 }

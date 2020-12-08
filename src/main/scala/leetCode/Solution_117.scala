@@ -1,6 +1,6 @@
 package leetCode
 
-import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 object Solution_117 {
 
@@ -11,21 +11,29 @@ object Solution_117 {
     var next: Node = _
   }
 
-  def connect(root: Node): Node = root match {
-    case null => root
-    case _ =>
-      val q = new mutable.Queue[Node]()
-      q.enqueue(root)
-      while (q.nonEmpty) {
-        val size = q.size
-        q.indices.foreach(i => {
-          val node = q.head
-          q.dequeue()
-          if (i < size - 1) node.next = q.head
-          if (node.left != null) q.enqueue(node.left)
-          if (node.right != null) q.enqueue(node.right)
+  def connect(root: Node): Node = {
+    if (root != null) f(ListBuffer(root))
+    root
+  }
+
+  @scala.annotation.tailrec
+  def f(nodes: ListBuffer[Node]): Unit = {
+    if (nodes.isEmpty) ()
+    else {
+      val nextLevel = level(nodes)
+      if (nextLevel.nonEmpty) {
+        nextLevel.reduce((l, r) => {
+          l.next = r
+          r
         })
+        f(nextLevel)
       }
-      root
+    }
+  }
+
+  def level(nodes: ListBuffer[Node]): ListBuffer[Node] = nodes./:(ListBuffer[Node]()) { (res, n) =>
+    if (n.left != null) res += n.left
+    if (n.right != null) res += n.right
+    res
   }
 }
