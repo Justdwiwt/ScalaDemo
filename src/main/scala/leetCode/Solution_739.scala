@@ -1,22 +1,15 @@
 package leetCode
 
-import scala.util.control.Breaks._
-
 object Solution_739 {
   def dailyTemperatures(T: Array[Int]): Array[Int] = {
-    val res = new Array[Int](T.length)
+    var st = List.empty[Int]
+    val res = Array.fill(T.length)(0)
     T.indices.foreach(i => {
-      val curr = T(i)
-      if (curr < 100) {
-        breakable {
-          (i + 1 until T.length).foreach(j => {
-            if (T(j) > curr) {
-              res(i) = j - i
-              break
-            }
-          })
-        }
+      while (st != Nil && T(st.head) < T(i)) {
+        res(st.head) = i - st.head
+        st = st.tail
       }
+      st = i :: st
     })
     res
   }

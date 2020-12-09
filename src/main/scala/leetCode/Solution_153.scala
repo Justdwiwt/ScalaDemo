@@ -2,15 +2,18 @@ package leetCode
 
 object Solution_153 {
   def findMin(nums: Array[Int]): Int = {
-    @annotation.tailrec
-    def func(lo: Int, hi: Int): Int = {
-      if (lo >= hi) nums(lo)
-      else {
-        val m = lo + (hi - lo) / 2
-        if (nums(m) < nums(hi)) func(lo, m) else func(m + 1, hi)
+    @scala.annotation.tailrec
+    def f(data: Array[Int], lo: Int, hi: Int): Int = (lo, hi) match {
+      case (l, h) if h < l => data(0)
+      case (l, h) if l == h => data(l)
+      case (l, h) => l + (h - l) / 2 match {
+        case m if m < h && data(m + 1) < data(m) => data(m + 1)
+        case m if l < m && data(m) < data(m - 1) => data(m)
+        case m if data(m) < data(h) => f(data, l, m - 1)
+        case m => f(data, m + 1, h)
       }
     }
 
-    func(0, nums.length - 1)
+    f(nums, 0, nums.length - 1)
   }
 }

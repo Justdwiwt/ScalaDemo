@@ -1,11 +1,9 @@
 package leetCode
 
-import scala.util.Sorting.quickSort
-
 object Solution_274 {
   def hIndex(citations: Array[Int]): Int = {
-    quickSort(citations)
-    citations.indices.foreach(i => if (citations(i) >= citations.length - i) return citations.length - i)
+    val sorted = citations.sortWith(_ > _)
+    (1 to sorted.length).reverse.foreach(i => if (sorted(i - 1) >= i) return i)
     0
   }
 }
