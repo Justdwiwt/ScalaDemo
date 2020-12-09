@@ -2,13 +2,14 @@ package leetCode
 
 object Solution_1015 {
   def smallestRepunitDivByK(K: Int): Int = {
-    if (K % 2 == 0 || K % 5 == 0) return -1
-    var n = 1 % K
-    var cnt = 1
-    while (n > 0) {
-      n = (n * 10 + 1) % K
-      cnt += 1
+    @scala.annotation.tailrec
+    def f(i: Int, n: Int): Int = {
+      val next = (n * 10) % K + 1
+      if (next % K == 0) i
+      else if (i <= K) f(i + 1, next)
+      else -1
     }
-    cnt
+
+    if (K % 2 == 0) -1 else f(1, 0)
   }
 }

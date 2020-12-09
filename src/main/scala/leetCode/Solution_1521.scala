@@ -3,8 +3,8 @@ package leetCode
 object Solution_1521 {
   def closestToTarget(arr: Array[Int], target: Int): Int = {
     val M = 24
-    val inf = 0x3f3f3f3f
-    val neg = 0xcfcfcfcf
+    val INF = 0x3f3f3f3f
+    val NEG = 0xcfcfcfcf
 
     def calc(bits: Array[Int]): Int = {
       var h = 1
@@ -16,30 +16,30 @@ object Solution_1521 {
       res
     }
 
-    val a = Array.ofDim[Int](arr.length, M)
-    arr.indices.foreach(i => (0 until M).foreach(j => if ((arr(i) >> j & 1) == 0) a(i)(j) = 1))
-    var min = neg
+    val A = Array.ofDim[Int](arr.length, M)
+    arr.indices.foreach(i => (0 until M).foreach(j => if ((arr(i) >> j & 1) == 0) A(i)(j) = 1))
+    var min = NEG
     var start = -1
     var cnt = Array.fill(M)(0)
     arr.indices.foreach(i => {
-      (0 until M).foreach(j => cnt(j) += a(i)(j))
+      (0 until M).foreach(j => cnt(j) += A(i)(j))
       var v = calc(cnt)
       while (v <= target) {
         min = min.max(v)
         start += 1
-        (0 until M).foreach(j => cnt(j) -= a(start)(j))
+        (0 until M).foreach(j => cnt(j) -= A(start)(j))
         v = calc(cnt)
       }
     })
     cnt = Array.fill(M)(0)
-    var max = inf
+    var max = INF
     start = -1
     arr.indices.foreach(i => {
-      (0 until M).foreach(j => cnt(j) += a(i)(j))
+      (0 until M).foreach(j => cnt(j) += A(i)(j))
       var v = calc(cnt)
       while (v < target) {
         start += 1
-        (0 until M).foreach(j => cnt(j) -= a(start)(j))
+        (0 until M).foreach(j => cnt(j) -= A(start)(j))
         v = calc(cnt)
       }
       if (start < i) max = max.min(v)
