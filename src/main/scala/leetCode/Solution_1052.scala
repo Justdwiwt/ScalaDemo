@@ -2,20 +2,15 @@ package leetCode
 
 object Solution_1052 {
   def maxSatisfied(customers: Array[Int], grumpy: Array[Int], X: Int): Int = {
-    var sum = 0
-    customers.indices.foreach(i => {
-      if (grumpy(i) == 0) {
-        sum += customers(i)
-        customers(i) = 0
-      }
+    var p = 0
+    var cnt = 0
+    var mxCnt = 0
+    grumpy.indices.foreach(i => {
+      if (grumpy(i) == 0) cnt += customers(i)
+      else p += customers(i)
+      if (i >= X) p -= grumpy(i - X) * customers(i - X)
+      mxCnt = mxCnt.max(p)
     })
-    var num = customers(0)
-    var mx = customers(0)
-    (1 until customers.length).foreach(i => {
-      if (i < X) num += customers(i)
-      else num += (customers(i) - customers(i - X))
-      mx = mx.max(num)
-    })
-    sum + mx
+    cnt + mxCnt
   }
 }

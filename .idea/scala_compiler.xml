@@ -2,8 +2,9 @@
 <project version="4">
   <component name="ScalaCompilerConfiguration">
     <option name="postfixOps" value="true" />
-    <profile name="sbt 1" modules="ScalaProject,scalaproject">
+    <profile name="sbt 1" modules="scalaproject">
       <option name="implicitConversions" value="true" />
     </profile>
+    <profile name="sbt 2" modules="ScalaProject" />
   </component>
 </project>

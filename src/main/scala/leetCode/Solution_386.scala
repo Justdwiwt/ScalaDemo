@@ -4,17 +4,14 @@ import scala.collection.mutable.ListBuffer
 
 object Solution_386 {
   def lexicalOrder(n: Int): List[Int] = {
-    val res = ListBuffer.fill(n)(0)
-    var cur = 1
-    (0 until n).foreach(i => {
-      res(i) = cur
-      if (cur * 10 <= n) cur *= 10
-      else {
-        if (cur >= n) cur /= 10
-        cur += 1
-        while (cur % 10 == 0) cur /= 10
-      }
-    })
+    val res = ListBuffer.empty[Int]
+
+    def f(s: Int): Unit = {
+      res += s
+      (10 * s to n.min(10 * s + 9)).foreach(i => f(i))
+    }
+
+    (1 to n.min(9)).foreach(i => f(i))
     res.toList
   }
 }

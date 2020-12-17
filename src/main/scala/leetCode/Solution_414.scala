@@ -4,12 +4,15 @@ import scala.collection.mutable
 
 object Solution_414 {
   def thirdMax(nums: Array[Int]): Int = {
-    if (nums.isEmpty) throw new RuntimeException("error")
-    val set = new mutable.TreeSet[Int]()
+    val pq = mutable.PriorityQueue.empty[Int](Ordering[Int].reverse)
+    val st = mutable.HashSet.empty[Int]
     nums.foreach(i => {
-      set.add(i)
-      if (set.size > 3) set.remove(set.firstKey)
+      if (st.add(i)) {
+        pq += i
+        if (pq.size > 3) pq.dequeue()
+      }
     })
-    if (set.size < 3) set.last else set.firstKey
+    if (pq.size == 2) pq.dequeue()
+    pq.dequeue()
   }
 }
