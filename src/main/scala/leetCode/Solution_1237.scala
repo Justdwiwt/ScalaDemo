@@ -7,21 +7,14 @@ object Solution_1237 {
   }
 
   def findSolution(customfunction: CustomFunction, z: Int): List[List[Int]] = {
-    var res = List.empty[List[Int]]
-    var start = 1
-    var end = 1000
-    while (start <= 1000 && end >= 1) {
-      val r = customfunction.f(start, end)
-      if (r == z) {
-        var t = List.empty[Int]
-        t :+= start
-        t :+= end
-        res :+= t
-        start += 1
-        end -= 1
-      } else if (r > z) end -= 1
-      else start += 1
+    def f(x: Int, y: Int): List[List[Int]] = {
+      if (x > 1000 || y <= 0) return Nil
+      val v = customfunction.f(x, y)
+      if (v < z) f(x + 1, y)
+      else if (v > z) f(x, y - 1)
+      else List(List(x, y)) ::: f(x + 1, y - 1)
     }
-    res
+
+    f(1, 1000)
   }
 }
