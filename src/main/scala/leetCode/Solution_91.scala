@@ -1,17 +1,24 @@
 package leetCode
 
+import scala.collection.mutable
+
 object Solution_91 {
   def numDecodings(s: String): Int = {
-    val dp = Array.fill(s.length)(0)
+    if (s == null || s.isEmpty) return 0
+    val m = mutable.HashMap.empty[Int, Int]
 
-    def func(i: Int) = if (i < 0) 1 else dp(i)
+    def f(idx: Int): Int = idx match {
+      case i if i == s.length => 1
+      case i if s(i) == '0' => 0
+      case i if i == s.length - 1 => 1
+      case i if m.contains(i) => m(i)
+      case i =>
+        var res = f(i + 1)
+        if (s.substring(i, i + 2).toInt <= 26) res += f(i + 2)
+        m += i -> res
+        res
+    }
 
-    s.indices.foreach(i => {
-      if (s(i) != '0')
-        dp(i) = func(i - 1)
-      if (i - 1 >= 0 && s(i - 1) != '0' && s.substring(i - 1, i + 1) <= "26")
-        dp(i) += func(i - 2)
-    })
-    dp.lastOption.getOrElse(0)
+    f(0)
   }
 }
