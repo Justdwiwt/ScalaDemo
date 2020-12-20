@@ -1,54 +1,57 @@
 package leetCode
 
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable
 
 object Solution_212 {
 
   class TrieNode {
-    var str = ""
-    var child: Array[TrieNode] = Array.fill(26)(null)
+    var children = mutable.Map.empty[Char, TrieNode]
+    var endsWord: Option[String] = None
   }
 
   class Trie {
-    var root = new TrieNode()
+    val root = new TrieNode()
 
-    def insert(s: String): Unit = {
-      var p = root
-      s.foreach(c => {
-        val t = c - 'a'
-        if (p.child(t) == null) p.child(t) = new TrieNode()
-        p = p.child(t)
-      })
-      p.str = s
+    def add(word: String): Unit = {
+      var curr = root
+      word.foreach(letter => curr = curr.children.getOrElseUpdate(letter, new TrieNode()))
+      curr.endsWord = Some(word)
     }
+  }
+
+  def buildTrie(words: Array[String]): Trie = {
+    val trie = new Trie()
+    words.foreach(word => trie.add(word))
+    trie
   }
 
   def findWords(board: Array[Array[Char]], words: Array[String]): List[String] = {
-    val res = ListBuffer[String]()
-    if (words.isEmpty || board.isEmpty || board(0).isEmpty) return res.toList
-    val flag = Array.fill(board.length, board(0).length)(false)
-    val T = new Trie()
-    words.foreach(i => T.insert(i))
-    board.indices.foreach(i => board(i).indices.foreach(j =>
-      if (T.root.child(board(i)(j) - 'a') != null)
-        search(board, T.root.child(board(i)(j) - 'a'), i, j, flag, res)
-    ))
-    res.toList
-  }
+    var st = Set.empty[String]
+    val trie = buildTrie(words)
 
-  def search(board: Array[Array[Char]], p: TrieNode, i: Int, j: Int, flag: Array[Array[Boolean]], res: ListBuffer[String]): Unit = {
-    if (p.str.nonEmpty) {
-      res.append(p.str)
-      p.str = ""
+    def inBounds(coord: (Int, Int)): Boolean = coord._1 >= 0 && coord._2 >= 0 && coord._1 < board.length && coord._2 < board.head.length
+
+    def getNeighbors(coord: (Int, Int)): List[(Int, Int)] =
+      List(
+        (coord._1 + 1, coord._2),
+        (coord._1 - 1, coord._2),
+        (coord._1, coord._2 + 1),
+        (coord._1, coord._2 - 1),
+      ).filter(inBounds)
+
+    def checkMatches(node: TrieNode, coord: (Int, Int)): Unit = {
+      val letter = board(coord._1)(coord._2)
+      if (node.children.contains(letter)) {
+        val matched = node.children(letter)
+        if (matched.endsWord.nonEmpty) st += matched.endsWord.get
+        board(coord._1)(coord._2) = '#'
+        getNeighbors(coord).foreach(neighbor => checkMatches(matched, neighbor))
+        board(coord._1)(coord._2) = letter
+        if (matched.children.isEmpty) node.children -= letter
+      }
     }
-    val diff = Array(Array(-1, 0), Array(1, 0), Array(0, 1), Array(0, -1))
-    flag(i)(j) = true
-    diff.foreach(v => {
-      val nx = v(0) + i
-      val ny = v(1) + j
-      if (nx >= 0 && nx < board.length && ny >= 0 && ny < board(0).length && !flag(nx)(ny) && p.child(board(nx)(ny) - 'a') != null)
-        search(board, p.child(board(nx)(ny) - 'a'), nx, ny, flag, res)
-    })
-    flag(i)(j) = true
+
+    board.indices.foreach(i => board.head.indices.foreach(j => checkMatches(trie.root, (i, j))))
+    st.toList
   }
 }
