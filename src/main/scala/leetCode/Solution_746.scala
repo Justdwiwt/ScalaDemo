@@ -1,14 +1,13 @@
 package leetCode
 
 object Solution_746 {
-  def minCostClimbingStairs(cost: Array[Int]): Int = {
-    var a = 0
-    var b = 0
-    cost.foreach(i => {
-      val t = a.min(b) + i
-      a = b
-      b = t
-    })
-    a.min(b)
+  def minCostClimbingStairs(cost: Array[Int]): Int = cost.length match {
+    case 0 => 0
+    case 1 => cost.head
+    case 2 => cost.head.min(cost.last)
+    case _ => val finalCost = cost.tail.tail.scanLeft((cost.head, cost.tail.head)) { case (acc, v) =>
+      (acc._2, acc._1.min(acc._2) + v)
+    }.tail.last
+      finalCost._1.min(finalCost._2)
   }
 }
