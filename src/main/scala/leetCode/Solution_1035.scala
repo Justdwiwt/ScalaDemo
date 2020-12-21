@@ -2,11 +2,8 @@ package leetCode
 
 object Solution_1035 {
   def maxUncrossedLines(A: Array[Int], B: Array[Int]): Int = {
-    val dp = Array.ofDim[Int](A.length + 1, B.length + 1)
-    A.indices.foreach(i => B.indices.foreach(j => {
-      if (A(i) == B(j)) dp(i + 1)(j + 1) = dp(i)(j) + 1
-      else dp(i + 1)(j + 1) = math.max(dp(i + 1)(j), dp(i)(j + 1))
-    }))
-    dp(A.length)(B.length)
+    val arr = Array.ofDim[Int](A.length + 1, B.length + 1)
+    (1 to A.length).foreach(i => (1 to B.length).foreach(j => arr(i)(j) = if (A(i - 1) == B(j - 1)) arr(i - 1)(j - 1) + 1 else arr(i - 1)(j).max(arr(i)(j - 1))))
+    arr.last.last
   }
 }

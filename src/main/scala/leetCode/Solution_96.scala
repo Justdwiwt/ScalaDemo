@@ -1,9 +1,10 @@
 package leetCode
 
 object Solution_96 {
-  def numTrees(n: Int): Int = {
-    var res = 1L
-    (n + 1 to 2 * n).foreach(i => res = res * i / (i - n))
-    (res / (n + 1)).toInt
-  }
+  def numTrees(n: Int): Int = f(n, List(1))
+
+  @scala.annotation.tailrec
+  def f(n: Int, nums: List[Int]): Int =
+    if (n == 0) nums.last
+    else f(n - 1, nums :+ nums.zipWithIndex./:(0)((acc, pair) => acc + pair._1 * nums(nums.length - 1 - pair._2)))
 }

@@ -1,16 +1,19 @@
 package leetCode
 
+import scala.collection.mutable
+
 object Solution_312 {
   def maxCoins(nums: Array[Int]): Int = {
-    val n = nums.toBuffer
-    n.insert(nums.head, 1)
-    n.append(1)
-    val t = n.toArray
-    val dp = Array.fill(nums.length + 2, nums.length + 2)(0)
-    (1 to nums.length).foreach(len => (1 to (nums.length - len + 1)).foreach(i => {
-      val j = i + len - 1
-      (i to j).foreach(k => dp(i)(j) = dp(i)(j).max(t(i - 1) * t(k) * t(j + 1) + dp(i)(k - 1) + dp(k + 1)(j)))
-    }))
-    dp(1)(nums.length)
+    val arr = 1 +: nums.filter(_ > 0) :+ 1
+    val m = mutable.Map.empty[(Int, Int), Int]
+
+    def f(left: Int, right: Int): Int =
+      if (left >= right) 0
+      else m.getOrElse((left, right), {
+        m((left, right)) = Range(left + 1, right).map(curr => arr(left) * arr(curr) * arr(right) + f(left, curr) + f(curr, right))./:(0)((max, current) => max.max(current))
+        m((left, right))
+      })
+
+    f(0, arr.length - 1)
   }
 }
