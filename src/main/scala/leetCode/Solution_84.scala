@@ -1,21 +1,15 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_84 {
   def largestRectangleArea(heights: Array[Int]): Int = {
-    var res = 0
-    val st = new mutable.Stack[Int]()
-    var h = heights
-    h :+= 0
-    h.indices.foreach(i => {
-      while (st.nonEmpty && h(st.top) >= h(i)) {
-        val cur = st.top
-        st.pop
-        res = res.max(h(cur) * (if (st.isEmpty) i else i - st.top - 1))
-      }
-      st.push(i)
-    })
-    res
+    val seq = heights.toSeq :+ 0
+    seq.zipWithIndex./:(
+      (List.empty[(Int, Int, Int)], seq.head))({
+      case ((stack, mxH), (h, idx)) =>
+        val (hi, lo) = stack.span(_._1 > h)
+        val newMx = hi.map(Function.tupled((h: Int, lo: Int, _: Int) => (idx - lo) * h)).fold(mxH)(math.max)
+        val newLo = lo.headOption.map(_._3 + 1).getOrElse(0)
+        ((h, newLo, idx) :: lo, newMx)
+    })._2
   }
 }

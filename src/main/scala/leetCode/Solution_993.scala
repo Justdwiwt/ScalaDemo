@@ -1,22 +1,14 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_993 {
   def isCousins(root: TreeNode, x: Int, y: Int): Boolean = {
-    val depth = mutable.HashMap[Int, Int]()
-    val parent = mutable.HashMap[Int, TreeNode]()
+    def f(n: Int, parent: Int, node: TreeNode, depth: Int): Option[(Int, Int)] =
+      if (n == node.value) Some(depth, parent)
+      else Option(node.left).flatMap(f(n, node.value, _, depth + 1))
+        .orElse(Option(node.right).flatMap(f(n, node.value, _, depth + 1)))
 
-    def dfs(node: TreeNode, par: TreeNode = null): Unit = {
-      if (node != null) {
-        depth.put(node.value, if (par == null) 0 else 1 + depth(par.value))
-        parent.put(node.value, par)
-        dfs(node.left, node)
-        dfs(node.right, node)
-      }
-    }
-
-    dfs(root)
-    depth(x) == depth(y) && parent(x) != parent(y)
+    f(x, root.value, root, 0)
+      .zip(f(y, root.value, root, 0))
+      .exists(pair => pair._1._2 != pair._2._2 && pair._1._1 == pair._2._1)
   }
 }
