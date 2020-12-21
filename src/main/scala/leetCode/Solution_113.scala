@@ -1,19 +1,9 @@
 package leetCode
 
 object Solution_113 {
-  def pathSum(root: TreeNode, target: Int): List[List[Int]] = {
-
-    def func(root: TreeNode): List[(Int, List[Int])] = {
-      if (root == null) List.empty
-      else if (root.left == null && root.right == null) List((root.value, List(root.value)))
-      else {
-        val l = func(root.left)
-        val r = func(root.right)
-        l.map { case (sum, path) => (sum + root.value, root.value :: path) } :::
-          r.map { case (sum, path) => (sum + root.value, root.value :: path) }
-      }
-    }
-
-    func(root).withFilter({ case (sum, _) => sum == target }).map({ case (_, path) => path })
+  def pathSum(root: TreeNode, sum: Int): List[List[Int]] = {
+    if (root == null) Nil
+    else if (root.value == sum && (root.left, root.right) == (null, null)) List(List(root.value))
+    else (pathSum(root.left, sum - root.value) ++ pathSum(root.right, sum - root.value)).map(path => root.value :: path)
   }
 }

@@ -1,27 +1,10 @@
 package leetCode
 
-import scala.collection.mutable
-import scala.util.control.Breaks._
-
 object Solution_890 {
+  @inline
+  def check[A](sq: Seq[(A, A)]): Boolean = sq.toSet.groupBy((p: (A, A)) => p._1).forall(_._2.size == 1)
+
   def findAndReplacePattern(words: Array[String], pattern: String): List[String] = {
-    var res = List[String]()
-    words.foreach(str => {
-      val w2p = new mutable.HashMap[Char, Char]()
-      val p2w = new mutable.HashMap[Char, Char]()
-      var i = 0
-      val n = str.length
-      breakable {
-        while (i < n) {
-          if (w2p.contains(str(i)) && w2p(str(i)) != pattern(i)) break
-          w2p(str(i)) = pattern(i)
-          if (p2w.contains(pattern(i)) && p2w(pattern(i)) != str(i)) break
-          p2w(pattern(i)) = str(i)
-          i += 1
-        }
-      }
-      if (i == n) res :+= str
-    })
-    res
+    words.toList.filter(word => check(word.zip(pattern)) && check(pattern.zip(word)))
   }
 }
