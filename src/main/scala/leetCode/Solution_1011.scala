@@ -1,27 +1,25 @@
 package leetCode
 
 object Solution_1011 {
-  def shipWithinDays(weights: Array[Int], D: Int): Int = {
-    var l = 0
-    var h = Int.MaxValue
-    while (l < h) {
-      val mid = l + (h - l) / 2
-      if (func(weights, D, mid)) h = mid else l = mid + 1
-    }
-    l
+  def getDays(weights: Array[Int], capacity: Int, curr: Int = 0, idx: Int = 0): Int = {
+    if (idx == weights.length) return if (curr > 0) 1 else 0
+    val x = weights(idx)
+    val remaining = capacity - curr
+    if (x < remaining) getDays(weights, capacity, curr + x, idx + 1)
+    else if (x > remaining) 1 + getDays(weights, capacity, x, idx + 1)
+    else 1 + getDays(weights, capacity, 0, idx + 1)
   }
 
-  def func(weights: Array[Int], D: Int, K: Int): Boolean = {
-    var cur = K
-    var d = D
-    weights.foreach(i => {
-      if (i > K) return false
-      if (cur < i) {
-        cur = K
-        d -= 1
-      }
-      cur -= i
-    })
-    d > 0
+  @scala.annotation.tailrec
+  def findCap(weights: Array[Int], capMn: Int, capMx: Int, d: Int): Int = {
+    if (capMn >= capMx) return capMn
+    val guessCap = (capMn + capMx) / 2
+    val requiredDays = getDays(weights, guessCap)
+    if (requiredDays > d) findCap(weights, guessCap + 1, capMx, d)
+    else findCap(weights, capMn, guessCap, d)
+  }
+
+  def shipWithinDays(weights: Array[Int], D: Int): Int = {
+    findCap(weights, weights.max, weights.sum, D)
   }
 }

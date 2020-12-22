@@ -1,29 +1,22 @@
 package leetCode
 
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
-
 object Solution_103 {
   def zigzagLevelOrder(root: TreeNode): List[List[Int]] = {
-    if (root == null) return List.empty
-    var flag = true
-    var res = List[List[Int]]()
-    val q = new mutable.Queue[TreeNode]()
-    q.enqueue(root)
-    while (q.nonEmpty) {
-      val size = q.size
-      val out = ListBuffer.fill(size)(0)
-      q.indices.foreach(i => {
-        val t = q.front
-        q.dequeue
-        val index = if (flag) i else size - 1 - i
-        out(index) = t.value
-        if (t.left != null) q.enqueue(t.left)
-        if (t.right != null) q.enqueue(t.right)
-      })
-      flag = !flag
-      res :+= out.toList
+    @scala.annotation.tailrec
+    def f(l2r: Boolean, seq: List[TreeNode], res: List[List[Int]]): List[List[Int]] = {
+      if (seq == Nil) res
+      else {
+        val sq = seq.:\(List[TreeNode]())((n, acc) => (n.left, n.right) match {
+          case (null, null) => acc
+          case (l, null) => l :: acc
+          case (null, r) => r :: acc
+          case (l, r) => l :: r :: acc
+        })
+        if (l2r) f(l2r = false, sq, seq.map(_.value) :: res)
+        else f(l2r = true, sq, seq.map(_.value).reverse :: res)
+      }
     }
-    res
+
+    if (root == null) Nil else f(l2r = true, List(root), Nil).reverse
   }
 }

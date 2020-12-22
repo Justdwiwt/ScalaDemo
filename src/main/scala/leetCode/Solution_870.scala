@@ -1,27 +1,12 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_870 {
-  def advantageCount(A: Array[Int], B: Array[Int]): Array[Int] = {
-    var left = 0
-    val a = A.sorted
-    var right = A.length - 1
-    val res = Array.fill(A.length)(0)
-    val q = new mutable.PriorityQueue[(Int, Int)]()
-    a.indices.foreach(i => q.enqueue((B(i), i)))
-    while (q.nonEmpty) {
-      val v = q.head._1
-      val idx = q.head._2
-      q.dequeue
-      if (a(right) > v) {
-        res(idx) = a(right)
-        right -= 1
-      } else {
-        res(idx) = a(left)
-        left += 1
-      }
+  def advantageCount(a: Array[Int], b: Array[Int]): Array[Int] = {
+    val bSorted = b.indices.sortBy(b)
+    val (bIdxToAValue, _, _) = a.sorted./:(Map[Int, Int](), 0, bSorted.length) {
+      case ((map, start, end), v) if v > b(bSorted(start)) => (map + (bSorted(start) -> v), start + 1, end)
+      case ((map, start, end), elem) => (map + (bSorted(end - 1) -> elem), start, end - 1)
     }
-    res
+    b.indices.map(bIdxToAValue).toArray
   }
 }
