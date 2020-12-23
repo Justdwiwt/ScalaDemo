@@ -1,40 +1,57 @@
 package leetCode
 
 import scala.collection.mutable
-import scala.util.control.Breaks._
 
 object Solution_773 {
   def slidingPuzzle(board: Array[Array[Int]]): Int = {
-    var res = 0
-    val target = "123450"
-    var start = ""
-    val dirs = Array(Array(1, 3), Array(0, 2, 4), Array(1, 5), Array(0, 4), Array(1, 3, 5), Array(2, 4))
-    board.indices.foreach(i => board(0).indices.foreach(j => start += board(i)(j).toString))
-    val visited = new mutable.HashSet[String]()
-    start.foreach(i => visited.add(i.toString))
-    val q = new mutable.Queue[String]()
-    start.foreach(i => q.enqueue(i.toString))
-    while (q.nonEmpty) {
-      ((q.size - 1) to 0 by -1).foreach(i => {
-        val cur = new mutable.StringBuilder()
-        cur.append(q.front)
-        q.dequeue
-        if (cur.toString == target) return res
-        val zero_idx = cur.indexOf("0")
-        dirs(zero_idx).foreach(_ => {
-          val cand = cur
-          val t = cand(i)
-          cand(i) = cand(zero_idx)
-          cand(zero_idx) = t
-          breakable {
-            if (visited.contains(cand.toString)) break
-          }
-          visited.add(cand.toString)
-          q.enqueue(cand.toString)
-        })
-      })
-      res += 1
+    def solved(board: Array[Array[Int]]): Boolean = board.flatMap(_.toSeq).toSeq == Seq(1, 2, 3, 4, 5, 0)
+
+    def swap(board: Array[Array[Int]], pos1: (Int, Int), pos2: (Int, Int)): Array[Array[Int]] = {
+      val _board = board.map(_.clone())
+      val tmp = _board(pos1._1)(pos1._2)
+      _board(pos1._1)(pos1._2) = _board(pos2._1)(pos2._2)
+      _board(pos2._1)(pos2._2) = tmp
+      _board
     }
-    -1
+
+    val visited = mutable.Map.empty[Seq[Int], Int]
+
+    def sliding(board: Array[Array[Int]], moveIdx: (Int, Int), moveCnt: Int): Int =
+      if (solved(board)) 0
+      else {
+        val pos = board.flatMap(_.toSeq)
+
+        if (visited.contains(pos) && visited(pos) < moveCnt + 1) -1
+        else {
+          visited(pos) = moveCnt
+
+          val tmpMove = Seq(
+            (moveIdx._1 + 1, moveIdx._2),
+            (moveIdx._1 - 1, moveIdx._2),
+            (moveIdx._1, moveIdx._2 + 1),
+            (moveIdx._1, moveIdx._2 - 1))
+
+          tmpMove
+            .filterNot(move => move._1 < 0 || move._2 < 0 || move._1 >= board.length || move._2 >= board(move._1).length)
+            .map(move => {
+              val newBoard = swap(board, moveIdx, move)
+              val pos = newBoard.flatMap(_.toSeq)
+
+              if (visited.contains(pos) && visited(pos) < moveCnt + 1) -1
+              else {
+                val res = sliding(newBoard, move, moveCnt + 1)
+                if (res == -1) -1
+                else res + 1
+              }
+            })
+            .filter(_ != -1)
+            .sorted
+            .headOption
+            .getOrElse(-1)
+        }
+      }
+
+    val idx = board.indices.flatMap(i => board(i).indices.withFilter(j => board(i)(j) == 0).map(j => (i, j))).head
+    sliding(board, idx, 0)
   }
 }

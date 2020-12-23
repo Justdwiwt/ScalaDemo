@@ -4,19 +4,13 @@ import scala.collection.mutable
 
 object Solution_841 {
   def canVisitAllRooms(rooms: List[List[Int]]): Boolean = {
-    val flag = Array.fill(rooms.length)(false)
-    val st = new mutable.Stack[Int]()
-    st.push(0)
-    flag(0) = true
-    while (st.nonEmpty) {
-      val door = st.top
-      st.pop
-      rooms(door).foreach(i => if (!flag(i)) {
-        st.push(i)
-        flag(i) = true
-      })
+    val visited = rooms.map(_ => false).toArray
+    val q = mutable.Queue(0)
+    while (q.nonEmpty) {
+      val room = q.dequeue()
+      visited(room) = true
+      rooms(room).withFilter(k => !visited(k)).foreach(k => q += k)
     }
-    flag.foreach(i => if (!i) return false)
-    true
+    rooms.indices.forall(visited)
   }
 }
