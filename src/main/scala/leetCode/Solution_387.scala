@@ -1,10 +1,15 @@
 package leetCode
 
 object Solution_387 {
-  def firstUniqChar(s: String): Int = {
-    val res: Array[Int] = new Array[Int](26)
-    (0 until s.length).foreach(i => res(s(i) - 'a') += 1)
-    (0 until s.length).foreach(j => if (res(s(j) - 'a') == 1) return j)
-    -1
-  }
+  def firstUniqChar(s: String): Int = s
+    .toList
+    .zipWithIndex
+    .groupBy(_._1)
+    .map({ case (l, t) => (l, t.map(_._2)) })
+    .filter(_._2.size == 1)
+    .toList
+    .sortBy(_._2.head)
+    .headOption
+    .map(_._2.head)
+    .getOrElse(-1)
 }
