@@ -1,17 +1,10 @@
 package leetCode
 
 object Solution_974 {
-  def subarraysDivByK(A: Array[Int], K: Int): Int = {
-    val arr = Array.fill(K)(0)
-    arr(0) += 1
-    var pre = 0
-    var res = 0
-    A.foreach(i => {
-      pre = (i + pre) % K
-      if (pre < 0) pre += K
-      res += arr(pre)
-      arr(pre) += 1
-    })
-    res
-  }
+  def subarraysDivByK(A: Array[Int], K: Int): Int = A.scanLeft(0)(_ + _)./:(Map[Int, Int](), 0: Int) {
+    case ((pre, cur), sum) =>
+      val M = (sum % K + K) % K
+      if (pre.contains(M)) (pre + (M -> (pre.getOrElse(M, 0) + 1)), cur + pre.getOrElse(M, 0))
+      else (pre + (M -> pre.getOrElse(M, 1)), cur)
+  }._2
 }
