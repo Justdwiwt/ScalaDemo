@@ -1,8 +1,5 @@
 package leetCode
 
 object Solution_231 {
-  def isPowerOfTwo(n: Int): Boolean = {
-    if (n <= 0) return false
-    (n & (n - 1)) == 0
-  }
+  def isPowerOfTwo(n: Int): Boolean = n > 0 && (n & (n - 1)) == 0
 }
