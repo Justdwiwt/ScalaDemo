@@ -1,32 +1,24 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_1028 {
   def recoverFromPreorder(S: String): TreeNode = {
-    var p = 0
-    var cur = 0
-    val st = new mutable.Stack[(TreeNode, Int)]
-    var i = 0
-    while (i < S.length) {
-      if (S(i) != '-') {
-        while (i < S.length && S(i) != '-') {
-          cur = (cur) * 10 + (S(i) - '0')
-          i += 1
-        }
-        val node = new TreeNode(cur)
-        while (st.nonEmpty && p <= st.top._2) st.pop()
-        if (st.nonEmpty && (if (st.top._1.left == null) true else false)) st.top._1.left = node
-        else if (st.nonEmpty && (if (st.top._1.right == null) true else false)) st.top._1.right = node
-        st.push((node, p))
-        p = 0
-        cur = 0
-      } else {
-        p += 1
-        i += 1
-      }
+    f(S.toList, 0)._1
+  }
+
+  def f(s: List[Char], level: Int): (TreeNode, List[Char]) = {
+    if (s.isEmpty) return (null, s)
+    val (depth, rest) = s.span(_ == '-') match {
+      case (d, r) => (d.length, r)
     }
-    while (st.length > 1) st.pop()
-    st.top._1
+    if (depth != level) return (null, s)
+    val (num, restStr) = rest.span(_ != '-') match {
+      case (n, ns) => (n./:("")((x, y) => x + y).toInt, ns)
+    }
+    val node = new TreeNode(num)
+    val c = f(restStr, level + 1)
+    node.left = c._1
+    val c2 = f(c._2, level + 1)
+    node.right = c2._1
+    (node, c2._2)
   }
 }
