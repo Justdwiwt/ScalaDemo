@@ -1,26 +1,16 @@
 package leetCode
 
 object Solution_1175 {
-  private val M = (1e9 + 7).toLong
+  val M: Int = math.pow(10, 9).toInt + 7
+
+  lazy val primes: Stream[Int] =
+    2 #:: Stream.from(3).filter(x => !primes.takeWhile(_ <= math.sqrt(x)).exists(x % _ == 0))
+
+  lazy val factorials: Stream[BigInt] =
+    1 #:: factorials.zip(Stream.from(1)).map(x => x._1 * x._2)
 
   def numPrimeArrangements(n: Int): Int = {
-    if (n <= 2) return 1
-    var prime = 2
-    (4 to n).foreach(i => if (isPrime(i)) prime += 1)
-    (cal(prime) * cal(n - prime) % M).toInt
-  }
-
-  def isPrime(n: Int): Boolean = {
-    (2 to math.sqrt(n).toInt).foreach(i => if (n % i == 0) return false)
-    true
-  }
-
-  def cal(n: Int): Long = {
-    var res = 1L
-    (2 to n).foreach(i => {
-      res *= i
-      res %= M
-    })
-    res
+    val cnt = primes.takeWhile(_ <= n).size
+    ((factorials(n - cnt) * factorials(cnt)) % M).toInt
   }
 }

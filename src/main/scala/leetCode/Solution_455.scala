@@ -1,15 +1,11 @@
 package leetCode
 
 object Solution_455 {
-  def findContentChildren(g: Array[Int], s: Array[Int]): Int = {
-    val G = g.sorted
-    val S = s.sorted
-    var res = 0
-    var p = 0
-    while (res < G.length && p < S.length) {
-      if (G(res) <= S(p)) res += 1
-      p += 1
-    }
-    res
-  }
+  def findContentChildren(g: Array[Int], s: Array[Int]): Int = s.sorted./:((0, g.sorted.toList)) {
+    case (res@(content, children), cookie) => children
+      .headOption
+      .filter(_ <= cookie)
+      .map(_ => (content + 1, children.tail))
+      .getOrElse(res)
+  }._1
 }

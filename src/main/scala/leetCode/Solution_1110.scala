@@ -1,27 +1,22 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_1110 {
   def delNodes(root: TreeNode, to_delete: Array[Int]): List[TreeNode] = {
+    val st = to_delete.toSet
     var res = List.empty[TreeNode]
-    val s = new mutable.HashSet[Int]()
-    to_delete.foreach(i => s.add(i))
+    if (!st.contains(root.value)) res = root :: res
 
-    def dfs(parent: TreeNode, root: TreeNode, set: mutable.HashSet[Int]): Unit = {
-      if (root == null) return
-      dfs(root, root.left, set)
-      dfs(root, root.right, set)
-      if (set.contains(root.value)) {
-        if (parent != null && parent.left == root) parent.left = null
-        if (parent != null && parent.right == root) parent.right = null
-        if (root.left != null) res :+= root.left
-        if (root.right != null) res :+= root.right
+    def f(cur: TreeNode, remove: () => Unit): Unit = {
+      if (cur.left != null) f(cur.left, () => cur.left = null)
+      if (cur.right != null) f(cur.right, () => cur.right = null)
+      if (st.contains(cur.value)) {
+        if (cur.left != null) res = cur.left :: res
+        if (cur.right != null) res = cur.right :: res
+        remove()
       }
     }
 
-    dfs(null, root, s)
-    if (!s.contains(root.value)) res :+= root
+    f(root, () => ())
     res
   }
 }

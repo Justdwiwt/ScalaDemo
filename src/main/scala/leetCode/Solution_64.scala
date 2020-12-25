@@ -1,11 +1,14 @@
 package leetCode
 
 object Solution_64 {
-  def minPathSum(grid: Array[Array[Int]]): Int = {
-    if (grid.isEmpty || grid(0).isEmpty) return 0
-    val dp = Array.fill(grid(0).length)(Int.MaxValue)
-    dp(0) = 0
-    grid.indices.foreach(i => grid(i).indices.foreach(j => if (j == 0) dp(j) += grid(i)(j) else dp(j) = grid(i)(j) + dp(j).min(dp(j - 1))))
-    dp(grid(0).length - 1)
+  def minPathSum(grid: Array[Array[Int]]): Int = (grid.length, grid.headOption.map(_.length).getOrElse(0)) match {
+    case (m, n) if m > 0 && n > 0 =>
+      val dp = Array.fill(m, n)(grid(m - 1)(n - 1))
+      (1 to m + n).foreach(k => (0.max((m - 1) - k) to (m - 1).min(m + n - k - 2)).foreach(i => {
+        val j = m + n - i - k - 2
+        dp(i)(j) = grid(i)(j) + Seq((i + 1, j), (i, j + 1))
+          .collect({ case (x, y) if dp.isDefinedAt(x) && dp(x).isDefinedAt(y) => dp(x)(y) }).min
+      }))
+      dp(0)(0)
   }
 }

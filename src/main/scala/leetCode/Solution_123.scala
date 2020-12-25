@@ -1,17 +1,25 @@
 package leetCode
 
 object Solution_123 {
-  def maxProfit(prices: Array[Int]): Int = {
-    if (prices.isEmpty) return 0
-    val g = Array.fill(3)(0)
-    val l = Array.fill(3)(0)
-    (0 until prices.length - 1).foreach(i => {
-      val diff = prices(i + 1) - prices(i)
-      (2 to 1 by -1).foreach(j => {
-        l(j) = (g(j - 1) + diff.max(0)).max(l(j) + diff)
-        g(j) = l(j).max(g(j))
-      })
-    })
-    g(2)
-  }
+  def maxProfit(prices: Array[Int]): Int =
+    if (prices.isEmpty) 0
+    else {
+      val left = prices./:((List.empty[Int], prices.head)) {
+        case ((acc, mn), price) =>
+          val last = acc.headOption.getOrElse(0)
+          val profit = last.max(price - mn)
+          val newMn = mn.min(price)
+          (profit :: acc, newMn)
+      }._1
+
+      val right = prices.:\((List.empty[Int], prices.last)) {
+        case (price, (acc, mx)) =>
+          val last = acc.headOption.getOrElse(0)
+          val profit = last.max(mx - price)
+          val newMx = mx.max(price)
+          (profit :: acc, newMx)
+      }._1.reverse
+
+      left.zip(right).map({ case (left, right) => left + right }).max
+    }
 }
