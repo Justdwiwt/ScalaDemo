@@ -1,28 +1,19 @@
 package leetCode
 
-import scala.collection.mutable
-import scala.util.control.Breaks._
-
 object Solution_436 {
   def findRightInterval(intervals: Array[Array[Int]]): Array[Int] = {
-    var res = Array.empty[Int]
-    var starts = Array.empty[Int]
-    val m = new mutable.HashMap[Int, Int]()
-    intervals.indices.foreach(i => {
-      m(intervals(i)(0)) = i
-      starts :+= intervals(i)(0)
-    })
-    val t = starts.sorted.reverse
-    intervals.foreach(v => {
-      var i = 0
-      breakable {
-        while (i < t.length) {
-          if (t(i) < v(1)) break
-          i += 1
-        }
+    @scala.annotation.tailrec
+    def f(tuple: Array[(Array[Int], Int)], interval: Array[Int], start: Int, end: Int): Int =
+      if (start == end)
+        if (start == tuple.length) -1
+        else tuple(start)._2
+      else {
+        val mid = start + (end - start) / 2
+        if (tuple(mid)._1(0) >= interval(1)) f(tuple, interval, start, mid)
+        else f(tuple, interval, mid + 1, end)
       }
-      res :+= (if (i > 0) m(t(i - 1)) else -1)
-    })
-    res
+
+    val tuple = intervals.zipWithIndex.sortWith((a, b) => a._1.head < b._1.head)
+    intervals.map(interval => f(tuple, interval, 0, tuple.length))
   }
 }
