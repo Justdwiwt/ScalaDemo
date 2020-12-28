@@ -1,18 +1,15 @@
 package leetCode
 
 object Solution_1004 {
-  def longestOnes(nums: Array[Int], k: Int): Int = {
-    var res = 0
-    var zero = 0
-    var left = 0
-    nums.indices.foreach(right => {
-      if (nums(right) == 0) zero += 1
-      while (zero > k) {
-        if (nums(left) == 0) zero -= 1
-        left += 1
-      }
-      res = res.max(right - left + 1)
-    })
-    res
+  def longestOnes(A: Array[Int], K: Int): Int = {
+    @scala.annotation.tailrec
+    def f(l: Int, r: Int, cur: Int, i: Int, mx: Int): Int =
+      if (r == A.length) mx
+      else if (A(r) == 1) f(l, r + 1, cur + 1, i, mx.max(cur + 1))
+      else if (i > 0) f(l, r + 1, cur + 1, i - 1, mx.max(cur + 1))
+      else if (A(l) == 0) f(l + 1, r.max(l + 1), 0.max(cur - 1), K.min(i + 1), mx)
+      else f(l + 1, r.max(l + 1), 0.max(cur - 1), i, mx)
+
+    f(0, 0, 0, K, 0)
   }
 }

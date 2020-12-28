@@ -9,7 +9,7 @@ object Solution_436 {
         else tuple(start)._2
       else {
         val mid = start + (end - start) / 2
-        if (tuple(mid)._1(0) >= interval(1)) f(tuple, interval, start, mid)
+        if (tuple(mid)._1.head >= interval(1)) f(tuple, interval, start, mid)
         else f(tuple, interval, mid + 1, end)
       }
 
