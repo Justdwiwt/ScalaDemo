@@ -1,38 +1,28 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_445 {
+
+  class ListNode(_x: Int = 0, _next: ListNode = null) {
+    var next: ListNode = _next
+    var x: Int = _x
+  }
+
   def addTwoNumbers(l1: ListNode, l2: ListNode): ListNode = {
-    var t1 = l1
-    var t2 = l2
-    val s1 = new mutable.Stack[Int]()
-    val s2 = new mutable.Stack[Int]()
-    while (t1 != null) {
-      s1.push(t1.x)
-      t1 = t1.next
+    @scala.annotation.tailrec
+    def add(l1: List[Int], l2: List[Int], carry: Int = 0, res: ListNode = null): ListNode = (l1, l2) match {
+      case (Nil, Nil) if carry == 0 => res
+      case (Nil, Nil) => new ListNode(carry, res)
+      case (h1 :: t1, Nil) => add(t1, Nil, (h1 + carry) / 10, new ListNode((h1 + carry) % 10, res))
+      case (Nil, h2 :: t2) => add(Nil, t2, (h2 + carry) / 10, new ListNode((h2 + carry) % 10, res))
+      case (h1 :: t1, h2 :: t2) => add(t1, t2, (h1 + h2 + carry) / 10, new ListNode((h1 + h2 + carry) % 10, res))
     }
-    while (t2 != null) {
-      s2.push(t2.x)
-      t2 = t2.next
-    }
-    var sum = 0
-    var res = new ListNode(0)
-    while (s1.nonEmpty || s2.nonEmpty) {
-      if (s1.nonEmpty) {
-        sum += s1.top
-        s1.pop
-      }
-      if (s2.nonEmpty) {
-        sum += s2.top
-        s2.pop
-      }
-      res.x = sum % 10
-      val head = new ListNode(sum / 10)
-      head.next = res
-      res = head
-      sum /= 10
-    }
-    if (res.x == 0) res.next else res
+
+    @scala.annotation.tailrec
+    def collect(ll1: ListNode, ll2: ListNode, toAdd1: List[Int], toAdd2: List[Int]): ListNode =
+      if (ll1.next == null && ll2.next == null) add(ll1.x :: toAdd1, ll2.x :: toAdd2)
+      else if (ll1.next == null) collect(ll1, ll2.next, toAdd1, ll2.x :: toAdd2)
+      else collect(ll1.next, ll2, ll1.x :: toAdd1, toAdd2)
+
+    collect(l1, l2, Nil, Nil)
   }
 }
