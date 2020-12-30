@@ -1,16 +1,9 @@
 package leetCode
 
 object Solution_724 {
-  def pivotIndex(nums: Array[Int]): Int = {
-    val len = nums.length
-    var sum = 0
-    var cur = 0
-    (0 until len).foreach(i => sum += nums(i))
-    (0 until len).foreach(i => {
-      if (i == 0) cur = 0
-      else cur += nums(i - 1)
-      if (cur << 1 == sum - nums(i)) return i
+  def pivotIndex(nums: Array[Int]): Int =
+    nums.scanLeft(0)((sum, x) => sum + x).drop(1)
+      .zipWithIndex.indexWhere({ case (l, idx) =>
+      nums.scanRight(0)((sum, x) => sum + x).dropRight(1)(idx) == l
     })
-    -1
-  }
 }

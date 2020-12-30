@@ -1,15 +1,11 @@
 package leetCode
 
+import scala.collection.mutable
+
 object Solution_1046 {
-  def lastStoneWeight(A: Array[Int]): Int = {
-    var t = 0
-    var res = 0
-    val q = collection.mutable.PriorityQueue[Int](A: _*)
-    while (q.size > 1) {
-      t = q.dequeue() - q.dequeue()
-      if (t > 0) q.enqueue(t)
-    }
-    if (q.size == 1) res = q.dequeue
-    res
+  def lastStoneWeight(stones: Array[Int]): Int = {
+    val pq = mutable.PriorityQueue[Int]() ++ stones
+    while (pq.size > 1) pq += (pq.dequeue - pq.dequeue)
+    if (pq.isEmpty) 0 else pq.dequeue
   }
 }

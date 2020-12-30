@@ -1,13 +1,20 @@
 package leetCode
 
 object Solution_219 {
-  def containsNearbyDuplicate(nums: Array[Int], k: Int): Boolean = {
-    val s = new collection.mutable.HashSet[Int]()
-    nums.indices.foreach(i => {
-      if (s.contains(nums(i))) return true
-      s.add(nums(i))
-      if (s.size > k) s.remove(nums(i - k))
-    })
-    false
+  def containsNearbyDuplicate(nums: Array[Int], maxDiff: Int): Boolean = {
+    def f(indices: Array[Int]): Boolean =
+      indices
+        .sliding(2)
+        .map({
+          case Array(x, y) => y - x <= maxDiff
+          case _ => false
+        }).exists(identity)
+
+    nums
+      .zipWithIndex
+      .groupBy(_._1)
+      .values
+      .map(v => f(v.map(_._2)))
+      .exists(identity)
   }
 }
