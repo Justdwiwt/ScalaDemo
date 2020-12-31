@@ -5,5 +5,6 @@ object Solution_553 {
     case h :: Nil => h.toString
     case x :: y :: Nil => x + "/" + y
     case h :: t => h + "/(" + t.mkString("/") + ")"
+    case _ => ""
   }
 }
