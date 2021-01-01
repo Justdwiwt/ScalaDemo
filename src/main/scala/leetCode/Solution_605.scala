@@ -1,19 +1,6 @@
 package leetCode
 
 object Solution_605 {
-  def canPlaceFlowers(flowerbed: Array[Int], n: Int): Boolean = {
-    var p = n
-    flowerbed.indices.foreach(i => {
-      if (p == 0) return true
-      if (flowerbed(i) == 0) {
-        val next = if (i == flowerbed.length - 1) 0 else flowerbed(i + 1)
-        val pre = if (i == 0) 0 else flowerbed(i - 1)
-        if (next + pre == 0) {
-          flowerbed(i) = 1
-          p -= 1
-        }
-      }
-    })
-    p <= 0
-  }
+  def canPlaceFlowers(flowerbed: Array[Int], n: Int): Boolean =
+    (-2 +: flowerbed.indices.filter(flowerbed.andThen(_ == 1)) :+ flowerbed.length + 1).sliding(2).map({ case Seq(s, e) => e - s - 1 }).map(x => x / 2 - ((x % 2) ^ 1)).sum >= n
 }
