@@ -1,15 +1,13 @@
 package leetCode
 
 object Solution_26 {
-  def removeDuplicates(nums: Array[Int]): Int = {
-    var ans = 0
-    if (nums.length < 2) return nums.length
-    (1 until nums.length).foreach(i =>
-      if (nums(ans) != nums(i)) {
-        ans = ans + 1
-        nums(ans) = nums(i)
-      })
-    ans += 1
-    ans
-  }
+  def removeDuplicates(nums: Array[Int]): Int =
+    if (nums.isEmpty) 0
+    else nums.drop(1)./:((1, nums.head))((tup, cur) => {
+      if (cur == tup._2) (tup._1, cur)
+      else {
+        nums(tup._1) = cur
+        (tup._1 + 1, cur)
+      }
+    })._1
 }
