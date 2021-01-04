@@ -1,33 +1,62 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_501 {
-  def findMode(root: TreeNode): Array[Int] = root match {
-    case null => Array.empty
-    case _ =>
-      var res = Array.empty[Int]
-      var p = root
-      var pre: TreeNode = null
-      val st = new mutable.Stack[TreeNode]()
-      var mx = 0
-      var cnt = 1
-      while (st.nonEmpty || p != null) {
-        while (p != null) {
-          st.push(p)
-          p = p.left
-        }
-        p = st.top
-        st.pop
-        if (pre != null) cnt = if (p.value == pre.value) cnt + 1 else 1
-        if (cnt >= mx) {
-          if (cnt > mx) res = Array.empty
-          res :+= p.value
-          mx = cnt
-        }
-        pre = p
-        p = p.right
-      }
-      res
+
+  class Window(val last: Int, val count: Int) {
+
+    def addItem(newVal: Int): Window =
+      if (newVal == last) new Window(last, count + 1)
+      else new Window(newVal, 1)
+
   }
+
+  class Modes(val items: List[Int], val count: Int) {
+
+    def combine(item: Modes): Modes =
+      if (count > item.count) this
+      else if (count < item.count) item
+      else new Modes(items ::: item.items, count)
+
+  }
+
+  class Result(val modes: Modes, val window: Window) {
+
+    def addValue(value: Int): Result =
+      addValue(value, window.addItem(value))
+
+    def addValue(value: Int, curWindow: Window): Result =
+      combine(Result(
+        modes = new Modes(value :: Nil, curWindow.count),
+        window = curWindow
+      ))
+
+    def combine(item: Result): Result =
+      Result(modes.combine(item.modes), item.window)
+
+  }
+
+  object Result {
+    def empty(): Result =
+      Result(new Modes(Nil, 0), new Window(0, 0))
+
+    def apply(modes: Modes, window: Window) =
+      new Result(modes, window)
+  }
+
+
+  def findMode(root: TreeNode): Array[Int] =
+    find(root, Result.empty())
+      .modes
+      .items
+      .toArray
+
+  def find(root: TreeNode, parent: Result): Result =
+    if (root == null) parent
+    else {
+      val left = find(root.left, parent)
+      val center = left.addValue(root.value)
+      val right = find(root.right, center)
+      right
+    }
+
 }

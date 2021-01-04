@@ -2,23 +2,20 @@ package leetCode
 
 object Solution_948 {
   def bagOfTokensScore(tokens: Array[Int], P: Int): Int = {
-    var sorted = tokens.sorted
-    var power = P
-    var score = 0
-    var res = 0
-    while (sorted.nonEmpty) {
-      if (power >= sorted.head) {
-        power = power - sorted.head
-        score += 1
-        res = res.max(score)
-        sorted = sorted.tail
-      } else {
-        if (score <= 0) return res
-        power += sorted.last
-        score -= 1
-        sorted = sorted.dropRight(1)
-      }
+    if (tokens.isEmpty) 0
+    else {
+      val sorted = tokens.sorted
+      if (sorted.head > P) 0
+      else f(sorted, P, sorted.sum, flag = true)
     }
-    res
   }
+
+  @scala.annotation.tailrec
+  def f(tokens: Array[Int], P: Int, res: Int, flag: Boolean): Int =
+    if (flag) f(tokens.tail, P - tokens.head, res - tokens.head, flag = false)
+    else {
+      if (P >= res) tokens.length + 1
+      else if (P >= res - tokens.last) tokens.length
+      else f(tokens.init, P + tokens.last, res - tokens.last, flag = true)
+    }
 }
