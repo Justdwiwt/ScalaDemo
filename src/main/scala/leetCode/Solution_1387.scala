@@ -1,22 +1,19 @@
 package leetCode
 
 object Solution_1387 {
-  def getKth(lo: Int, hi: Int, k: Int): Int = {
-    var arr = Array.empty[(Int, Int)]
-
-    def f(input: Int): Int = {
-      var res = 0
-      var t = input
-      while (t != 1) {
-        if (t % 2 == 0) t /= 2
-        else t = t * 3 + 1
-        res += 1
-      }
-      res
+  def f(x: Int): Int = {
+    @scala.annotation.tailrec
+    def g(x: Int, step: Int): Int = x match {
+      case 1 => step
+      case n =>
+        g(if (n % 2 == 0) n / 2 else n * 3 + 1, step + 1)
     }
 
-    (lo to hi).foreach(i => arr :+= (f(i), i))
-    arr = arr.sorted
-    arr(k - 1)._2
+    g(x, 0)
   }
+
+  def getKth(lo: Int, hi: Int, k: Int): Int =
+    (lo to hi).map(n => (n, f(n))).sortBy({ case (_, pow) => pow }).toList(k - 1) match {
+      case (n, _) => n
+    }
 }

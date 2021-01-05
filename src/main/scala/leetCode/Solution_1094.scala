@@ -2,16 +2,14 @@ package leetCode
 
 object Solution_1094 {
   def carPooling(trips: Array[Array[Int]], capacity: Int): Boolean = {
-    val cnt = Array.fill(1001)(0)
-    trips.foreach(i => {
-      cnt(i(1)) += i(0)
-      cnt(i(2)) -= i(0)
-    })
-    if (cnt(0) > capacity) return false
-    (1 until cnt.length).foreach(i => {
-      cnt(i) += cnt(i - 1)
-      if (cnt(i) > capacity) return false
-    })
-    true
+    var cur = 0
+    trips
+      .flatMap(x => List((x(0), x(1)), (-x(0), x(2))))
+      .sortBy(t => (t._2, t._1))
+      .forall(t => {
+        cur += t._1
+        if (cur > capacity) false
+        else true
+      })
   }
 }
