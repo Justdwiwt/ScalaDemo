@@ -1,18 +1,20 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_30 {
   def findSubstring(s: String, words: Array[String]): List[Int] = {
     if (s.isEmpty || words.isEmpty) return Nil
-    val l1 = s.length
-    val l2 = words.map(_.length).sum
-    val key = words.permutations.map(_.mkString).toSet
 
-    val hash_targets = new mutable.HashSet[String]()
-    val i = key.iterator
-    while (i.hasNext) hash_targets.add(i.next())
+    def toSet(w: Seq[String]): Set[(String, Int)] = w.groupBy(identity).mapValues(_.length).toSet
 
-    (0 to (l1 - l2)).withFilter(i => key.contains(s.substring(i, i + l2))).map(i => i).toList
+    val target = toSet(words)
+    (0 until words.head.length)
+      .flatMap(i => s.substring(i)
+        .sliding(words.head.length, words.head.length)
+        .sliding(words.length, 1)
+        .zipWithIndex
+        .map(x => x.copy(_2 = x._2 * words.head.length + i)))
+      .filter(t => toSet(t._1) == target)
+      .map(_._2)
+      .toList
   }
 }
