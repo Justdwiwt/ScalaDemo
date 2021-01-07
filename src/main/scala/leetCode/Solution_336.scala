@@ -2,62 +2,58 @@ package leetCode
 
 object Solution_336 {
 
-  class Node {
-    val next: Array[Int] = Array.fill(26)(0)
-    var flag: Int = -1
-  }
+  type SDT = (List[Option[Word]], Option[Word], Int)
+  type ZDT = (Array[Int], Int, Int)
 
-  private var trie = Array.empty[Node]
+  case class Word(v: Char, n: Option[Word])
 
   def palindromePairs(words: Array[String]): List[List[Int]] = {
-    trie :+= new Node
-    words.indices.foreach(i => add(words(i), i))
-    var res = List.empty[List[Int]]
-    words.indices.foreach(i => words(i).indices.foreach(j => {
-      if (isPalindrome(words(i), j, words(i).length - 1)) {
-        val rId = find(words(i), 0, j - 1)
-        if (rId != -1 && rId != i) res ::= i :: rId :: Nil
-      }
-      if (j != 0 && isPalindrome(words(i), 0, j - 1)) {
-        val lId = find(words(i), j, words(i).length - 1)
-        if (lId != -1 && lId != i) res ::= lId :: i :: Nil
-      }
-    }))
-    res
+    val dictR = dict(words)
+    val dictL = dict(words.map(_.reverse))
+
+    words
+      .zipWithIndex
+      .flatMap({ case (_, i) => getPairs(dictR, words(i).reverse).map(List(_, i)) ++ getPairs(dictL, words(i)).map(List(i, _)) })
+      .filter(p => p.head != p(1))
+      .distinct
+      .toList
   }
 
-  def add(key: String, id: Int): Unit = {
-    var idx = 0
-    key.indices.foreach(i => {
-      val c = key(i) - 'a'
-      if (trie(idx).next(c) == 0) {
-        trie :+= new Node
-        trie(idx).next(c) = trie.length - 1
-      }
-      idx = trie(idx).next(c)
-    })
-    trie(idx).flag = id
+  def convertWord(s: String): Option[Word] = s.toList./:(Option.empty[Word])((prev: Option[Word], c: Char) => Some(Word(c, prev)))
+
+  def dict(words: Array[String]): Map[Option[Word], Int] = words.map(convertWord).zipWithIndex.toMap
+
+  def getPairs(dict: Map[Option[Word], Int], s: String): List[Int] = getPolindroms(s)
+    .:\((List.empty[Option[Word]], convertWord(s), s.length - 1))(getPrefixes)
+    ._1
+    .flatMap(dict.get)
+
+  @scala.annotation.tailrec
+  def getPrefixes(idx: Int, d: SDT): SDT =
+    if (d._3 < idx) (d._1 :+ d._2, d._2, d._3)
+    else getPrefixes(idx, (d._1, d._2.get.n, d._3 - 1))
+
+  def getPolindroms(s: String): Array[Int] = {
+    val n = s.length * 2 + 1
+    (1 until n)
+      ./:(Array(n), 0, 0)(getZElem(s.reverse + "\u0000" + s))
+      ._1
+      .zipWithIndex
+      .filter(d => d._2 > n / 2 && n - d._2 - d._1 < 2)
+      .map(_._2 - n / 2 - 1) :+ n / 2
   }
 
-  def isPalindrome(s: String, left: Int, right: Int): Boolean = {
-    var l = left
-    var r = right
-    while (l <= r) {
-      if (s(l) != s(r)) return false
-      l += 1
-      r -= 1
-    }
-    true
+  def getZElem(s: String)(d: ZDT, i: Int): ZDT = d match {
+    case (res, l, r) if i > r =>
+      val rN = getR(s, i, i)
+      (res :+ (rN - l), i, rN)
+    case (res, l, r) if res(i - l) > r - i =>
+      val rN = getR(s, i, r)
+      (res :+ (rN - l), i, rN)
+    case (res, l, r) => (res :+ res(i - l), l, r)
   }
 
-  def find(s: String, left: Int, right: Int): Int = {
-    var idx = 0
-    (left to right).reverse.foreach(i => {
-      val c = s(i) - 'a'
-      if (trie(idx).next(c) == 0) return -1
-      idx = trie(idx).next(c)
-    })
-    trie(idx).flag
-  }
+  @scala.annotation.tailrec
+  def getR(s: String, L: Int, R: Int): Int = if (R == s.length || s(R - L) != s(R)) R - 1 else getR(s, L, R + 1)
 
 }
