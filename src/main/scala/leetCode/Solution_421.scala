@@ -1,26 +1,18 @@
 package leetCode
 
 import scala.collection.mutable
-import scala.util.control.Breaks._
 
 object Solution_421 {
   def findMaximumXOR(nums: Array[Int]): Int = {
-    var res = 0
-    var mask = 0
-    (31 to 0 by -1).foreach(i => {
-      mask |= (1 << i)
-      val s = new mutable.HashSet[Int]()
-      nums.foreach(v => s.add(v & mask))
-      val t = res | (1 << i)
-      breakable {
-        s.foreach(pre => {
-          if (s.contains(t ^ pre)) {
-            res = t
-            break
-          }
-        })
-      }
+    var mx = 0
+    val st = mutable.Set.empty[Int]
+    ((nums.max.toBinaryString.length - 1) to(0, -1)).foreach(i => {
+      st.clear()
+      st ++= nums.map(_ >> i)
+      mx = mx << 1
+      val cur = mx | 1
+      st.withFilter(p => st.contains(p ^ cur)).foreach(_ => mx = cur)
     })
-    res
+    mx
   }
 }

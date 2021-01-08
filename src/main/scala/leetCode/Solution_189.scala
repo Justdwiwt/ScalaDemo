@@ -2,13 +2,8 @@ package leetCode
 
 object Solution_189 {
   def rotate(nums: Array[Int], k: Int): Unit = {
-    if (k == 0) println(nums)
-    else {
-      (1 to (k % nums.length)).foreach(_ => {
-        val tmp = nums(nums.length - 1)
-        (0 to nums.length - 2).reverse.foreach(j => nums(j + 1) = nums(j))
-        nums(0) = tmp
-      })
-    }
+    val M = k % nums.length
+    val arr = nums.takeRight(M) ++ nums.take(nums.length - M)
+    arr.zipWithIndex.foreach(x => nums(x._2) = x._1)
   }
 }
