@@ -2,30 +2,19 @@ package leetCode
 
 object Solution_8 {
   def myAtoi(str: String): Int = {
-    var res: Long = 0L
-    var i: Int = 0
-    while (i < str.length) {
-      if (str.charAt(i) == '-') {
-        while (i < str.length && str.charAt(i) >= '0' && str.charAt(i) <= '9') {
-          res = res * 10 + (str.charAt(i) - '0')
-          if (res - 1 > Int.MaxValue) return Int.MinValue
-          i = i + 1
-        }
-        res = res * (-1)
-        return res.toInt
-      }
-      else if ((str.charAt(i) >= '0' && str.charAt(i) <= '9') || str.charAt(i) == '+') {
-        if (str.charAt(i) == '+') i = i + 1
-        while (i < str.length && str.charAt(i) >= '0' && str.charAt(i) <= '9') {
-          res = res * 10 + (str.charAt(i) - '0')
-          if (res > Int.MaxValue) return Int.MaxValue
-          i = i + 1
-        }
-        return res.toInt
-      }
-      else if (str.charAt(i) == ' ') i = i + i
-      else return 0
+    @scala.annotation.tailrec
+    def f(list: List[Char], num: Int, sign: Option[Char]): Int = list match {
+      case ' ' :: rest if sign.isEmpty => f(rest, num, sign)
+      case '-' :: rest if sign.isEmpty => f(rest, num, Some('-'))
+      case '+' :: rest if sign.isEmpty => f(rest, num, Some('+'))
+      case ch :: rest if ch >= '0' && ch <= '9' =>
+        val t = ch - '0'
+        if (sign.contains('+') && (num == Int.MaxValue / 10 && t > 7 || num > Int.MaxValue / 10)) Int.MaxValue
+        else if (sign.contains('-') && (num == Int.MaxValue / 10 && t > 8 || num > Int.MaxValue / 10)) Int.MinValue
+        else f(rest, num * 10 + t, sign.orElse(Some('+')))
+      case _ => if (sign.contains('-')) -num else num
     }
-    0
+
+    f(str.toList, 0, None)
   }
 }
