@@ -2,32 +2,19 @@ package leetCode
 
 object Solution_44 {
   def isMatch(s: String, p: String): Boolean = {
-    val str = s.toArray
-    val pattern = p.toArray
+    val arr = f(s, p)
+    (1 to s.length).foreach(i => (1 to p.length).foreach(j => p(j - 1) match {
+      case c if c == s(i - 1) || c == '?' => arr(i)(j) = arr(i - 1)(j - 1)
+      case '*' => arr(i)(j) = arr(i - 1)(j - 1) || arr(i - 1)(j) || arr(i)(j - 1)
+      case _ =>
+    }))
+    arr(s.length)(p.length)
+  }
 
-    val n = str.length
-    val m = pattern.length
-    val dp = Array.fill(n + 1, m + 1)(false)
-    dp(0)(0) = true
-
-    @scala.annotation.tailrec
-    def f(i: Int): Unit = {
-      if (i <= m && pattern(i - 1) == '*') {
-        dp(0)(i) = true
-        f(i + 1)
-      }
-    }
-
-    f(1)
-
-    (1 to n).foreach(i =>
-      (1 to m).foreach(j => {
-        if (str(i - 1) == pattern(j - 1) || pattern(j - 1) == '?')
-          dp(i)(j) = dp(i - 1)(j - 1)
-        if (pattern(j - 1) == '*')
-          dp(i)(j) = dp(i - 1)(j) || dp(i)(j - 1) || dp(i - 1)(j - 1)
-      })
-    )
-    dp(n)(m)
+  def f(s: String, p: String): Array[Array[Boolean]] = {
+    val arr = Array.fill(s.length + 1)(Array.ofDim[Boolean](p.length + 1))
+    arr(0)(0) = true
+    p.indices.withFilter(i => p(i) == '*').foreach(i => arr(0)(i + 1) = arr(0)(i))
+    arr
   }
 }
