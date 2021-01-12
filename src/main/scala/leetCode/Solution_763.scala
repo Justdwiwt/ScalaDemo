@@ -1,22 +1,16 @@
 package leetCode
 
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 
 object Solution_763 {
   def partitionLabels(S: String): List[Int] = {
-    val res = new ListBuffer[Int]
-    var start = 0
-    var last = 0
-    val m = new mutable.HashMap[Char, Int]()
-    S.indices.foreach(i => m(S(i)) = i)
-    S.indices.foreach(i => {
-      last = last.max(m(S(i)))
-      if (i == last) {
-        res.append(i - start + 1)
-        start = i + 1
-      }
-    })
-    res.toList
+    val m = mutable.Map.empty[Char, (Int, Int)]
+    S.zipWithIndex.foreach({ case (c, i) => m += c -> (m.get(c).map(_._1).getOrElse(i), i) })
+    m.values.toSeq.sorted./:(List.empty[(Int, Int)]) {
+      case (Nil, (start, end)) => List((start, end))
+      case (soFar@(s1, e1) :: rest, interval@(s2, e2)) =>
+        if (s2 <= e1) (s1, e1.max(e2)) :: rest
+        else interval :: soFar
+    }.reverse.map({ case (start, end) => end - start + 1 })
   }
 }
