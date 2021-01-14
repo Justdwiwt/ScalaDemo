@@ -2,30 +2,17 @@ package leetCode
 
 object Solution_1417 {
   def reformat(s: String): String = {
-    var n1 = 0
-    var n2 = 0
-    val arr = s.toCharArray
-    arr.foreach(i => if (check(i)) n1 += 1 else n2 += 1)
-    if (n1 - n2 < -1 || n1 - n2 > 1) return ""
-    if (n1 > n2) {
-      n1 = 0
-      n2 = 1
-    } else {
-      n1 = 1
-      n2 = 0
+    val (digits, letters) = s.partition(Character.isDigit)
+    if ((digits.length - letters.length).abs > 1) ""
+    else {
+      val (less, big) = if (digits.length <= letters.length) (digits, letters) else (letters, digits)
+      val sb = StringBuilder.newBuilder
+      less.indices.foreach(i => {
+        sb.append(big(i))
+        sb.append(less(i))
+      })
+      if (big.length > less.length) sb.append(big(big.length - 1))
+      sb.mkString
     }
-    s.toCharArray.foreach(i => {
-      if (check(i)) {
-        arr(n1) = i
-        n1 += 2
-      } else {
-        arr(n2) = i
-        n2 += 2
-      }
-    })
-
-    arr.mkString
   }
-
-  def check(c: Char): Boolean = c >= '0' && c <= '9'
 }

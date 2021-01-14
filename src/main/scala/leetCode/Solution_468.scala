@@ -1,14 +1,12 @@
 package leetCode
 
 object Solution_468 {
-  def validIPAddress(IP: String): String = {
-    parser.runP(IP.toList.map(_.toLower)).find(x => x._2.isEmpty) match {
-      case None => "Neither"
-      case Some(x) =>
-        x._1 match {
-          case IPV4(_) => "IPv4"
-          case IPV6(_) => "IPv6"
-        }
+
+  def validIPAddress(IP: String): String = parser.runP(IP.toList.map(_.toLower)).find(x => x._2.isEmpty) match {
+    case None => "Neither"
+    case Some(x) => x._1 match {
+      case IPV4(_) => "IPv4"
+      case IPV6(_) => "IPv6"
     }
   }
 
@@ -19,19 +17,15 @@ object Solution_468 {
   case class IPV6(v: String) extends IP
 
   case class Parser[+A](runP: List[Char] => List[(A, List[Char])]) {
-    def map[B](f: A => B): Parser[B] = Parser(l =>
-      runP(l) match {
-        case Nil => Nil
-        case xs => xs.map(x => (f(x._1), x._2))
-      }
-    )
+    def map[B](f: A => B): Parser[B] = Parser(l => runP(l) match {
+      case Nil => Nil
+      case xs => xs.map(x => (f(x._1), x._2))
+    })
 
-    def flatMap[B](f: A => Parser[B]): Parser[B] = Parser(l =>
-      runP(l) match {
-        case Nil => Nil
-        case xs => xs.flatMap(x => f(x._1).runP(x._2))
-      }
-    )
+    def flatMap[B](f: A => Parser[B]): Parser[B] = Parser(l => runP(l) match {
+      case Nil => Nil
+      case xs => xs.flatMap(x => f(x._1).runP(x._2))
+    })
   }
 
   val fail: Parser[Nothing] = Parser(_ => Nil)
@@ -91,7 +85,7 @@ object Solution_468 {
 
   def chain[A](p: Parser[A], ops: Parser[(A, A) => A], n: Int): Parser[A] =
     p.flatMap(x => repeat(ops.flatMap(f => p.map(y => (f, y))), n)
-      .map(fys => fys.foldLeft(x) { case (acc, (g, i)) => g(acc, i) }))
+      .map(fys => fys./:(x) { case (acc, (g, i)) => g(acc, i) }))
 
   val ipv4: Parser[IPV4] = chain(ipv4Num, dot, 3)
   val ipv6: Parser[IPV6] = chain(ipv6Num, colon, 7)
