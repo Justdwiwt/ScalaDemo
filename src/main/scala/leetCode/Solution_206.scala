@@ -2,10 +2,12 @@ package leetCode
 
 object Solution_206 {
   def reverseList(head: ListNode): ListNode = {
-    if (head == null || head.next == null) return head
-    val cur = reverseList(head.next)
-    head.next.next = head
-    head.next = null
-    cur
+    @scala.annotation.tailrec
+    def f(pre: ListNode, cur: ListNode, next: ListNode): ListNode = {
+      cur.next = pre
+      if (next != null) f(cur, next, next.next) else cur
+    }
+
+    if (head == null) null else f(null, head, head.next)
   }
 }

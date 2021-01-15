@@ -1,21 +1,15 @@
 package leetCode
 
 object Solution_106 {
-  def buildTree(inorder: Array[Int], postorder: Array[Int]): TreeNode = {
-    def buildTree(inorderIndexed: Array[(Int, Int)], inOrderStart: Int, inOrderEnd: Int, postOrderIndexed: Array[(Int, Int)], postOrderStart: Int, postOrderEnd: Int): TreeNode =
-      if (inOrderStart > inOrderEnd) null
-      else {
-        val value = postOrderIndexed(postOrderEnd)._1
-        val root = new TreeNode(value)
-        val pos = inorderIndexed.find(_._1 == value) match {
-          case Some((_, i)) => i
-        }
-        val leftTreeLen = pos - inOrderStart
-        root.left = buildTree(inorderIndexed, inOrderStart, pos - 1, postOrderIndexed, postOrderStart, postOrderStart + leftTreeLen - 1)
-        root.right = buildTree(inorderIndexed, pos + 1, inOrderEnd, postOrderIndexed, postOrderStart + leftTreeLen, postOrderEnd - 1)
-        root
-      }
-
-    buildTree(inorder.zipWithIndex, 0, inorder.length - 1, postorder.zipWithIndex, 0, postorder.length - 1)
-  }
+  def buildTree(inorder: Array[Int], postorder: Array[Int]): TreeNode =
+    if (postorder.length == 0) null
+    else if (postorder.length == 1) new TreeNode(postorder(0))
+    else {
+      var idx = postorder.length - 1
+      while (idx >= 0 && inorder(idx) != postorder(postorder.length - 1)) idx -= 1
+      val root = new TreeNode(postorder(postorder.length - 1))
+      root.left = buildTree(inorder.slice(0, idx), postorder.slice(0, idx))
+      root.right = buildTree(inorder.slice(idx + 1, postorder.length), postorder.slice(idx, postorder.length - 1))
+      root
+    }
 }
