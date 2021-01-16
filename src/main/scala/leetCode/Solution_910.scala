@@ -2,15 +2,17 @@ package leetCode
 
 object Solution_910 {
   def smallestRangeII(A: Array[Int], K: Int): Int = {
-    val t = A.sorted
-    var res = t(t.length - 1) - t(0)
-    (0 until t.length - 1).foreach(i => {
-      val a = t(i)
-      val b = t(i + 1)
-      val high = math.max(t(t.length - 1) - K, a + K)
-      val low = math.min(t(0) + K, b - K)
-      res = math.min(res, high - low)
-    })
-    res
+    val sortedA = A.sorted
+
+    @scala.annotation.tailrec
+    def f(idx: Int, mn: Int): Int =
+      if (idx == sortedA.length - 1) mn
+      else {
+        val high = (sortedA(A.length - 1) - K).max(sortedA(idx) + K)
+        val low = (sortedA.head + K).min(sortedA(idx + 1) - K)
+        f(idx + 1, mn.min(high - low))
+      }
+
+    f(0, sortedA(A.length - 1) - sortedA.head)
   }
 }
