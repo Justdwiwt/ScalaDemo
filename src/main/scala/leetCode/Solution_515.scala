@@ -1,23 +1,14 @@
 package leetCode
 
 object Solution_515 {
-  def largestValues(root: TreeNode): List[Int] = if (root == null) Nil else {
-    val res = new collection.mutable.ListBuffer[Int]
+  def largestValues(root: TreeNode): List[Int] = f(Seq(root), Nil)
 
-    @annotation.tailrec
-    def loop(row: List[TreeNode]): Unit = if (row.nonEmpty) {
-      val (nextRow, maxValue) = row.foldLeft((List.empty[TreeNode], Int.MinValue)) { case ((r, v), node) =>
-        val t = v max node.value
-        if (node.left != null && node.right != null) (node.left :: node.right :: r, t)
-        else if (node.right != null) (node.right :: r, t)
-        else if (node.left != null) (node.left :: r, t)
-        else (r, t)
-      }
-      res += maxValue
-      loop(nextRow)
-    }
-
-    loop(List(root))
-    res.toList
+  @scala.annotation.tailrec
+  def f(seq: Seq[TreeNode], res: List[Int]): List[Int] = seq match {
+    case Seq() | Seq(null) => res
+    case _ => f(
+      seq.flatMap(n => Seq(n.left, n.right).filter(null.!=)),
+      res :+ seq.map(_.value).max
+    )
   }
 }

@@ -6,24 +6,12 @@ object Solution_843 {
     def guess(word: String): Int = ???
   }
 
-  @scala.annotation.tailrec
-  def findSecretWord(l: Array[String], m: Master): Unit = {
-    val graph = Array.fill(l.length, l.length)(6)
-    l.indices.foreach(i => (i + 1 until l.length).foreach(j => {
-      graph(i)(j) = f(l(i), l(j))
-      graph(j)(i) = f(l(i), l(j))
-    }))
-
-    def countGraph(i: Int): Array[Int] = {
-      val res = Array.fill(7)(0)
-      graph(i).foreach(x => res(x) += 1)
-      res
-    }
-
-    val greedyGuess = l.indices.toList.minBy(i => countGraph(i).max)
-    val cnt = m.guess(l(greedyGuess))
-    if (cnt != 6) findSecretWord(l.filter(x => f(x, l(greedyGuess)) == cnt && x != l(greedyGuess)), m)
+  def findSecretWord(wordlist: Array[String], master: Master): Unit = {
+    val cnt = wordlist.flatten.groupBy(c => c).mapValues(_.length)
+    val word = wordlist.maxBy(w => w.map(cnt).sum)
+    val m = master.guess(word)
+    if (m < word.length) findSecretWord(wordlist.filter(f(word, _) == m), master)
   }
 
-  def f(s1: String, s2: String): Int = s1.zip(s2).count({ case (x, y) => x == y })
+  def f(x: String, y: String): Int = x.zip(y).count(p => p._1 == p._2)
 }

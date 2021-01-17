@@ -2,14 +2,13 @@ package leetCode
 
 object Solution_829 {
   def consecutiveNumbersSum(N: Int): Int = {
-    var res = 0
-    var sum = 0
-    var i = 1
-    while (sum < N) {
-      sum += i
-      if ((N - sum) % i == 0) res += 1
-      i += 1
+    @scala.annotation.tailrec
+    def f(N: Int, start: Int, res: Int): Int = {
+      if ((N - start * (start + 1) / 2) < 0) return res
+      if ((N - start * (start + 1) / 2) % start == 0) f(N, start + 1, res + 1)
+      else f(N, start + 1, res)
     }
-    res
+
+    f(N, 1, 0)
   }
 }
