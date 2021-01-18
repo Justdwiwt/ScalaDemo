@@ -2,36 +2,27 @@ package leetCode
 
 object Solution_721 {
   def accountsMerge(accounts: List[List[String]]): List[List[String]] = {
-    val parent = accounts.indices.toArray
-
-    @annotation.tailrec
-    def root(p: Int): Int = {
-      if (p != parent(p)) {
-        parent(p) = parent(parent(p))
-        root(parent(p))
-      } else p
-    }
-
-    def union(p: Int, q: Int): Unit = {
-      val P = root(p)
-      val Q = root(q)
-      parent(P) = Q
-    }
-
-    val (_, idxNameTable) = accounts.zipWithIndex.foldLeft((Map[String, Int](), Map[Int, String]())) {
-      case ((idxMailMap, idxNameMap), (account, i)) =>
-        val m = account.tail.foldLeft(idxMailMap)((map, mail) => {
-          if (map.contains(mail)) union(i, map(mail))
-          map + (mail -> i)
-        })
-        (m, idxNameMap + (i -> account.head))
-    }
-
-    val map: Map[Int, List[String]] = accounts.zipWithIndex.foldLeft(Map[Int, List[String]]()) {
-      case (m, (account, i)) =>
-        val r = root(i)
-        m.updated(r, account.tail ::: m.getOrElse(r, List()))
-    }.map({ case (key, value) => (key, idxNameTable(key) :: value.distinct.sorted) })
-    map.values.toList
+    class Acc(var _id: Int, val _name: String, var _emails: List[String])
+    var accId = 0
+    val accArr = accounts.toArray.map(x => {
+      val acc = new Acc(accId, x.head, x.tail)
+      accId += 1
+      acc
+    })
+    var m = Map.empty[String, Acc]
+    var res = List.empty[Acc]
+    accArr.foreach(acc => {
+      val toMerge = acc._emails.filter(e => m.contains(e)).map(e => m(e)).toSet
+      if (toMerge.nonEmpty) {
+        val merged = toMerge.reduce((a, b) => new Acc(a._id, b._name, a._emails ::: b._emails))
+        merged._emails :::= acc._emails
+        res = merged :: res.filterNot(toMerge)
+        merged._emails.foreach(e => m += e -> merged)
+      } else {
+        res ::= acc
+        acc._emails.foreach(e => m += e -> acc)
+      }
+    })
+    res.map(acc => acc._name :: acc._emails.distinct.sorted)
   }
 }

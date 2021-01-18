@@ -1,28 +1,25 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_218 {
-  def getSkyline(buildings: Array[Array[Int]]): List[(Int, Int)] = {
-    var res = List.empty[(Int, Int)]
-    var cur = 0
-    var curX = 0
-    var curH = -1
-    val aliveBuilds = new mutable.PriorityQueue[(Int, Int)]()
-    while (cur < buildings.length || aliveBuilds.nonEmpty) {
-      curX = if (aliveBuilds.isEmpty) buildings(cur)(0) else aliveBuilds.head._2
-      if (cur >= buildings.length || buildings(cur)(0) > curX)
-        while (aliveBuilds.nonEmpty && (aliveBuilds.head._2 <= curX)) aliveBuilds.dequeue()
-      else {
-        curX = buildings(cur)(0)
-        while (cur < buildings.length && buildings(cur)(0) == curX) {
-          aliveBuilds.enqueue((buildings(cur)(2), buildings(cur)(1)))
-          cur += 1
-        }
-      }
-      curH = if (aliveBuilds.isEmpty) 0 else aliveBuilds.head._1
-      if (res.isEmpty || (res.last._2 != curH)) res :+= (curX, curH)
-    }
-    res
+  def criticalPoints(buildings: Array[Array[Int]]): List[(Int, Int)] =
+    buildings.map(b => List(b.head -> b(2), b(1) -> b(2))).toList.flatten.sortBy(_._1)
+
+  def filterPoints(points: List[Array[Int]]): List[Array[Int]] = points match {
+    case Nil => Nil
+    case h :: n :: t if h(1) == n(1) => filterPoints(h :: t)
+    case h :: t => h :: filterPoints(t)
   }
+
+  def getSkyline(buildings: Array[Array[Int]]): List[List[Int]] =
+    filterPoints(criticalPoints(buildings).map(cp => {
+      val overlapping = buildings.filter(b => b.head <= cp._1 && b(1) > cp._1)
+      val height = if (overlapping.isEmpty) 0 else overlapping.map(_ (2)).max
+      Array(cp._1, height)
+    })).map(_.toList)
+
+  def _getSkyline(buildings: Array[Array[Int]]): List[Array[Int]] = buildings
+    .map(b => List(b.head -> b(2), b(1) -> b(2)))
+    .toList.flatten.sortBy(_._1)
+    .map(cp => Array(cp._1, buildings.filter(b => b.head <= cp._1 && b(1) > cp._1).map(_ (2)).reduceOption(_.max(_)).getOrElse(0)))
+    ./:(List.empty[Array[Int]])((l, n) => l.lastOption.map(m => if (m(1) == n(1)) l else l :+ n).map(_.toList).getOrElse(List(n)))
 }

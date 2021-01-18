@@ -1,7 +1,5 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_690 {
 
   class Employee() {
@@ -11,16 +9,18 @@ object Solution_690 {
   }
 
   def getImportance(employees: List[Employee], id: Int): Int = {
-    val m = new mutable.HashMap[Int, Employee]()
-    employees.foreach(i => m.put(i.id, i))
+    val empLookup = employees./:(Map[Int, Employee]())((m, e) => m + (e.id -> e))
 
-    def dfs(eid: Int): Int = {
-      val employee = m(eid)
-      var res = employee.importance
-      employee.subordinates.foreach(i => res += dfs(i))
-      res
+    def dfs(employeeId: Int, acc: Int): Int = {
+      val e = empLookup(employeeId)
+      e.subordinates./:(e.importance) {
+        case (acc, id) =>
+          val sub = empLookup(id).importance
+          acc + dfs(id, sub)
+        case _ => acc
+      }
     }
 
-    dfs(id)
+    dfs(id, 0)
   }
 }
