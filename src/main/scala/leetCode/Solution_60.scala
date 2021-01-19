@@ -1,10 +1,13 @@
 package leetCode
 
 object Solution_60 {
-  def getPermutation(n: Int, k: Int): String = {
-    val t = (1 to n).permutations
-    (1 until k).foreach(_ => if (t.hasNext) t.next())
-    if (t.nonEmpty) return t.next().toList.mkString
-    ""
+  def getPermutation(n: Int, k: Int): String =
+    f((1 until n).scan(1)(_ * _).tail.reverse, 1 to n, k - 1, "")
+
+  @scala.annotation.tailrec
+  def f(seq: Seq[Int], idxSq: IndexedSeq[Int], k: Int, permutation: String): String = seq match {
+    case Seq() => permutation + idxSq.head
+    case Seq(head, tail@_*) =>
+      f(tail, idxSq.filterNot(_ == idxSq(k / head)), k % head, permutation + idxSq(k / head))
   }
 }
