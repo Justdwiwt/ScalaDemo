@@ -1,10 +1,8 @@
 package leetCode
 
 object Solution_1529 {
-  def minFlips(target: String): Int = {
-    var res = 0
-    if (target(0) == '1') res += 1
-    (0 until target.length - 1).foreach(i => if (target(i) != target(i + 1)) res += 1)
-    res
+  def minFlips(target: String): Int = target./:(0) {
+    case (numFlips, bulb) if numFlips % 2 != bulb - '0' => numFlips + 1
+    case (numFlips, _) => numFlips
   }
 }

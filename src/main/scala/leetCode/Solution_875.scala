@@ -1,20 +1,20 @@
 package leetCode
 
 object Solution_875 {
-  def minEatingSpeed(piles: Array[Int], H: Int): Int = {
-    var lo = 1
-    var hi = 1000000000.min(piles.max)
-    while (lo < hi) {
-      val mid = (lo + hi) >>> 1
-      if (!check(piles, H, mid)) lo = mid + 1
-      else hi = mid
-    }
-    lo
-  }
+  def f(piles: Array[Int], mid: Int, hours: Int): Boolean = piles./:(0) { case (acc, e) =>
+    val quotient = e / mid
+    val remainder = e % mid
+    acc + (quotient + (if (remainder > 0) 1 else 0))
+  } <= hours
 
-  def check(piles: Array[Int], H: Int, K: Int): Boolean = {
-    var time = 0
-    piles.foreach(i => time += (i - 1) / K + 1)
-    time <= H
-  }
+  @scala.annotation.tailrec
+  def binSearchPiles(piles: Array[Int], left: Int, right: Int, hours: Int): Int =
+    if (left < right) {
+      val m = (left + right) >>> 1
+      if (f(piles, m, hours)) binSearchPiles(piles, left, m, hours)
+      else binSearchPiles(piles, m + 1, right, hours)
+    } else left
+
+  def minEatingSpeed(piles: Array[Int], H: Int): Int =
+    binSearchPiles(piles, 1, piles.max, H)
 }
