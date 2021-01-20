@@ -1,8 +1,12 @@
 package leetCode
 
 object Solution_1287 {
-  def findSpecialInteger(arr: Array[Int]): Int = {
-    (0 until arr.length - arr.length / 4).foreach(i => if (arr(i) == arr(i + arr.length / 4)) return arr(i))
-    arr.head
-  }
+  def findSpecialInteger(arr: Array[Int]): Int =
+    arr./:(Map[Int, Int]())((acc, n) => {
+      acc + (n -> acc.get(n).fold(1)(_ + 1))
+    }).find {
+      case (_, n) => (n.toDouble / arr.length) > 0.25
+    }.fold(-1) {
+      case (n, _) => n
+    }
 }
