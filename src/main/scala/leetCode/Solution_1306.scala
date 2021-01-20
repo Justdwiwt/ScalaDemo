@@ -1,13 +1,20 @@
 package leetCode
 
 object Solution_1306 {
-  def canReach(arr: Array[Int], start: Int): Boolean = {
-    if (start >= arr.length || start < 0) return false
-    if (arr(start) < 0) return false
-    if (arr(start) == 0) return true
-    val l = arr(start) + start
-    val r = start - arr(start)
-    arr(start) *= -1
-    canReach(arr, l) || canReach(arr, r)
-  }
+  @scala.annotation.tailrec
+  def f(arr: Array[Int], target: Array[Int], visited: Set[Int], toVisit: Array[Int]): Boolean =
+    if (target.exists(visited.contains)) true
+    else if (toVisit.isEmpty && !target.exists(visited.contains)) false
+    else f(
+      arr,
+      target,
+      visited ++ toVisit,
+      toVisit
+        .flatMap(cur => Array(cur - arr(cur), cur + arr(cur)))
+        .filterNot(visited.contains)
+        .filter(idx => idx < arr.length && idx >= 0)
+    )
+
+  def canReach(arr: Array[Int], start: Int): Boolean =
+    f(arr, arr.zipWithIndex.withFilter(_._1 == 0).map(_._2), Set.empty, Array(start))
 }
