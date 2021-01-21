@@ -1,17 +1,12 @@
 package leetCode
 
 object Solution_845 {
-  def longestMountain(A: Array[Int]): Int = {
-    var res = 0
-    (1 until A.length - 1).foreach(i => {
-      if (A(i - 1) < A(i) && A(i + 1) < A(i)) {
-        var left = i - 1
-        var right = i + 1
-        while (left > 0 && A(left - 1) < A(left)) left -= 1
-        while (right < (A.length - 1) && A(right) > A(right + 1)) right += 1
-        res = res.max(right - left + 1)
-      }
-    })
-    res
-  }
+  def longestMountain(A: Array[Int]): Int = A.sliding(2)./:(0, 0, false) {
+    case ((mx, 0, false), e) if e.head < e.last => (mx, 2, false)
+    case ((mx, size, false), e) if e.head < e.last => (mx, size + 1, false)
+    case ((mx, _, _), e) if e.head == e.last => (mx, 0, false)
+    case ((mx, 0, false), e) if e.head > e.last => (mx, 0, false)
+    case ((mx, size, _), e) if e.head > e.last => (mx.max(size + 1), size + 1, true)
+    case ((mx, _, true), e) if e.head < e.last => (mx, 2, false)
+  }._1
 }
