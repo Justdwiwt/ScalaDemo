@@ -1,11 +1,7 @@
 package leetCode
 
-import scala.collection.mutable.ListBuffer
-
 object Solution_89 {
-  def grayCode(n: Int): List[Int] = {
-    val res = new ListBuffer[Int]
-    (0 until math.pow(2, n).toInt).foreach(i => res.append((i >> 1) ^ i))
-    res.toList
-  }
+  def grayCode(n: Int): List[Int] =
+    if (n == 0) 0 :: Nil
+    else grayCode(n - 1) ::: grayCode(n - 1).reverseMap(_ | (1 << (n - 1)))
 }

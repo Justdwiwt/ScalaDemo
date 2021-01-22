@@ -1,27 +1,21 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_894 {
-
-  private val m = new mutable.HashMap[Int, List[TreeNode]]()
-
   def allPossibleFBT(N: Int): List[TreeNode] = {
-    if (N % 2 == 0) return List.empty
-    if (N == 1) return List(new TreeNode(0))
-    if (m.contains(N)) return m(N)
-    var res = List[TreeNode]()
-    (1 until N by 2).foreach(i => {
-      val left = allPossibleFBT(i)
-      val right = allPossibleFBT(N - i - 1)
-      left.foreach(i => right.foreach(j => {
-        var cur = new TreeNode(0)
-        cur.left = i
-        cur.right = j
-        res :+= cur
-      }))
-    })
-    res
-  }
+    def f(n: Int, m: Map[Int, List[TreeNode]]): Map[Int, List[TreeNode]] = {
+      val newList = if (n % 2 == 0) List.empty[TreeNode]
+      else (1 until n by 2)./:(List.empty[TreeNode])((res, num) => {
+        val tmp = m(num).flatMap(left => m(n - 1 - num).map(right => {
+          val node = new TreeNode(0)
+          node.left = left
+          node.right = right
+          node
+        }))
+        tmp ::: res
+      })
+      m + (n -> newList)
+    }
 
+    (3 to N by 2)./:(Map(1 -> List(new TreeNode(0))))((prev, num) => f(num, prev)).getOrElse(N, List.empty[TreeNode])
+  }
 }
