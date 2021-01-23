@@ -1,40 +1,38 @@
 package leetCode
 
-import scala.collection.mutable.ListBuffer
-
 object Solution_68 {
-  def fullJustify(words: Array[String], maxWidth: Int): List[String] = {
-    val res = new ListBuffer[String]()
-    var i = 0
-    while (i < words.length) {
-      var j = i
-      var len = 0
-      while (j < words.length && len + words(j).length + j - i <= maxWidth) {
-        len += words(j).length
-        j += 1
-      }
-      val out = new StringBuilder
-      var space = maxWidth - len
-      (i until j).foreach(k => {
-        out.append(words(k))
-        if (space > 0) {
-          var tmp = 0
-          if (j == words.length) {
-            if (j - k == 1) tmp = space
-            else tmp = 1
-          } else {
-            if (j - k - 1 > 0) {
-              if (space % (j - k - 1) == 0) tmp = space / (j - k - 1)
-              else tmp = space / (j - k - 1) + 1
-            } else tmp = space
-          }
-          out.append(tmp, ' ')
-          space -= tmp
-        }
-      })
-      res.append(out.toString)
-      i = j
-    }
-    res.toList
+  def fullJustify(words: Array[String], maxWidth: Int): List[String] =
+    format(words.toList./:(List[String]()) { case (acc, s) => acc ++ s.trim.split("\\s+").toList }, maxWidth, Nil, Nil)
+
+  @scala.annotation.tailrec
+  def format(words: List[String], limit: Int, acc: List[String], tmp: List[String]): List[String] = words match {
+    case Nil if tmp.isEmpty => acc
+    case Nil =>
+      val tmpStr = tmp.mkString(" ")
+      acc :+ (tmpStr :+ fillSpace(limit - tmpStr.length)).mkString
+    case w :: tailWords if tmp.map(_.length).sum + tmp.length + w.length <= limit => format(tailWords, limit, acc, tmp :+ w)
+    case w :: tailWords => format(tailWords, limit, acc :+ justify(limit, tmp).mkString, List(w))
   }
+
+  def justify(limit: Int, tmp: List[String]): List[String] = {
+    val spacesAvail = limit - tmp.map(_.length).sum
+    if (tmp.length <= 1) tmp :+ fillSpace(spacesAvail)
+    else {
+      val gaps = tmp.length - 1
+      val baseGap = spacesAvail / gaps
+      val remainders = spacesAvail % gaps
+      justify(limit, tmp, Nil, baseGap, remainders)
+    }
+  }
+
+  @scala.annotation.tailrec
+  def justify(limit: Int, tmp: List[String], acc: List[String], baseGap: Int, remainders: Int): List[String] = tmp match {
+    case Nil => throw new Exception("never happen")
+    case word :: Nil => acc :+ word
+    case word :: tail =>
+      val spaces = baseGap + (if (remainders > 0) 1 else 0)
+      justify(limit, tail, acc :+ word :+ fillSpace(spaces), baseGap, if (remainders > 0) remainders - 1 else 0)
+  }
+
+  def fillSpace(n: Int): String = List.fill(n)(" ").mkString
 }

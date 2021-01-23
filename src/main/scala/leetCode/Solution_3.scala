@@ -1,27 +1,9 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_3 {
-  def lengthOfLongestSubstring(s: String): Int = {
-    var res = 0
-    var pLeft = 0
-    var pRight = 0
-    val size = s.length
-    val map = mutable.HashMap[Char, Int]()
-    while (pRight < size) {
-      val c = s(pRight)
-      if (map.contains(c)) {
-        val index = map(c)
-        res = res.max(pRight - pLeft)
-        while (pLeft <= index) {
-          map -= s(pLeft)
-          pLeft += 1
-        }
-      }
-      map.put(c, pRight)
-      pRight += 1
-    }
-    res.max(map.size)
-  }
+  def lengthOfLongestSubstring(s: String): Int =
+    s.toSeq./:((0, Seq.empty[Char])) { case ((max, cur), c) =>
+      if (cur.contains(c)) max.max(cur.size) -> (c +: cur.takeWhile(_ != c))
+      else max.max(cur.size + 1) -> (c +: cur)
+    }._1
 }
