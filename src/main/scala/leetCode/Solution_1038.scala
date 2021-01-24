@@ -2,15 +2,16 @@ package leetCode
 
 object Solution_1038 {
   def bstToGst(root: TreeNode): TreeNode = {
-    func(root, 0)
+    f(List.empty[TreeNode], Option(root), 0)
     root
   }
 
-  def func(tree: TreeNode, parent: Int): Int = tree match {
-    case null => parent
-    case _ =>
-      var right = func(tree.right, parent)
-      tree.value += right
-      func(tree.left, tree.value)
+  @scala.annotation.tailrec
+  def f(stack: List[TreeNode], nodeOpts: Option[TreeNode], sum: Int): (List[TreeNode], Option[TreeNode], Int) = (stack, nodeOpts) match {
+    case (Nil, None) => (stack, nodeOpts, sum)
+    case (_, Some(nd)) => f(nd :: stack, Option(nd.right), sum)
+    case (_, None) =>
+      stack.head.value += sum
+      f(stack.tail, Option(stack.head.left), stack.head.value)
   }
 }
