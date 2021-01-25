@@ -7,11 +7,9 @@ object Solution_559 {
     var children: Array[Node] = Array.empty
   }
 
-  def maxDepth(root: Node): Int = root match {
-    case null => 0
-    case _ =>
-      var mx = 0
-      root.children.foreach(i => mx = mx.max(maxDepth(i)))
-      mx
+  def maxDepth(root: Node): Int = {
+    if (root == null) 0
+    else if (root.children == null || root.children.isEmpty) 1
+    else root.children./:(1)((acc, n) => acc.max(1 + maxDepth(n)))
   }
 }
