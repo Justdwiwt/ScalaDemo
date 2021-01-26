@@ -1,19 +1,10 @@
 package leetCode
 
 object Solution_1021 {
-  def removeOuterParentheses(S: String): String = {
-    var cnt = 0
-    var res = ""
-    (0 until S.length).foreach(i => {
-      if ('(' == S(i)) {
-        cnt += 1
-        if (cnt > 1) res += S(i)
-      }
-      if (')' == S(i)) {
-        cnt -= 1
-        if (cnt >= 1) res += S(i)
-      }
-    })
-    res
-  }
+  def removeOuterParentheses(S: String): String = S./:((0, ""))((acc, ch) => acc match {
+    case (0, s) if ch == '(' => (1, s)
+    case (1, s) if ch == ')' => (0, s)
+    case (x, s) if ch == '(' => (x + 1, s + ch)
+    case (x, s) if ch == ')' => (x - 1, s + ch)
+  })._2
 }

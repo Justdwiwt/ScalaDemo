@@ -1,20 +1,15 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_1481 {
-  def findLeastNumOfUniqueInts(arr: Array[Int], k: Int): Int = {
-    val m = new mutable.HashMap[Int, Int]()
-    arr.foreach(i => if (!m.contains(i)) m += i -> 1 else m(i) += 1)
-    val sorted = m.toArray.sortWith((a, b) => a._2 < b._2).map(x => x._2)
-    var size = sorted.length
-    var t = k
-    sorted.indices.foreach(i => {
-      if (t >= sorted(i)) {
-        t = t - sorted(i)
-        size -= 1
-      } else return size
-    })
-    0
-  }
+  def findLeastNumOfUniqueInts(arr: Array[Int], k: Int): Int = arr
+    .groupBy(x => x)
+    .values
+    .map(x => (x.head, x.length))
+    .toList
+    .sortWith(_._2 < _._2)
+    .flatMap(x => Array.fill(x._2)(x._1))
+    .drop(k)
+    .groupBy(x => x)
+    .keySet
+    .size
 }
