@@ -1,22 +1,22 @@
 package leetCode
 
 import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
 
 object Solution_652 {
   def findDuplicateSubtrees(root: TreeNode): List[TreeNode] = {
-    val res = new ListBuffer[TreeNode]()
-    val m = new mutable.HashMap[String, Int]()
-    func(root, m, res)
-    res.toList
-  }
+    val m = mutable.HashMap.empty[String, Int].withDefaultValue(0)
+    val diff = mutable.HashMap.empty[String, TreeNode]
 
-  def func(node: TreeNode, m: mutable.HashMap[String, Int], res: mutable.ListBuffer[TreeNode]): String = node match {
-    case null => "#"
-    case _ =>
-      val str = node.value.toString + "," + func(node.left, m, res) + "," + func(node.right, m, res)
-      if (m(str) == 1) res.append(node)
-      m(str) += 1
-      str
+    def f(root: TreeNode): String = {
+      if (root != null) {
+        val hashKey = f(root.left) + "," + f(root.right) + "," + root.value
+        m(hashKey) += 1
+        diff(hashKey) = root
+        hashKey
+      } else ""
+    }
+
+    f(root)
+    diff.keySet.intersect(m.filter(_._2 > 1).keySet).map(diff(_)).toList
   }
 }

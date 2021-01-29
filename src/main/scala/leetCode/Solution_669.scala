@@ -1,12 +1,13 @@
 package leetCode
 
 object Solution_669 {
-  def trimBST(root: TreeNode, L: Int, R: Int): TreeNode = {
-    if (root == null) return null
-    if (root.value < L) return trimBST(root.right, L, R)
-    if (root.value > R) return trimBST(root.left, L, R)
-    root.left = trimBST(root.left, L, R)
-    root.right = trimBST(root.right, L, R)
-    root
+  def trimBST(root: TreeNode, l: Int, r: Int): TreeNode = (root, l, r) match {
+    case (null, _, _) => null
+    case (root, l, r) if l > root.value => trimBST(root.right, l, r)
+    case (root, l, r) if r < root.value => trimBST(root.left, l, r)
+    case (root, l, r) =>
+      root.left = trimBST(root.left, l, r)
+      root.right = trimBST(root.right, l, r)
+      root
   }
 }
