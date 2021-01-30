@@ -1,20 +1,16 @@
 package leetCode
 
-import scala.collection.mutable.ArrayBuffer
-
 object Solution_662 {
   def widthOfBinaryTree(root: TreeNode): Int = {
-    var res = 0
-    dfs(root, 1, 1, new ArrayBuffer[Int]())
+    def f(seq: Seq[(TreeNode, Int)]): Int =
+      if (seq.isEmpty) 0
+      else (seq.last._2 - seq.head._2).max(
+        f(seq./:(Seq.empty[(TreeNode, Int)])((res, node) => {
+          val tmp = Option(node._1.left).map(res :+ (_, node._2 * 2)).getOrElse(res)
+          Option(node._1.right).map(tmp :+ (_, node._2 * 2 + 1)).getOrElse(tmp)
+        }))
+      )
 
-    def dfs(r: TreeNode, level: Int, idx: Int, left: ArrayBuffer[Int]): Unit = {
-      if (r == null) return
-      if (level > left.length) left.append(idx)
-      res = res.max(idx - left(level - 1) + 1)
-      dfs(r.left, level + 1, idx * 2, left)
-      dfs(r.right, level + 1, idx * 2 + 1, left)
-    }
-
-    res
+    f(Seq((root, 1))) + 1
   }
 }
