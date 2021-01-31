@@ -1,9 +1,9 @@
 package leetCode
 
 object Solution_1491 {
-  def average(salary: Array[Int]): Double = {
-    f(salary.sorted.slice(1, salary.length - 1))
-  }
-
-  def f(A: Array[Int]): Double = A.sum.toDouble / A.length
+  def average(salary: Array[Int]): Double = salary
+    .sortWith(_ < _)
+    .take(salary.length - 1)
+    .tail
+    .sum * 1.0 / (salary.length - 2)
 }
