@@ -4,15 +4,13 @@ import scala.collection.mutable
 
 object Solution_456 {
   def find132pattern(nums: Array[Int]): Boolean = {
-    var MN = Int.MinValue
-    val st = new mutable.Stack[Int]()
-    (nums.length - 1 to 0 by -1).foreach(i => {
-      if (nums(i) < MN) return true
-      while (st.nonEmpty && nums(i) > st.top) {
-        MN = st.top
-        st.pop
-      }
-      st.push(nums(i))
+    if (nums.length < 3) return false
+    val mn = nums.scanLeft(Int.MaxValue)(_.min(_)).tail
+    val stack = mutable.Stack[Int]()
+    nums.indices.reverse.withFilter(j => nums(j) > mn(j)).foreach(j => {
+      while (stack.nonEmpty && stack.top <= mn(j)) stack.pop()
+      if (stack.nonEmpty && stack.top < nums(j)) return true
+      stack.push(nums(j))
     })
     false
   }
