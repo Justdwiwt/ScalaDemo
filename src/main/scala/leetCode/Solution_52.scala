@@ -1,21 +1,14 @@
 package leetCode
 
 object Solution_52 {
-  def totalNQueens(n: Int): Int = func(n).size
+  def totalNQueens(n: Int): Int = {
+    def nQueens(k: Int): List[List[Int]] =
+      if (k == 0) List(Nil)
+      else nQueens(k - 1).flatMap(q => (0 until n).withFilter(c => isValid(c, q)).map(c => c :: q))
 
-  def func(n: Int): List[List[String]] = {
-    var res = List[List[String]]()
-    (0 until n).permutations.foreach(x => if (valid(x.toList)) {
-      val candidate = Array.ofDim[String](n, n)
-      (0 until n).foreach(xx => (0 until n).foreach(yy =>
-        if (x(xx) == yy) candidate(xx)(yy) = "Q" else candidate(xx)(yy) = "."))
-      res = (0 until n).map(x => candidate(x).reduce(_ + _)).toList :: res
-    })
-    res
-  }
+    def isValid(col: Int, queens: List[Int]) =
+      (1 to queens.length).zip(queens).forall({ case (r, c) => c != col && r != (col - c).abs })
 
-  def valid(l: List[Int]): Boolean = {
-    l.indices.foreach(x => (x + 1 until l.length).foreach(y => if (((x - y).toDouble / (l(x) - l(y)).toDouble).abs == 1) return false))
-    true
+    nQueens(n).length
   }
 }

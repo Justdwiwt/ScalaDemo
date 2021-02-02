@@ -2,14 +2,15 @@ package leetCode
 
 object Solution_220 {
   def containsNearbyAlmostDuplicate(nums: Array[Int], k: Int, t: Int): Boolean = {
-    if (k == 10000) return false
-    nums.indices.foreach(i => {
-      var j = i + 1
-      while (j <= i + k && j < nums.length) {
-        if ((nums(i).toLong - nums(j).toLong).abs <= t) return true
-        j += 1
-      }
-    })
-    false
+    def check(l: Int, r: Int): Boolean =
+      (l until r).exists(idx => (nums(idx).toLong - nums(r).toLong).abs <= t)
+
+    @scala.annotation.tailrec
+    def f(l: Int, r: Int): Boolean =
+      if (r >= nums.length) false
+      else if (r - l < k) check(l, r) || f(l, r + 1)
+      else check(l, r) || f(l + 1, r + 1)
+
+    f(0, 0)
   }
 }
