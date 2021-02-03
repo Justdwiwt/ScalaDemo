@@ -1,10 +1,7 @@
 package leetCode
 
 object Solution_1217 {
-  def minCostToMoveChips(chips: Array[Int]): Int = {
-    var odd = 0
-    var even = 0
-    chips.foreach(i => if ((i & 1) == 0) even += 1 else odd += 1)
-    even.min(odd)
-  }
+  def minCostToMoveChips(chips: Array[Int]): Int = chips./:(List(0, 0))((l, p) => {
+    if (p % 2 == 0) List(l.head, l(1) + 1) else List(l.head + 1, l(1))
+  }).min
 }

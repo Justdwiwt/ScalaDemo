@@ -1,36 +1,20 @@
 package leetCode
 
+import scala.collection.mutable
+
 object Solution_508 {
-
-  private var ans = Array.empty[Int]
-
   def findFrequentTreeSum(root: TreeNode): Array[Int] = {
-    func(root)
-    var t = ans.sorted
-    t :+= Int.MinValue
-    var res = Array.empty[Int]
-    var cnt = 1
-    var m = -1
-    (0 until t.length - 1).foreach(i => {
-      if (t(i) == t(i + 1)) cnt += 1 else cnt = 1
-      if (cnt == m) res :+= t(i)
-      if (cnt > m) {
-        res = Array.empty[Int]
-        m = cnt
-        res :+= t(i)
-      }
-    })
-    res
+    if (root == null) return Array.empty
+    val m = mutable.Map.empty[Int, Int]
+    f(root, m)
+    val sorted = m.toArray.sortWith(_._2 > _._2)
+    sorted.filter({ case (_, freq) => freq == sorted.head._2 }).map(_._1)
   }
 
-  def func(node: TreeNode): Int = node match {
-    case null => 0
-    case _ =>
-      val left = func(node.left)
-      val right = func(node.right)
-      val sum = left + right + node.value
-      ans :+= sum
-      sum
+  def f(root: TreeNode, m: mutable.Map[Int, Int]): Int = {
+    if (root == null) return 0
+    val sum = root.value + f(root.left, m) + f(root.right, m)
+    m += sum -> (m.getOrElse(sum, 0) + 1)
+    sum
   }
-
 }

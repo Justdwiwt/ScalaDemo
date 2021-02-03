@@ -1,19 +1,16 @@
 package leetCode
 
-import scala.collection.mutable.Stack
-
 object Solution_768 {
-  def maxChunksToSorted(arr: Array[Int]): Int = {
-    val st = new Stack[Int]
-    arr.indices.foreach(i => {
-      if (st.isEmpty || st.top <= arr(i)) st.push(arr(i))
-      else {
-        val cur = st.top
-        st.pop
-        while (st.nonEmpty && st.top > arr(i)) st.pop
-        st.push(cur)
-      }
+  def maxChunksToSorted(a: Array[Int]): Int = {
+    var p = 0
+    val sorted = a.sorted
+    var cnt = 0
+    a.indices.foreach(i => {
+      val f = sorted.indexOf(a(i))
+      sorted(f) = Int.MinValue
+      if (f > p) p = f
+      if (i == p) cnt += 1
     })
-    st.size
+    cnt
   }
 }
