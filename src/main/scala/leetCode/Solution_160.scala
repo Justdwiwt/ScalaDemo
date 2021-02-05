@@ -2,21 +2,14 @@ package leetCode
 
 object Solution_160 {
   def getIntersectionNode(headA: ListNode, headB: ListNode): ListNode = {
-    if (headA == null || headB == null) return null
-    if (headA == headB) return headA
-    var pA = headA
-    var pB = headB
-    var cnt = 0
-    while (pA != pB && cnt < 3) {
-      if (pA.next == null) {
-        pA = headB
-        cnt += 1
-      } else pA = pA.next
-      if (pB.next == null) {
-        pB = headA
-        cnt += 1
-      } else pB = pB.next
-    }
-    if (pA == pB) pA else null
+    @scala.annotation.tailrec
+    def f(pA: ListNode, pB: ListNode): ListNode =
+      if (pA != pB) {
+        val newA = if (pA == null) headB else pA.next
+        val newB = if (pB == null) headA else pB.next
+        f(newA, newB)
+      } else pA
+
+    f(headA, headB)
   }
 }

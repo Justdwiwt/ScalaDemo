@@ -2,24 +2,11 @@ package leetCode
 
 object Solution_202 {
   def isHappy(n: Int): Boolean = {
-    var slow = n
-    var fast = process(n)
-    while (slow != fast) {
-      slow = process(slow)
-      fast = process(fast)
-      fast = process(fast)
-    }
-    slow == 1
-  }
+    @scala.annotation.tailrec
+    def f(x: Int, seen: Set[Int]): Boolean =
+      if (seen.contains(x)) x == 1
+      else f(x.toString.map(x => math.pow(x.asDigit, 2).toInt).sum, seen + x)
 
-  def process(n: Int): Int = {
-    var sum = 0
-    var N = n
-    while (N > 0) {
-      val k = N % 10
-      sum += (k * k)
-      N = N / 10
-    }
-    sum
+    f(n, Set.empty)
   }
 }
