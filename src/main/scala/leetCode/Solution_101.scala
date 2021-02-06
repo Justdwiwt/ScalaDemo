@@ -1,11 +1,15 @@
 package leetCode
 
 object Solution_101 {
-  def isSymmetric(root: TreeNode): Boolean = f(root, root)
+  def f(root: TreeNode, ref: TreeNode): Boolean = (Option(root), Option(ref)) match {
+    case (None, Some(_)) | (Some(_), None) => false
+    case (None, None) => true
+    case (Some(root), Some(ref)) =>
+      Seq(root.value == ref.value, f(root.left, ref.right), f(root.right, ref.left)).reduce(_ && _)
+  }
 
-  def f(left: TreeNode, right: TreeNode): Boolean = {
-    if (left == null && right == null) return true
-    if (left == null || right == null) return false
-    (left.value == right.value) && f(left.left, right.right) && f(left.right, right.left)
+  def isSymmetric(root: TreeNode): Boolean = Option(root) match {
+    case None => true
+    case Some(root) => f(root.left, root.right)
   }
 }
