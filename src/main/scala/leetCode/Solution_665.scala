@@ -1,16 +1,19 @@
 package leetCode
 
 object Solution_665 {
-  def checkPossibility(nums: Array[Int]): Boolean = {
-    var cnt = 1
-    (1 until nums.length).foreach(i => {
-      if (nums(i) < nums(i - 1)) {
-        if (cnt == 0) return false
-        if (i == 1 || nums(i) >= nums(i - 2)) nums(i - 1) = nums(i)
-        else nums(i) = nums(i - 1)
-        cnt -= 1
-      }
-    })
-    true
+  def checkPossibility(nums: Array[Int]): Boolean =
+    f(nums.min, nums.min, nums.toList)
+
+  @scala.annotation.tailrec
+  def f(pre: Int, cur: Int, nums: List[Int]): Boolean = nums match {
+    case Nil => true
+    case xs :: ys =>
+      if (cur > xs)
+        if (pre > xs) g(cur +: ys)
+        else g(pre +: nums)
+      else f(cur, xs, ys)
   }
+
+  def g(nums: List[Int]): Boolean =
+    nums.zip(nums.drop(1)).map(t => t._1 - t._2).forall(_ <= 0)
 }
