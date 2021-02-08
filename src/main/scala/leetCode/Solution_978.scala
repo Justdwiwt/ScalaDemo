@@ -1,19 +1,11 @@
 package leetCode
 
 object Solution_978 {
-  def maxTurbulenceSize(A: Array[Int]): Int = {
-    var preLen = 1
-    var res = 1
-    var pre = '='
-    (1 until A.length).foreach(i => {
-      if (A(i) == A(i - 1)) {
-        preLen = 1
-        pre = '='
-      } else if (A(i) > A(i - 1) && pre == '<' || A(i) < A(i - 1) && pre == '>') preLen += 1
-      else preLen = 2
-      pre = if (A(i) > A(i - 1)) '>' else '<'
-      res = res.max(preLen)
-    })
-    res
-  }
+  def maxTurbulenceSize(A: Array[Int]): Int = A./:(0, 0, A.headOption.getOrElse(0), 0L) {
+    case ((b, l, pre, diff), n) =>
+      val len = if (pre == n) 1
+      else if (diff * (n - pre) > 0L) 2
+      else l + 1
+      (b.max(len), len, n, n - pre)
+  }._1
 }
