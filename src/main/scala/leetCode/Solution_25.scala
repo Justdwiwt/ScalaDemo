@@ -34,4 +34,10 @@ object Solution_25 {
       case _ => length(head.next, len - 1)
     }
   }
+
+  @scala.annotation.tailrec
+  def reverseListInKGroups[A](in: List[A], k: Int, acc: List[A] = List.empty[A], sub: List[A] = List.empty[A]): List[A] =
+    if (in.isEmpty) acc ++ sub
+    else if (sub.size == k) reverseListInKGroups(in, k, acc ++ sub, List.empty[A])
+    else reverseListInKGroups(in.tail, k, acc, in.head :: sub)
 }

@@ -2,19 +2,20 @@ package leetCode
 
 object Solution_67 {
   def addBinary(a: String, b: String): String = {
-    var res = ""
-    var m = a.length - 1
-    var n = b.length - 1
-    var carry = 0
-    while (m >= 0 || n >= 0) {
-      val p = if (m >= 0) a(m) - '0' else 0
-      m -= 1
-      val q = if (n >= 0) b(n) - '0' else 0
-      n -= 1
-      val sum = p + q + carry
-      res = (sum % 2).toString + res
-      carry = sum / 2
+    val s1 = if (a.length > b.length) a else b
+    val s2 = if (s1 == a) b else a
+    val (_, buff, carry) = s1.:\(s2.length - 1, "", 0) {
+      case (bit, (idx, buff, carry)) =>
+        val t = if (idx >= 0) s2(idx) else '0'
+        (bit - '0', t - '0', carry) match {
+          case (1, 1, 0) => (idx - 1, 0 + buff, 1)
+          case (1, 1, 1) => (idx - 1, 1 + buff, 1)
+          case (0, 0, 0) => (idx - 1, 0 + buff, 0)
+          case (0, 0, 1) => (idx - 1, 1 + buff, 0)
+          case (_, _, 1) => (idx - 1, 0 + buff, 1)
+          case _ => (idx - 1, 1 + buff, 0)
+        }
     }
-    if (carry == 1) "1" + res else res
+    if (carry == 1) 1 + buff else buff
   }
 }
