@@ -1,26 +1,24 @@
 package leetCode
 
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable
 
 object Solution_481 {
-  def magicalString(n: Int): Int = {
-    if (n <= 0) return 0
-    if (n <= 3) return 1
-    var res = 1
-    var head = 2
-    var tail = 3
-    var num = 1
-    val v = new ArrayBuffer[Int]()
-    v.append(1, 2, 2)
-    while (tail < n) {
-      (0 until v(head)).foreach(_ => {
-        v.append(num)
-        if (num == 1 && tail < n) res += 1
-        tail += 1
-      })
-      num ^= 3
-      head += 1
+  def magicalString(n: Int): Int =
+    if (n == 0) 0
+    else if (n < 4) 1
+    else f(n - 2, mutable.Queue(2), 1)
+
+  @scala.annotation.tailrec
+  def f(n: Int, q: mutable.Queue[Int], res: Int): Int =
+    if (n == 1) res
+    else {
+      val nx = 3 - q.last
+      val v = q.dequeue()
+      if (n == 2) res + (2 - nx)
+      else {
+        q += nx
+        if (v == 2) q += nx
+        f(n - v, q, res + v * (2 - nx))
+      }
     }
-    res
-  }
 }
