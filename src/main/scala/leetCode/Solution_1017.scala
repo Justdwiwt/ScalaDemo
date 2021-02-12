@@ -1,18 +1,10 @@
 package leetCode
 
 object Solution_1017 {
-  def baseNeg2(N: Int): String = {
-    var res = ""
-    if (N == 0) return "0"
-    var n = N
-    while (n != 0)
-      if (n % 2 == 0) {
-        res = "0" + res
-        n /= -2
-      } else {
-        res = "1" + res
-        n = (n - 1) / -2
-      }
-    res
-  }
+  @scala.annotation.tailrec
+  def baseNeg2(N: Int, sig: Int = 0, res: StringBuilder = new StringBuilder): String =
+    if (N == 0)
+      if (res.isEmpty) "0"
+      else res.reverse.mkString
+    else baseNeg2(N / 2 + (N & sig), 1 - sig, res.append(N & 1))
 }

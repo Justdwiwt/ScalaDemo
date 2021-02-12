@@ -1,14 +1,11 @@
 package leetCode
 
 object Solution_129 {
-  def sumNumbers(root: TreeNode): Int = {
-    dfs(root, 0)
-  }
+  def sumNumbers(root: TreeNode): Int = f(root, Nil)
 
-  def dfs(root: TreeNode, sum: Int): Int = {
-    if (root == null) return 0
-    val t = sum * 10 + root.value
-    if (root.left == null && root.right == null) return t
-    dfs(root.left, t) + dfs(root.right, t)
+  def f(n: TreeNode, xs: List[Int]): Int = n match {
+    case null => 0
+    case n if (n.left, n.right) == (null, null) => (xs ::: List(n.value)).reduce(10 * _ + _)
+    case n => f(n.left, xs ::: List(n.value)) + f(n.right, xs ::: List(n.value))
   }
 }

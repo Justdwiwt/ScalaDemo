@@ -1,14 +1,8 @@
 package leetCode
 
 object Solution_357 {
-  def countNumbersWithUniqueDigits(n: Int): Int = {
-    if (n == 0) return 1
-    var res = 10
-    var cnt = 9
-    (2 to n).foreach(i => {
-      cnt *= (11 - i)
-      res += cnt
-    })
-    res
-  }
+  def countNumbersWithUniqueDigits(n: Int): Int =
+    (10 until 10 - 9.min(n) by -1)./:((1, 1)) { case ((res, pre), x) =>
+      (res + pre * x.min(9), pre * x.min(9))
+    }._1
 }
