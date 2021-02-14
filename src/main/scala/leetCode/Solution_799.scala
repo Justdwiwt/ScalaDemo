@@ -2,12 +2,22 @@ package leetCode
 
 object Solution_799 {
   def champagneTower(poured: Int, query_row: Int, query_glass: Int): Double = {
-    val dp = Array.fill(101)(0.0)
-    dp(0) = poured
-    (1 to query_row).foreach(i => (i to 0 by -1).foreach(j => {
-      dp(j) = 0.0.max((dp(j) - 1) / 2.0)
-      dp(j + 1) += dp(j)
-    }))
-    1.0.min(dp(query_glass))
+    def getSpill(pin: Double): List[Double] = {
+      val half = (pin - 1).max(0.0) * 0.5
+      List(half, half)
+    }
+
+    def joinSpill(left: List[Double], right: List[Double]): List[Double] =
+      left.init ::: (left.last + right.head) :: right.tail
+
+    def nextSpill(last: List[Double]): List[Double] =
+      last.map(getSpill).reduce(joinSpill)
+
+    @scala.annotation.tailrec
+    def f(last: List[Double] = List(poured.toDouble), layer: Int = 0): Double =
+      if (layer >= query_row) last(query_glass)
+      else f(nextSpill(last), layer + 1)
+
+    f().min(1.0)
   }
 }
