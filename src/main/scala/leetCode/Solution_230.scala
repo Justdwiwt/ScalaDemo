@@ -1,24 +1,15 @@
 package leetCode
 
 object Solution_230 {
-
-  var time = 0
-  var ans = 0
-
   def kthSmallest(root: TreeNode, k: Int): Int = {
-    dfs(root, k)
-    ans
-  }
+    def f(root: TreeNode, cnt: Int): (Int, Option[Int]) =
+      if (root == null) (cnt, None)
+      else f(root.left, cnt) match {
+        case (_, Some(solution: Int)) => (0, Some(solution))
+        case (cnt: Int, None) if cnt == 1 => (0, Some(root.value))
+        case (cnt: Int, None) => f(root.right, cnt - 1)
+      }
 
-  def dfs(root: TreeNode, k: Int): Unit = {
-    if (root == null) return
-    dfs(root.left, k)
-    time += 1
-    if (time == k) {
-      ans = root.value
-      return
-    }
-    dfs(root.right, k)
+    f(root, k)._2.get
   }
-
 }
