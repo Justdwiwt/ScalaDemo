@@ -1,10 +1,13 @@
 package leetCode
 
 object Solution_1502 {
-  def canMakeArithmeticProgression(arr: Array[Int]): Boolean = {
-    val t = arr.sorted
-    val d = t(1) - t(0)
-    (2 until arr.length).foreach(i => if (t(i) - t(i - 1) != d) return false)
-    true
-  }
+  def canMakeArithmeticProgression(arr: Array[Int]): Boolean = arr
+    .indices
+    .dropRight(1)
+    .map({ i => val b = arr.sorted; (i, b) })
+    .map({ case (i, b) => val s = b(i + 1) - b(i); (i, b, s) })
+    .map({ case (_, _, s) => s })
+    .toArray
+    .toSet
+    .size == 1
 }

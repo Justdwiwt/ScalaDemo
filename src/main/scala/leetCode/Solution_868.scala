@@ -1,23 +1,15 @@
 package leetCode
 
 object Solution_868 {
-  def binaryGap(N: Int): Int = {
+  def binaryGap(n: Int): Int = {
+    var cnt = 0
     var res = 0
-    var flag = 1
-    var p = -1
-    var current = 0
-    var index = 0
-    while (flag < N) {
-      if ((flag & N) != 0)
-        if (p == -1) p = index
-        else {
-          current = index
-          res = math.max(res, current - p)
-          p = current
-        }
-      index += 1
-      flag <<= 1
-    }
+    n.toBinaryString.foreach(ch =>
+      if (ch == '1') {
+        res = res.max(cnt)
+        cnt = 1
+      } else cnt += 1
+    )
     res
   }
 }
