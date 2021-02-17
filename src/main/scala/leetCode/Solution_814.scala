@@ -2,10 +2,16 @@ package leetCode
 
 object Solution_814 {
   def pruneTree(root: TreeNode): TreeNode = {
-    if (root == null) return null
-    root.left = pruneTree(root.left)
-    root.right = pruneTree(root.right)
-    if (root.left == null && root.right == null && root.value == 0) null
-    else root
+    def f(opts: Option[TreeNode]): Option[TreeNode] = opts match {
+      case None => None
+      case Some(nd) =>
+        val l = f(Option(nd.left))
+        val r = f(Option(nd.right))
+        if (l.isEmpty) nd.left = null
+        if (r.isEmpty) nd.right = null
+        if (l.isEmpty && r.isEmpty && nd.value == 0) None else Some(nd)
+    }
+
+    f(Option(root)).orNull
   }
 }

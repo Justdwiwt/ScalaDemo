@@ -1,26 +1,16 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_756 {
   def pyramidTransition(bottom: String, allowed: List[String]): Boolean = {
-    var m = new mutable.HashMap[String, Array[Char]]()
-    allowed.foreach(a => {
-      var c = a(2)
-      val child = a.substring(0, 2)
-      if (!m.contains(child)) m += child -> Array.empty
-      m(child) :+= c
-    })
+    def cross[A](a: List[List[A]]): List[List[A]] =
+      a.:\(List[List[A]](Nil))((l, kss) => kss.flatMap(k => l.map(_ :: k)))
 
-    def dfs(last: String, now: String): Boolean = {
-      if (last.length == 1) return true
-      if (now.length + 1 == last.length) return dfs(now, "")
-      val child = last.substring(now.length, now.length + 2)
-      if (!m.contains(child)) return false
-      m(child).foreach(c => if (dfs(last, now + c)) return true)
-      false
-    }
+    def nextRow(row: List[Char], allowed: List[List[Char]]): List[List[Char]] =
+      cross(row.sliding(2).map(x => allowed.filter(_.startsWith(x)).map(_ (2))).toList).distinct
 
-    dfs(bottom, "")
+    def init(allowed: List[List[Char]])(row: List[Char]): Boolean =
+      row.length <= 1 || nextRow(row, allowed).exists(init(allowed))
+
+    init(allowed.map(_.toList))(bottom.toList)
   }
 }
