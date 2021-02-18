@@ -1,14 +1,16 @@
 package leetCode
 
 object Solution_965 {
-  def isUnivalTree(root: TreeNode): Boolean = root match {
-    case null => true
-    case _ => func(root.right, root.value) && func(root.left, root.value)
-  }
+  def isUnivalTree(root: TreeNode): Boolean = {
+    @scala.annotation.tailrec
+    def f(curr: List[TreeNode]): Boolean = curr match {
+      case Nil => true
+      case _ =>
+        val next = curr.flatMap(node => List(node.left, node.right)).filter(_ != null)
+        if (next.exists(_.value != root.value)) false
+        else f(next)
+    }
 
-  def func(root: TreeNode, value: Int): Boolean = root match {
-    case null => true
-    case node: TreeNode if node.value == value => func(node.left, value) && func(node.right, value)
-    case _ => false
+    f(if (root == null) Nil else List(root))
   }
 }
