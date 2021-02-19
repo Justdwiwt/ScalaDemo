@@ -2,35 +2,34 @@ package leetCode
 
 object Solution_936 {
   def movesToStamp(stamp: String, target: String): Array[Int] = {
-    val c = 'X'
+    val ch = 'X'
     var s = target
-    val f = target.map(_ => c)
-    val rep = stamp.map(_ => c)
-    var n = 0
-    var ans = Array[Int]()
+    val f = target.map(_ => ch)
+    val rep = stamp.map(_ => ch)
+    var cnt = 0
+    var res = Array.emptyIntArray
     val mx = s.length - stamp.length
     while (true) {
-      var found = false
-      (0 to mx).foreach(x => {
-        val sub = s.substring(x, x + stamp.length)
-        if (isstamp(stamp, sub, c)) {
-          found = true
-          s = s.substring(0, x) + rep + s.substring(x + stamp.length)
-          ans :+= x
+      var flag = false
+      (0 to mx).foreach(idx => {
+        val sub = s.substring(idx, idx + stamp.length)
+        if (check(stamp, sub, ch)) {
+          flag = true
+          s = s.substring(0, idx) + rep + s.substring(idx + stamp.length)
+          res :+= idx
         }
       })
-      n += 1
-      if (n == 10 * target.length || !found) {
-        if (s == f) return ans.reverse
-        else return Array[Int]()
-      }
+      cnt += 1
+      if (cnt == 10 * target.length || !flag)
+        if (s == f) return res.reverse
+        else return Array.emptyIntArray
     }
-    Array[Int]()
+    Array.emptyIntArray
   }
 
-  def isstamp(stamp: String, cdt: String, c: Char): Boolean = {
-    if (cdt == stamp.map(_ => c)) return false
-    stamp.indices.withFilter(x => cdt(x) != stamp(x) && cdt(x) != c).foreach(_ => return false)
+  def check(s1: String, s2: String, ch: Char): Boolean = {
+    if (s2 == s1.map(_ => ch)) return false
+    s1.indices.withFilter(x => s2(x) != s1(x) && s2(x) != ch).foreach(_ => return false)
     true
   }
 }
