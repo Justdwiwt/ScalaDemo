@@ -1,20 +1,20 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_987 {
+
+  case class Node(x: Int, depth: Int, value: Int)
+
   def verticalTraversal(root: TreeNode): List[List[Int]] = {
-    val m = mutable.HashMap[Int, List[(Int, Int)]]()
-
-    def func(root: TreeNode, key: Int, d: Int): Unit = {
-      if (root != null) {
-        m.put(key, (root.value, d) :: m.getOrElse(key, Nil))
-        func(root.left, key - 1, d + 1)
-        func(root.right, key + 1, d + 1)
-      }
-    }
-
-    func(root, 0, 0)
-    m.keySet.toList.sorted.map(key => m(key).sortBy(x => (x._2, x._1)).map(_._1))
+    val nodes = dfs(root, 0, 0)
+    nodes
+      .groupBy(_.x)
+      .toList
+      .sortBy(_._1)
+      .map({ case (_, column) => column.sortBy(node => (node.depth, node.value)).map(_.value) })
   }
+
+  def dfs(node: TreeNode, x: Int, depth: Int): List[Node] =
+    if (node == null) Nil
+    else Node(x, depth, node.value) :: dfs(node.left, x - 1, depth + 1) ::: dfs(node.right, x + 1, depth + 1)
+
 }

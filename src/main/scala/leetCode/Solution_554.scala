@@ -4,16 +4,19 @@ import scala.collection.mutable
 
 object Solution_554 {
   def leastBricks(wall: List[List[Int]]): Int = {
-    var m = new mutable.HashMap[Int, Int]()
-    var cnt = 0
-    wall.foreach(v => {
-      var sum = 0
-      (0 until v.length - 1).foreach(i => {
-        sum += v(i)
-        m += sum -> (m.getOrElseUpdate(sum, 0) + 1)
-        cnt = cnt.max(m(sum))
-      })
-    })
-    wall.length - cnt
+    val m = mutable.Map.empty[Int, Int]
+
+    @scala.annotation.tailrec
+    def f(row: List[Int], offset: Int): Unit = row match {
+      case Nil =>
+      case _ :: Nil =>
+      case hd :: tl =>
+        val newOffset = offset + hd
+        m += newOffset -> (m.getOrElse(newOffset, 0) + 1)
+        f(tl, newOffset)
+    }
+
+    wall.foreach(row => f(row, 0))
+    wall.length - m.values./:(0)(_.max(_))
   }
 }

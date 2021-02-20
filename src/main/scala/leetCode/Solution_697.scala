@@ -1,11 +1,14 @@
 package leetCode
 
 object Solution_697 {
-  def findShortestSubArray(nums: Array[Int]): Int = {
-    var res = nums.length
-    val arr = nums.groupBy(i => i).map(i => (i._1, i._2.length)).toList.sortBy(i => (-i._2, i._1))
-    val t = arr.filter(_._2 == arr.map(_._2).max).map(_._1)
-    t.foreach(i => res = res.min(nums.lastIndexOf(i) - nums.indexOf(i) + 1))
-    res
-  }
+  def findShortestSubArray(nums: Array[Int]): Int = nums
+    .zipWithIndex
+    .groupBy(_._1)
+    .values
+    .map(v => v.length -> (v.maxBy(_._2)._2 - v.minBy(_._2)._2 + 1))
+    .groupBy(_._1)
+    .maxBy(_._1)
+    ._2
+    .minBy(_._2)
+    ._2
 }
