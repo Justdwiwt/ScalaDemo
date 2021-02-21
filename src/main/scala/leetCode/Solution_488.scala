@@ -3,16 +3,16 @@ package leetCode
 import scala.collection.immutable
 
 object Solution_488 {
-  private val colors = "RYBGW".zipWithIndex.toMap
+  val colors: Map[Char, Int] = "RYBGW".zipWithIndex.toMap
 
-  private case class Balls(color: Int, qnt: Int = 1, separable: Boolean = false)
+  case class Balls(color: Int, qnt: Int = 1, separable: Boolean = false)
 
-  private case class State(board: Seq[Balls], hand: Array[Int])
+  case class State(board: Seq[Balls], hand: Array[Int])
 
   def findMinStep(board: String, hand: String): Int = {
     val h = Array.ofDim[Int](5)
     hand.foreach(c => h(colors(c)) += 1)
-    val b = (Seq.empty[Balls] /: board) {
+    val b = board./:(Seq.empty[Balls]) {
       case (in :+ Balls(lc, q, _), c) if lc == colors(c) => in :+ Balls(lc, q + 1, separable = true)
       case (s, c) => s :+ Balls(colors(c), separable = true)
     }
@@ -21,19 +21,19 @@ object Solution_488 {
   }
 
   @scala.annotation.tailrec
-  private def helper(q: Seq[State], res: Int): Int = {
+  def helper(q: Seq[State], res: Int): Int = {
     if (q.exists(_.board.isEmpty)) res
     else if (q.isEmpty) -1
     else {
-      val newQ = q.flatMap({ state => state.board.indices.flatMap({ i => getStatesWithSeparatedPair(state, i) ++ getStateWithInsertedBall(state, i) }) })
+      val newQ = q.flatMap(state => state.board.indices.flatMap(i => getStatesWithSeparatedPair(state, i) ++ getStateWithInsertedBall(state, i)))
       helper(newQ, res + 1)
     }
   }
 
-  private def getStatesWithSeparatedPair(state: State, i: Int): immutable.Seq[State] = {
+  def getStatesWithSeparatedPair(state: State, i: Int): immutable.Seq[State] = {
     val balls = state.board(i)
     if (balls.qnt > 1 && balls.separable)
-      state.hand.indices.flatMap({ c =>
+      state.hand.indices.flatMap(c => {
         if (state.hand(c) > 0 && c != balls.color)
           Some(State((state.board.take(i) :+ Balls(balls.color) :+ Balls(c) :+ Balls(balls.color)) ++ state.board.drop(i + 1), getNewHand(state.hand, c)))
         else None
@@ -41,7 +41,7 @@ object Solution_488 {
     else Nil
   }
 
-  private def getStateWithInsertedBall(state: State, i: Int): Seq[State] = {
+  def getStateWithInsertedBall(state: State, i: Int): Seq[State] = {
     val balls = state.board(i)
     if (state.hand(balls.color) > 0)
       Seq(State(inserted((state.board.take(i) :+ Balls(balls.color, balls.qnt + 1)) ++ state.board.drop(i + 1), i), getNewHand(state.hand, balls.color)))
@@ -49,7 +49,7 @@ object Solution_488 {
   }
 
   @scala.annotation.tailrec
-  private def inserted(board: Seq[Balls], p: Int): Seq[Balls] = board(p) match {
+  def inserted(board: Seq[Balls], p: Int): Seq[Balls] = board(p) match {
     case Balls(_, q, _) if q > 2 =>
       val init = board.take(p)
       val tail = board.drop(p + 1)
@@ -60,8 +60,8 @@ object Solution_488 {
     case _ => board
   }
 
-  private def getNewHand(hand: Array[Int], c: Int): Array[Int] = {
-    val res = hand.clone
+  def getNewHand(hand: Array[Int], c: Int): Array[Int] = {
+    val res = hand
     res(c) -= 1
     res
   }
