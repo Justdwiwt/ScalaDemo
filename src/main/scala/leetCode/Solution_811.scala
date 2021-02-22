@@ -1,22 +1,14 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_811 {
-  def subdomainVisits(cpdomains: Array[String]): List[String] = {
-    val m = new mutable.HashMap[String, Int]()
-    cpdomains.foreach(i => {
-      val t = i.split(" ")
-      val c = t(0).toInt
-      var v = t(1)
-      m.put(v, m.getOrElse(v, 0) + c)
-      while (v.indexOf('.') != -1) {
-        v = v.replaceFirst("[a-zA-Z]*.", "")
-        m.put(v, m.getOrElse(v, 0) + c)
-      }
-    })
-    var res = List[String]()
-    m.foreach(i => res ::= (i._2 + " " + i._1))
-    res
-  }
+  def subdomainVisits(cpdomains: Array[String]): List[String] = cpdomains
+    .map(_.split(" "))
+    .map(a => (a.head, a(1)))
+    .map(t => (t._1.toInt, t._2.split("\\.")))
+    .map(t => (t._1, (t._2.size - 1 to 0 by -1).map(t._2.slice(_, t._2.size).mkString("."))))
+    .flatMap(t => t._2.map((t._1, _)))
+    .groupBy(_._2)
+    .mapValues(_.map(_._1).sum)
+    .map(t => t._2 + " " + t._1)
+    .toList
 }
