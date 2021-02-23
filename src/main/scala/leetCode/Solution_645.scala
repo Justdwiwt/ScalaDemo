@@ -2,13 +2,13 @@ package leetCode
 
 object Solution_645 {
   def findErrorNums(nums: Array[Int]): Array[Int] = {
-    val res = new Array[Int](2)
-    val cnt = new Array[Int](10001)
-    nums.indices.foreach(i => cnt(nums(i)) += 1)
-    (1 to nums.length).foreach(i => {
-      if (cnt(i) == 2) res(0) = i
-      if (cnt(i) == 0) res(1) = i
-    })
-    res
+    var xor, xor1, xor2 = 0
+    nums.foreach(n => xor ^= n)
+    (1 to nums.length).foreach(n => xor ^= n)
+    val rightBit = xor & ~(xor - 1)
+    nums.foreach(n => if ((rightBit & n) == 0) xor1 ^= n else xor2 ^= n)
+    (1 to nums.length).foreach(n => if ((rightBit & n) == 0) xor1 ^= n else xor2 ^= n)
+    nums.foreach(n => if (n == xor1) return Array(xor1, xor2) else if (n == xor2) return Array(xor2, xor1))
+    Array(xor1, xor2)
   }
 }
