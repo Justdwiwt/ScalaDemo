@@ -4,7 +4,9 @@ object Solution_47 {
   def permuteUnique(nums: Array[Int]): List[List[Int]] =
     if (nums.isEmpty) Nil
     else if (nums.length == 1) List(nums.toList)
-    else if (nums.length == 2) if (nums.head == nums(1)) List(nums.toList) else List(nums.toList, nums.reverse.toList)
+    else if (nums.length == 2)
+      if (nums.head == nums(1)) List(nums.toList)
+      else List(nums.toList, nums.reverse.toList)
     else nums
       .sorted
       .toList
