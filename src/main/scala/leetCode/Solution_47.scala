@@ -1,24 +1,16 @@
 package leetCode
 
 object Solution_47 {
-  def permuteUnique(nums: Array[Int]): List[List[Int]] = {
-    solver(List((List[Int](), nums.sorted.toList))) map (x => x._1)
-  }
-
-  @scala.annotation.tailrec
-  def solver(l: List[(List[Int], List[Int])]): List[(List[Int], List[Int])] = {
-    if (l forall (x => x._2 == Nil)) l
-    else solver(l flatMap f)
-  }
-
-  def f(x: (List[Int], List[Int])): List[(List[Int], List[Int])] = x._2 match {
-    case Nil => List(x)
-    case _ => g(x._1)(Nil, x._2, Nil)
-  }
-
-  @scala.annotation.tailrec
-  def g(x: List[Int])(xs1: List[Int], xs2: List[Int], acc: List[(List[Int], List[Int])]): List[(List[Int], List[Int])] = xs2 match {
-    case Nil => acc distinct
-    case h :: t => g(x)(xs1 :+ h, t, (h :: x, xs1 ++ t) :: acc)
-  }
+  def permuteUnique(nums: Array[Int]): List[List[Int]] =
+    if (nums.isEmpty) Nil
+    else if (nums.length == 1) List(nums.toList)
+    else if (nums.length == 2) if (nums.head == nums(1)) List(nums.toList) else List(nums.toList, nums.reverse.toList)
+    else nums
+      .sorted
+      .toList
+      .map(num => (num, nums.diff(Seq(num)).toList))
+      .distinct
+      .map({ case (i, j) => val pre = permuteUnique(j.toArray); ((i, j), pre) })
+      .map({ case ((i, j), pre) => val res = pre.map(List(i) ++ _); ((i, j), pre, res) })
+      .flatMap({ case ((_, _), _, res) => res })
 }
