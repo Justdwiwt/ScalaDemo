@@ -1,19 +1,15 @@
 package leetCode
 
 object Solution_45 {
-  def jump(nums: Array[Int]): Int = {
-    var res = 0
-    var i = 0
-    var cur = 0
-    while (cur < nums.length - 1) {
-      res += 1
-      val pre = cur
-      while (i <= pre) {
-        cur = cur.max(i + nums(i))
-        i += 1
-      }
-      if (pre == cur) return -1
-    }
-    res
+  def jump(nums: Array[Int]): Int =
+    f(nums, nums.length - 1, 0, 0, 0, 0)
+
+  @scala.annotation.tailrec
+  def f(nums: Array[Int], target: Int, i: Int, steps: Int, cur: Int, mx: Int): Int = {
+    if (i == target) return steps
+    val nextReach = cur.max(i + nums(i))
+    if (nextReach >= target) return steps + 1
+    if (i == mx) f(nums, target, i + 1, steps + 1, nextReach, nextReach)
+    else f(nums, target, i + 1, steps, nextReach, mx)
   }
 }
