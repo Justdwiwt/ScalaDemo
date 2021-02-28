@@ -1,29 +1,63 @@
 package leetCode
 
-import scala.collection.mutable
+import scala.collection.immutable.HashSet
 
 object Solution_210 {
-  def findOrder(numCourses: Int, prerequisites: Array[Array[Int]]): Array[Int] = numCourses match {
-    case 0 => Array.empty
-    case _ =>
-      val inDegrees = Array.fill(numCourses)(0)
-      prerequisites.foreach(i => inDegrees(i(0)) += 1)
-      val q = new mutable.Queue[Int]()
-      inDegrees.indices.foreach(i => if (inDegrees(i) == 0) q.enqueue(i))
-      var cnt = 0
-      val res = Array.fill(numCourses)(0)
-      while (q.nonEmpty) {
-        val cur = q.dequeue()
-        res(cnt) = cur
-        cnt += 1
-        prerequisites.foreach(i => {
-          if (i(1) == cur) {
-            inDegrees(i(0)) -= 1
-            if (inDegrees(i(0)) == 0) q.enqueue(i(0))
-          }
-        })
+  def findOrder(numCourses: Int, prerequisites: Array[Array[Int]]): Array[Int] = {
+    @scala.annotation.tailrec
+    def findOrder(dependsOn: Map[Int, List[Int]], dependencyFor: Map[Int, List[Int]], noDependencies: HashSet[Int], returnValue: List[Int]): List[Int] = {
+      if (noDependencies.isEmpty)
+        if (returnValue.length == numCourses) returnValue
+        else List.empty
+      else {
+        val course = noDependencies.head
+        val (updatedDependsOn: Map[Int, List[Int]], updatedNoDependencies: HashSet[Int]) = removeDependency(
+          course = course,
+          dependentCourses = dependencyFor.getOrElse(course, List.empty),
+          dependsOn = dependsOn,
+          noDependencies = noDependencies
+        )
+        findOrder(
+          dependsOn = updatedDependsOn,
+          dependencyFor = dependencyFor,
+          noDependencies = updatedNoDependencies - course,
+          returnValue = returnValue :+ course
+        )
       }
-      if (cnt == numCourses) return res
-      Array.empty
+    }
+
+    @scala.annotation.tailrec
+    def removeDependency(course: Int, dependentCourses: List[Int], dependsOn: Map[Int, List[Int]], noDependencies: HashSet[Int]): (Map[Int, List[Int]], HashSet[Int]) =
+      if (dependentCourses.isEmpty) (dependsOn, noDependencies)
+      else {
+        val dependency: Int = dependentCourses.head
+        val updatedDependencies: List[Int] = dependsOn(dependency).filter(_ != course)
+        removeDependency(
+          course = course,
+          dependentCourses = dependentCourses.tail,
+          dependsOn = {
+            if (updatedDependencies.isEmpty) dependsOn - dependency
+            else dependsOn - dependency + (dependency -> updatedDependencies)
+          },
+          noDependencies = {
+            if (updatedDependencies.isEmpty) noDependencies + dependency
+            else noDependencies
+          }
+        )
+      }
+
+    val (dependsOn: Map[Int, List[Int]], dependencyFor: Map[Int, List[Int]], noDependencies: HashSet[Int]) = prerequisites
+      ./:((Map.empty[Int, List[Int]], Map.empty[Int, List[Int]], HashSet[Int](Range(0, numCourses): _*)))((tuple, current) => {
+        val (dependsOn: Map[Int, List[Int]], dependencyFor: Map[Int, List[Int]], noDependencies: HashSet[Int]) = tuple
+        val course = current.head
+        val dependentOn = current(1)
+        val updatedDependsOn = dependsOn - course + (course -> (dependsOn.getOrElse(course, List.empty) :+ dependentOn))
+        val updatedDependencyFor = dependencyFor - dependentOn + (dependentOn -> (dependencyFor.getOrElse(dependentOn, List.empty) :+ course))
+        val updatedNoDependencies = noDependencies - course
+        (updatedDependsOn, updatedDependencyFor, updatedNoDependencies)
+      })
+
+    if (noDependencies.isEmpty) Array.empty
+    else findOrder(dependsOn, dependencyFor, noDependencies, List.empty).toArray
   }
 }
