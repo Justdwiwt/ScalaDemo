@@ -1,45 +1,53 @@
 package leetCode
 
+import scala.collection.mutable
+
 object Solution_211 {
 
   class WordDictionary() {
 
-    class TrieNode {
-      var flag = false
-      val next: Array[TrieNode] = Array.fill(26)(null)
-    }
+    val head = new TrieDataNode()
 
-    /** Initialize your data structure here. */
-
-    val trieNode = new TrieNode
-
-    /** Adds a word into the data structure. */
     def addWord(word: String) {
-      val lastNode = word.foldLeft(trieNode)((node, char) => {
-        val index = char - 'a'
-        if (node.next(index) == null)
-          node.next(index) = new TrieNode
-        node.next(index)
-      })
-      lastNode.flag = true
+      head.add(word.toList)
     }
 
-    /** Returns if the word is in the data structure. A word could contain the dot character '.' to represent any one letter. */
-    def search(word: String): Boolean = {
+    def search(word: String): Boolean =
+      head.search(word.toList).isDefined
 
-      def loop(i: Int, node: TrieNode): Boolean = {
-        if (node == null) false
-        else if (i == word.length) node.flag
-        else if (word(i) == '.') node.next.view.exists(n => n != null && loop(i + 1, n))
-        else {
-          val index = word(i) - 'a'
-          loop(i + 1, node.next(index))
-        }
+  }
+
+  sealed trait TrieNode
+
+  class TrieDataNode extends TrieNode {
+
+    private val m = mutable.Map.empty[Char, TrieNode]
+
+    def add(list: List[Char]): Unit = list match {
+      case Nil => m('\u0000') = TrieWordEndNode
+      case head :: tail => m.get(head) match {
+        case Some(x: TrieDataNode) => x.add(tail)
+        case _ => m
+          .getOrElseUpdate(head, new TrieDataNode())
+          .asInstanceOf[TrieDataNode]
+          .add(tail)
       }
+    }
 
-      loop(0, trieNode)
+    def search(chars: List[Char]): Option[TrieNode] = chars match {
+      case Nil => m.get('\u0000')
+      case '.' :: tail => m
+        .values
+        .collect({ case x: TrieDataNode => x.search(tail) })
+        .collectFirst({ case Some(TrieWordEndNode) => TrieWordEndNode })
+      case head :: tail => m.get(head) match {
+        case Some(x: TrieDataNode) => x.search(tail)
+        case _ => None
+      }
     }
 
   }
+
+  object TrieWordEndNode extends TrieNode
 
 }
