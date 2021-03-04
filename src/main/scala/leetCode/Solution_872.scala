@@ -1,15 +1,12 @@
 package leetCode
 
 object Solution_872 {
-  def leafSimilar(r1: TreeNode, r2: TreeNode): Boolean = dfs(r1) == dfs(r2)
+  def leafSimilar(root1: TreeNode, root2: TreeNode): Boolean =
+    f(Seq(root1)) == f(Seq(root2))
 
-  def dfs(root: TreeNode): List[Int] = {
-    if (root == null) return List[Int]()
-    if (root.left == null && root.right == null) {
-      return List[Int](root.value)
-    }
-    val left: List[Int] = if (root.left == null) List[Int]() else dfs(root.left)
-    val right: List[Int] = if (root.right == null) List[Int]() else dfs(root.right)
-    left ::: right
-  }
+  @scala.annotation.tailrec
+  def f(nodes: Seq[TreeNode]): Seq[Int] =
+    if (nodes.exists(n => n.left != null || n.right != null))
+      f(nodes.flatMap(n => if (n.left == null && n.right == null) Seq(n) else Seq(n.left, n.right).filter(null.!=)))
+    else nodes.map(_.value)
 }
