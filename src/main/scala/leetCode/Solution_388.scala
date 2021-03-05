@@ -16,16 +16,16 @@ object Solution_388 {
   }
 
   def lengthLongestPath(input: String): Int = {
-    var ans = 0
-    val len = mutable.HashMap[Int, Int]()
+    var res = 0
+    val m = mutable.HashMap.empty[Int, Int]
 
     def f(elem: Elem): Unit = {
-      len.put(elem.level, elem.getLength)
-      if (elem.isFile) ans = ans max (0 to elem.level).map(len).sum
+      m += elem.level -> elem.getLength
+      if (elem.isFile) res = res.max((0 to elem.level).map(m).sum)
     }
 
     input.split("\n").map(trans).foreach(f)
-    ans
+    res
   }
 
 }

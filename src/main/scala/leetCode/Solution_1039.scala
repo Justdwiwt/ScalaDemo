@@ -2,16 +2,12 @@ package leetCode
 
 object Solution_1039 {
   def minScoreTriangulation(A: Array[Int]): Int = {
-    val dp = Array.fill(A.length, A.length)(Int.MaxValue)
-    A.indices.foreach(i => dp(i)((i + 1) % A.length) = 0)
-    (2 until A.length).foreach(i => A.indices.foreach(j => {
-      val t = (j + i) % A.length
-      var k = (j + 1) % A.length
-      while (k != t) {
-        dp(j)(t) = dp(j)(t).min(dp(j)(k) + dp(k)(t) + A(j) * A(k) * A(t))
-        k = (k + 1) % A.length
-      }
+    val dp = Array.fill(A.length, A.length)(0)
+    A.indices.drop(2).foreach(d => (0 until A.length - d).foreach(i => {
+      val j = i + d
+      dp(i)(j) = Int.MaxValue
+      (i + 1 until j).foreach(k => dp(i)(j) = dp(i)(j).min(dp(i)(k) + dp(k)(j) + A(i) * A(j) * A(k)))
     }))
-    dp(0)(A.length - 1)
+    dp.head(A.length - 1)
   }
 }
