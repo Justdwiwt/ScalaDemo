@@ -11,7 +11,8 @@ object Solution_943 {
           dp(i)(j) = A(i).length
           path(i)(j) = List(i)
         }
-        else A.indices
+        else A
+          .indices
           .withFilter(k => ((j >> k) & 1) == 1 && k != i)
           .foreach(k => if (dp(i)(j) > graph(k)(i) + dp(k)(j - (1 << i))) {
             dp(i)(j) = graph(k)(i) + dp(k)(j - (1 << i))
@@ -19,18 +20,13 @@ object Solution_943 {
           })
       })
     })
-
     val m = A.indices.map(x => dp(x)((1 << A.length) - 1)).zipWithIndex.minBy(x => x._1)._2
-
     val p = path(m)((1 << A.length) - 1)
     generateAns(A, p, graph)
   }
 
-  def generateAns(A: Array[String], path: List[Int], graph: Array[Array[Int]]): String = {
-
-    A(path.head) + path.zip(path.tail)
-      .map(x => A(x._2).substring(A(x._2).length - graph(x._1)(x._2), A(x._2).length)).mkString
-  }
+  def generateAns(A: Array[String], path: List[Int], graph: Array[Array[Int]]): String =
+    A(path.head) + path.zip(path.tail).map(x => A(x._2).substring(A(x._2).length - graph(x._1)(x._2), A(x._2).length)).mkString
 
   def buildGraph(A: Array[String], f: (String, String) => Int): Array[Array[Int]] = {
     val graph = Array.fill(A.length, A.length)(0)
@@ -40,7 +36,7 @@ object Solution_943 {
 
   def cost(s1: String, s2: String): Int = {
     var m = s1.length
-    (0 until s1.length).foreach(i => if (s2.startsWith(s1.substring(i, s1.length))) m = m min i)
+    s1.indices.foreach(i => if (s2.startsWith(s1.substring(i, s1.length))) m = m.min(i))
     s2.length - s1.length + m
   }
 }

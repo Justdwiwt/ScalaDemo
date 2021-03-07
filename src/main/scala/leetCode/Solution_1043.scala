@@ -1,9 +1,12 @@
 package leetCode
 
 object Solution_1043 {
-  def maxSumAfterPartitioning(A: Array[Int], K: Int): Int = {
-    val dp = Array.fill(A.length + 1)(0)
-    (1 to A.length).foreach(i => (1 to K).withFilter(j => i - j >= 0).foreach(j => dp(i) = dp(i).max(dp(i - j) + A.slice(i - j, i).max * j)))
-    dp(A.length)
-  }
+  def maxSumAfterPartitioning(A: Array[Int], K: Int): Int = A.indices./:(Seq(0))((q, i) => {
+    val res = q.:\(A(i), 0, Int.MinValue) {
+      case (prev, (mx, cnt, best)) =>
+        val t = mx.max(A(i - cnt))
+        (t, cnt + 1, best.max(prev + (cnt + 1) * t))
+    }._3
+    (q :+ res).takeRight(K)
+  }).last
 }
