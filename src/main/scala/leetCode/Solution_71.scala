@@ -1,14 +1,9 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_71 {
-  def simplifyPath(path: String): String = {
-    val p = path.split("/")
-    val st = mutable.Stack[String]()
-    p.foreach(i => if (i != "." && i != "") if (i == "..") {
-      if (st.nonEmpty) st.pop()
-    } else st.push(i))
-    "/" + st.reverse.mkString("/")
-  }
+  def simplifyPath(path: String): String =
+    "/" + path.split("/").filter(_.nonEmpty).filter(_ != ".")./:(Vector.empty[String])((r, cur) => cur match {
+      case ".." => if (r.length > 1) r.init else Vector.empty[String]
+      case _ => r :+ cur
+    }).mkString("/")
 }
