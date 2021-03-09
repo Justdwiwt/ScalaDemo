@@ -1,47 +1,39 @@
 package leetCode
 
+import scala.concurrent.duration._
+import scala.concurrent.{Await, ExecutionContext, ExecutionContextExecutor, Future}
+
 object Solution_5 {
+  implicit val executionContext: ExecutionContextExecutor = ExecutionContext.global
+
   def longestPalindrome(s: String): String = {
-    //奇数的回文串
-    var result1 = ""
-    var left1 = 0
-    var right1 = 0
-    var step1 = 0
-    var flag1 = true
-    //偶数的回文串
-    var result2 = ""
-    var left2 = 0
-    var step2 = 0
-    var right2 = 0
-    var flag2 = true
-    val indices = s.indices
-    //暴力穷举
-    indices.foreach(i => {
-      step1 = 0
-      flag1 = true
-      while (flag1) {
-        step1 += 1
-        left1 = i - step1
-        right1 = i + step1
-        flag1 = indices.contains(left1) && indices.contains(right1) && s(left1) == s(right1)
-        if (!flag1) {
-          val resultTmp = s.substring(left1 + 1, right1)
-          if (resultTmp.length > result1.length) result1 = resultTmp
-        }
-      }
-      step2 = 0
-      flag2 = true
-      while (flag2) {
-        left2 = i - step2
-        right2 = i + step2 + 1
-        step2 += 1
-        flag2 = indices.contains(left2) && indices.contains(right2) && s(left2) == s(right2)
-        if (!flag2) {
-          val resultTmp2 = s.substring(left2 + 1, right2)
-          if (resultTmp2.length > result2.length) result2 = resultTmp2
-        }
-      }
+    val accumulator: Future[(Int, Int)] = Future.successful((0, 0))
+
+    val longestPalindromeFuture: Future[(Int, Int)] = s.indices./:(accumulator)((acc: Future[(Int, Int)], i: Int) ⇒ {
+
+      @scala.annotation.tailrec
+      def loopEven(j: Int, start: Int, maxLength: Int): (Int, Int) =
+        if (i + j >= s.length || i - j < 0 || s(i + j) != s(i - j)) (start, maxLength)
+        else if (maxLength < 2 * j + 1) loopEven(j + 1, i - j, 2 * j + 1)
+        else loopEven(j + 1, start, maxLength)
+
+      @scala.annotation.tailrec
+      def loopOdd(j: Int, start: Int, maxLength: Int): (Int, Int) =
+        if (i + j + 1 >= s.length || i - j < 0 || s(i + j + 1) != s(i - j)) (start, maxLength)
+        else if (maxLength < 2 * j + 2) loopOdd(j + 1, i - j, 2 * j + 2)
+        else loopOdd(j + 1, start, maxLength)
+
+      val eve: Future[(Int, Int)] = acc.flatMap(t ⇒ Future(loopEven(0, t._1, t._2)))
+      val odd: Future[(Int, Int)] = acc.flatMap(t ⇒ Future(loopOdd(0, t._1, t._2)))
+
+      val mappedFuture: Future[(Int, Int)] = eve.zip(odd).map({
+        case (t1: (Int, Int), t2: (Int, Int)) if t1._2 < t2._2 ⇒ t2
+        case (t1: (Int, Int), _) ⇒ t1
+      })
+      mappedFuture
     })
-    if (result1.length >= result2.length) result1 else result2
+
+    val (start: Int, len: Int) = Await.result(longestPalindromeFuture, 10.seconds)
+    s.slice(start, start + len)
   }
 }
