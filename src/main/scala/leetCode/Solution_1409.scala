@@ -1,17 +1,16 @@
 package leetCode
 
-import scala.collection.mutable.ArrayBuffer
-
 object Solution_1409 {
   def processQueries(queries: Array[Int], m: Int): Array[Int] = {
-    var arr = ArrayBuffer.empty[Int]
-    (1 to m).foreach(i => arr :+= i)
-    queries.indices.foreach(i => {
-      val t = arr.indexOf(queries(i))
-      arr.remove(t)
-      arr +:= queries(i)
-      queries(i) = t
-    })
-    queries
+    @scala.annotation.tailrec
+    def f(queries: Array[Int], list: List[Int] = (1 to m).toList, acc: List[Int] = Nil): List[Int] =
+      if (queries.isEmpty) acc
+      else {
+        val pos = list.indexOf(queries.head)
+        val split = list.splitAt(pos)
+        f(queries.tail, (list(pos) :: split._1) ++ split._2.tail, pos :: acc)
+      }
+
+    f(queries).toArray.reverse
   }
 }
