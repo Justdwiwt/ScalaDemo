@@ -1,34 +1,26 @@
 package leetCode
 
 object Solution_329 {
+  val diff = Vector((0, 1), (0, -1), (1, 0), (-1, 0))
+
   def longestIncreasingPath(matrix: Array[Array[Int]]): Int = {
-    if (matrix.isEmpty || matrix(0).isEmpty) return 0
+    if (matrix.isEmpty) return 0
+    val arr = Array.ofDim[Int](matrix.length, matrix.head.length)
     var res = 0
-    val ori = matrix
-    val memo = Array.ofDim[Int](matrix.length, matrix(0).length)
+    matrix.indices.foreach(x => matrix.head.indices.foreach(y => res = res.max(dfs(x, y))))
 
-    def find(_curX: Int, _curY: Int): Int = {
-      var top = 0
-      var right = 0
-      var down = 0
-      var left = 0
-      if (_curX - 1 >= 0 && ori(_curX)(_curY) < ori(_curX - 1)(_curY))
-        if (memo(_curX - 1)(_curY) != 0) top = memo(_curX - 1)(_curY)
-        else top = find(_curX - 1, _curY)
-      if (_curY + 1 < ori(0).length && ori(_curX)(_curY) < ori(_curX)(_curY + 1))
-        if (memo(_curX)(_curY + 1) != 0) right = memo(_curX)(_curY + 1)
-        else right = find(_curX, _curY + 1)
-      if (_curX + 1 < ori.length && ori(_curX)(_curY) < ori(_curX + 1)(_curY))
-        if (memo(_curX + 1)(_curY) != 0) down = memo(_curX + 1)(_curY)
-        else down = find(_curX + 1, _curY)
-      if (_curY - 1 >= 0 && ori(_curX)(_curY) < ori(_curX)(_curY - 1))
-        if (memo(_curX)(_curY - 1) != 0) left = memo(_curX)(_curY - 1)
-        else left = find(_curX, _curY - 1)
+    def dfs(x: Int, y: Int): Int =
+      if (arr(x)(y) != 0) arr(x)(y)
+      else {
+        diff.foreach(d => {
+          val (i, j) = (x + d._1, y + d._2)
+          if (i < matrix.length && j < matrix.head.length && i >= 0 && j >= 0 && matrix(i)(j) > matrix(x)(y))
+            arr(x)(y) = dfs(i, j).max(arr(x)(y))
+        })
+        arr(x)(y) += 1
+        arr(x)(y)
+      }
 
-      top.max(right).max(down.max(left)) + 1
-    }
-
-    matrix.indices.foreach(row => matrix(0).indices.foreach(col => res = res.max(find(row, col))))
     res
   }
 }
