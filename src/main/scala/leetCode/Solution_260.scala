@@ -1,12 +1,6 @@
 package leetCode
 
 object Solution_260 {
-  def singleNumber(nums: Array[Int]): Array[Int] = {
-    val res = new Array[Int](2)
-    var xor = 0
-    nums.foreach(i => xor ^= i)
-    val k = xor & (-xor)
-    nums.foreach(i => if ((i & k) == 0) res(0) ^= i else res(1) ^= i)
-    res
-  }
+  def singleNumber(nums: Array[Int]): Array[Int] =
+    nums./:(Set.empty[Int]) { case (acc, v) => if (acc.contains(v)) acc - v else acc + v }.toArray
 }
