@@ -1,20 +1,18 @@
 package leetCode
 
 object Solution_289 {
-  def gameOfLife(board: Array[Array[Int]]): Unit = {
-    val n = if (board.length > 0) board(0).length else 0
-    val dx = Array(-1, -1, -1, 0, 1, 1, 1, 0)
-    val dy = Array(-1, 0, 1, 1, 1, 0, -1, -1)
-    board.indices.foreach(i => (0 until n).foreach(j => {
-      var cnt = 0
-      (0 until 8).foreach(k => {
-        val x = i + dx(k)
-        val y = j + dy(k)
-        if (x >= 0 && x < board.length && y >= 0 && y < n && (board(x)(y) == 1 || board(x)(y) == 2)) cnt += 1
-      })
-      if (board(i)(j) > 0 && (cnt < 2 || cnt > 3)) board(i)(j) = 2
-      else if (board(i)(j) <= 0 && cnt == 3) board(i)(j) = 3
-    }))
-    board.indices.foreach(i => (0 until n).foreach(j => board(i)(j) %= 2))
-  }
+  def gameOfLife(board: Array[Array[Int]]): Unit = board.indices./:(Array.fill(board.head.length)(0))((prevRow, i) => {
+    val oldRow = board(i).clone
+    board(i).indices./:(0)((prevCell, j) => {
+      val cur = board(i)(j)
+      val neighbours =
+        prevRow.slice(j - 1, j + 2).sum +
+          prevCell +
+          (if (j < board(i).length - 1) board(i)(j + 1) else 0) +
+          (if (i < board.length - 1) board(i + 1).slice(j - 1, j + 2).sum else 0)
+      board(i)(j) = if ((neighbours | cur) == 3) 1 else 0
+      cur
+    })
+    oldRow
+  })
 }
