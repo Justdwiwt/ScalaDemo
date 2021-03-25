@@ -2,12 +2,16 @@ package leetCode
 
 object Solution_997 {
   def findJudge(N: Int, trust: Array[Array[Int]]): Int = {
-    val people = Array.ofDim[Int](N, 2)
-    trust.foreach(p => {
-      people(p(0) - 1)(0) += 1
-      people(p(1) - 1)(1) += 1
+    val arr = Array.ofDim[Int](N + 1)
+    trust.foreach({ case Array(i, j) =>
+      arr(i) -= 1
+      arr(j) += 1
     })
-    (0 until N).foreach(i => if (people(i)(0) == 0 && people(i)(1) == N - 1) return i + 1)
-    -1
+    arr
+      .zipWithIndex
+      .tail
+      .find(_._1 == N - 1)
+      .map(_._2)
+      .getOrElse(-1)
   }
 }
