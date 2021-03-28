@@ -1,37 +1,23 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_173 {
 
   class BSTIterator(_root: TreeNode) {
-    private val st = new mutable.Stack[TreeNode]()
-    private var root = _root
+    private var stack = pushLefts(_root, Nil)
 
-    while (root != null) {
-      st.push(root)
-      root = root.left
+    @scala.annotation.tailrec
+    private def pushLefts(node: TreeNode, acc: List[TreeNode]): List[TreeNode] =
+      if (node == null) acc
+      else pushLefts(node.left, node :: acc)
+
+    def next(): Int = stack match {
+      case x :: xs =>
+        stack = pushLefts(x.right, xs)
+        x.value
+      case Nil => throw new NoSuchElementException
     }
 
-    /** @return the next smallest number */
-    def next(): Int = {
-      var n = st.top
-      st.pop()
-      val res = n.value
-      if (n.right != null)
-        n = n.right
-      while (n != null) {
-        st.push(n)
-        n = n.left
-      }
-      res
-    }
-
-    /** @return whether we have a next smallest number */
-    def hasNext(): Boolean = {
-      st.nonEmpty
-    }
-
+    def hasNext(): Boolean = stack.nonEmpty
   }
 
 }
