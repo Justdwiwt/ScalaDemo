@@ -1,16 +1,22 @@
 package leetCode
 
 object Solution_986 {
-  def intervalIntersection(A: Array[Array[Int]], B: Array[Array[Int]]): Array[Array[Int]] = {
-    var res = Array.empty[Array[Int]]
-    var i = 0
-    var j = 0
-    while (i < A.length && j < B.length) {
-      val left = A(i)(0).max(B(j)(0))
-      val right = A(i)(1).min(B(j)(1))
-      if (left <= right) res :+= Array(left, right)
-      if (A(i)(1) >= B(j)(1)) j += 1 else i += 1
-    }
-    res
+
+  case class Interval(start: Int, end: Int)
+
+  def intervalIntersection(firstList: Array[Array[Int]], secondList: Array[Array[Int]]): Array[Array[Int]] = {
+    val first = firstList.toList.map({ case Array(st, en) => Interval(st, en) })
+    val second = secondList.toList.map({ case Array(st, en) => Interval(st, en) })
+    merge(first, second).map({ case Interval(a, b) => Array(a, b) }).toArray
   }
+
+  def merge(a: List[Interval], b: List[Interval]): List[Interval] = (a, b) match {
+    case (Interval(aStart, aEnd) :: _, Interval(bStart, bEnd) :: _) =>
+      val lo = aStart.max(bStart)
+      val hi = aEnd.min(bEnd)
+      val res = if (aEnd < bEnd) merge(a.tail, b) else merge(a, b.tail)
+      if (lo <= hi) Interval(lo, hi) :: res else res
+    case _ => Nil
+  }
+
 }
