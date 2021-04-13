@@ -1,19 +1,12 @@
 package leetCode
 
 object Solution_783 {
+  def dfs(root: TreeNode): List[Int] =
+    if (root == null) Nil
+    else dfs(root.left) ::: List(root.value) ::: dfs(root.right)
+
   def minDiffInBST(root: TreeNode): Int = {
-    var v = Set[Int]()
-
-    def func(root: TreeNode): Unit = root match {
-      case null =>
-      case _ =>
-        v += root.value
-        func(root.left)
-        func(root.right)
-    }
-
-    func(root)
-    val values = v.toList.sorted
-    (values zip values.tail).map(x => x._2 - x._1).min
+    val ordered = dfs(root)
+    ordered.zip(ordered.tail).map({ case (a, b) => (a - b).abs }).min
   }
 }
