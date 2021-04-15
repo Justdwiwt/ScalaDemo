@@ -1,15 +1,13 @@
 package leetCode
 
 object Solution_213 {
-  def rob(nums: Array[Int]): Int = {
-    if (nums.length <= 1) return if (nums.isEmpty) 0 else nums(0)
-    func(nums, 0, nums.length - 1).max(func(nums, 1, nums.length))
-  }
+  def rob(nums: Array[Int]): Int = nums
+    .headOption
+    .map(h => f(nums, 1, nums.length).max(h + f(nums, 2, nums.length - 1)))
+    .getOrElse(0)
 
-  def func(nums: Array[Int], left: Int, right: Int): Int = {
-    var even = 0
-    var odd = 0
-    (left until right).foreach(i => if (i % 2 == 0) even = (even + nums(i)).max(odd) else odd = even.max(odd + nums(i)))
-    even.max(odd)
-  }
+  def f(nums: Array[Int], i1: Int, i2: Int): Int = nums
+    .slice(i1, i2)
+    ./:(0, 0)((d, n) => ((n + d._2).max(d._1), d._1))
+    ._1
 }
