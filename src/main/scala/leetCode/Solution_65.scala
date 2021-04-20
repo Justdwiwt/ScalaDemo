@@ -1,7 +1,10 @@
 package leetCode
 
+import scala.util.{Failure, Success, Try}
+
 object Solution_65 {
-  def isNumber(s: String): Boolean = {
-    s.trim().matches("[-+]?(\\d+\\.?|\\.\\d+)\\d*(e[-+]?\\d+)?")
+  def isNumber(s: String): Boolean = Try(s.toDouble) match {
+    case Success(_) => s.filter(_.isLetter).forall(_.toLower == 'e')
+    case Failure(_) => false
   }
 }
