@@ -1,11 +1,9 @@
 package leetCode
 
 object Solution_1534 {
-  def countGoodTriplets(arr: Array[Int], a: Int, b: Int, c: Int): Int = {
-    var res = 0
-    (0 until arr.length - 2).foreach(i => (i + 1 until arr.length - 1).foreach(j => (j + 1 until arr.length).foreach(k =>
-      if ((arr(i) - arr(j)).abs <= a && (arr(j) - arr(k)).abs <= b && (arr(i) - arr(k)).abs <= c) res += 1
-    )))
-    res
-  }
+  def countGoodTriplets(arr: Array[Int], a: Int, b: Int, c: Int): Int = arr
+    .indices
+    .dropRight(2)
+    .flatMap(i => arr.indices.drop(1).dropRight(1).flatMap(j => arr.drop(i + j + 1).map(Array(arr(i), arr(i + j), _))))
+    .count(t => (t.head - t(1)).abs <= a && (t(1) - t(2)).abs <= b && (t.head - t(2)).abs <= c)
 }
