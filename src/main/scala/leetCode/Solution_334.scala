@@ -2,13 +2,12 @@ package leetCode
 
 object Solution_334 {
   def increasingTriplet(nums: Array[Int]): Boolean = {
-    var a = Int.MaxValue
-    var b = a
-    nums.foreach(v => {
-      if (v <= a) a = v
-      else if (v <= b) b = v
-      else return true
-    })
+    nums./:((Int.MaxValue, Int.MaxValue)) { case ((a, b), i) =>
+      if (i < a) (i, b)
+      else if (i > a && i < b) (a, i)
+      else if (i > b) return true
+      else (a, b)
+    }
     false
   }
 }
