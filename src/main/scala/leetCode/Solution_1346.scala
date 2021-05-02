@@ -2,7 +2,7 @@ package leetCode
 
 object Solution_1346 {
   def checkIfExist(arr: Array[Int]): Boolean = {
-    arr.indices.foreach(i => arr.indices.foreach(j => if (arr(i) * 2 == arr(j) && i != j) return true))
-    false
+    if (arr.count(_ == 0) > 1) return true
+    arr.filter(_ != 0).map(2 * _).exists(arr.contains)
   }
 }
