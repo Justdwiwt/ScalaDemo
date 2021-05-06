@@ -1,21 +1,11 @@
 package leetCode
 
 object Solution_904 {
-  def totalFruit(tree: Array[Int]): Int = {
-    var res = 0
-    var cur = 0
-    var cntB = 0
-    var a = 0
-    var b = 0
-    tree.foreach(i => {
-      cur = if (i == a || i == b) cur + 1 else cntB + 1
-      cntB = if (i == b) cntB + 1 else 1
-      if (b != i) {
-        a = b
-        b = i
-      }
-      res = res.max(cur)
-    })
-    res
-  }
+  def totalFruit(tree: Array[Int]): Int = tree./:((0, -1, 0, -1, 0)) { case ((res, p1, l1, p2, l2), t) =>
+    t match {
+      case `p1` => (res.max(l2 + 1), p1, l1 + 1, p2, l2 + 1)
+      case `p2` => (res.max(l2 + 1), p2, 1, p1, l2 + 1)
+      case _ => (res.max(l1 + 1), t, 1, p1, l1 + 1)
+    }
+  }._1
 }
