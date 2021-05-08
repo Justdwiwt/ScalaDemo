@@ -2,12 +2,8 @@ package leetCode
 
 object Solution_769 {
   def maxChunksToSorted(arr: Array[Int]): Int = {
-    var res = 0
-    var mx = 0
-    arr.indices.foreach(i => {
-      mx = mx.max(arr(i))
-      if (mx == i) res += 1
-    })
-    res
+    val s = arr.scanLeft(0)((a, b) => a + (1 << b))
+    val p = arr.indices.scanLeft(0)((a, b) => a + (1 << b))
+    s.zip(p).map(a => a._1 == a._2).count(_ == true) - 1
   }
 }
