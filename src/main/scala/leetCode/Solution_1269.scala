@@ -1,19 +1,18 @@
 package leetCode
 
 object Solution_1269 {
-  def numWays(steps: Int, arrLen: Int): Int = {
-    val M = 1000000007
-    var dp = Array.fill(502)(0)
-    dp(0) = 1
-    var tmp = 0
-    dp :+= 1
-    (1 to steps).foreach(s => (0 until arrLen.min(s + 1).min(steps - s + 1)).foreach(i => {
-      tmp = 0
-      val t = dp(i)
-      dp(i) = tmp
-      tmp = t
-      dp(i) = (tmp + dp(i) + dp(i + 1)) % M
-    }))
-    dp(0)
-  }
+  def numWays(numSteps: Int, length: Int): Int =
+    f(numSteps, 1 +: IndexedSeq.fill((length - 1).min(numSteps / 2))(0))
+
+  @scala.annotation.tailrec
+  def f(step: Int, cnt: IndexedSeq[Int]): Int =
+    if (step == 0) cnt.head
+    else f(step - 1, cnt
+      .indices
+      .map(i => {
+        Traversable(cnt(i),
+          Some(i - 1).filter(cnt.indices.contains).map(cnt).getOrElse(0),
+          Some(i + 1).filter(cnt.indices.contains).map(cnt).getOrElse(0))
+          .reduce((x, y) => (x + y) % 1000000007)
+      }))
 }
