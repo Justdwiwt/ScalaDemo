@@ -2,17 +2,16 @@ package leetCode
 
 object Solution_1508 {
   def rangeSum(nums: Array[Int], n: Int, left: Int, right: Int): Int = {
-    val M = (1e9 + 7).toInt
-    val pq = new java.util.PriorityQueue[Array[Int]](n, (a: Array[Int], b: Array[Int]) => Integer.compare(a(0), b(0)))
-    nums.indices.foreach(i => pq.offer(Array(nums(i), i)))
-    var res = 0
-    var cnt = 1
-    while (cnt <= right && !pq.isEmpty) {
-      val cur = pq.poll()
-      if (cnt >= left) res += cur(0) % M
-      if (cur(1) < n - 1) pq.offer(Array(cur(0) + nums(cur(1) + 1), cur(1) + 1))
-      cnt += 1
-    }
-    res
+    val arr = Array.ofDim[Int](n * (n + 1) / 2)
+    var idx = 0
+    (0 until n).foreach(i => {
+      var sum = 0
+      (i until n).foreach(j => {
+        sum += nums(j)
+        arr(idx) = sum
+        idx += 1
+      })
+    })
+    arr.sortWith(_ < _).slice(left - 1, left - 1 + right - left + 1)./:(0)((b, a) => (b + a) % 1000000007)
   }
 }
