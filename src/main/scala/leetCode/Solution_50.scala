@@ -1,15 +1,15 @@
 package leetCode
 
 object Solution_50 {
-  def myPow(x: Double, n: Int): Double = {
-    var res = 1.0
-    var i = n
-    var v = x
-    while (i != 0) {
-      if (i % 2 != 0) res *= v
-      v *= v
-      i /= 2
-    }
-    if (n < 0) 1 / res else res
+  def myPow(x: Double, n: Int): Double = n match {
+    case 0 => 1
+    case 1 => x
+    case _ =>
+      val f = myPow(x, n / 2)
+      n % 2 match {
+        case 0 => f * f
+        case 1 => f * f * x
+        case -1 => f * f / x
+      }
   }
 }
