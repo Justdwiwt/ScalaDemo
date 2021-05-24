@@ -1,17 +1,11 @@
 package leetCode
 
 object Solution_899 {
-  def orderlyQueue(S: String, K: Int): String = K match {
-    case 1 => func(S)
-    case _ => S.sorted
-  }
+  def f(S: String, len: Int): String =
+    (0 until len).map(i => S.slice(i, i + len)).min
 
-  def func(str: String): String = {
-    var res = str
-    (1 until str.length).foreach(i => {
-      val t = str.substring(i) + str.substring(0, i)
-      if (t < res) res = t
-    })
-    res
+  def orderlyQueue(S: String, K: Int): String = {
+    if (K == 1) return f(S + S, S.length)
+    S.sorted
   }
 }
