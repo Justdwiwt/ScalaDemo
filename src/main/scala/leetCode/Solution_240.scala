@@ -1,21 +1,17 @@
 package leetCode
 
-import scala.util.control.Breaks._
-
 object Solution_240 {
   def searchMatrix(matrix: Array[Array[Int]], target: Int): Boolean = {
-    if (matrix.isEmpty || matrix(0).isEmpty) return false
-    if (target < matrix(0)(0) || target > matrix.last.last) return false
-    var x = matrix.length - 1
-    var y = 0
-    breakable {
-      while (true) {
-        if (matrix(x)(y) > target) x -= 1
-        else if (matrix(x)(y) < target) y += 1
-        else return true
-        if (x < 0 || y >= matrix(0).length) break
+    @scala.annotation.tailrec
+    def f(row: Int, col: Int): Boolean =
+      if (row >= matrix.length || col < 0) false
+      else matrix(row)(col).compareTo(target) match {
+        case 0 => true
+        case 1 => f(row, col - 1)
+        case -1 => f(row + 1, col)
       }
-    }
-    false
+
+    if (matrix.isEmpty) false
+    else f(0, matrix.head.length - 1)
   }
 }
