@@ -2,16 +2,16 @@ package leetCode
 
 object Solution_581 {
   def findUnsortedSubarray(nums: Array[Int]): Int = {
-    var start = -1
-    var end = -2
-    var mn = nums(nums.length - 1)
-    var mx = nums(0)
-    (1 until nums.length).foreach(i => {
-      mx = mx.max(nums(i))
-      mn = mn.min(nums(nums.length - 1 - i))
-      if (mx > nums(i)) end = i
-      if (mn < nums(nums.length - 1 - i)) start = nums.length - 1 - i
-    })
-    end - start + 1
+    val prefSize = nums.:\(Int.MaxValue, 0)((n, d) => {
+      if (n <= d._1) (n, d._2 + 1)
+      else (d._1, 0)
+    })._2
+
+    val sufSize = nums.drop(prefSize)./:(Int.MinValue, 0)((d, n) => {
+      if (n >= d._1) (n, d._2 + 1)
+      else (d._1, 0)
+    })._2
+
+    nums.length - prefSize - sufSize
   }
 }
