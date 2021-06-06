@@ -9,17 +9,14 @@ object Solution_1448 {
   }
 
   def goodNodes(root: TreeNode): Int = {
-    var res = 0
 
-    def check(root: TreeNode, curMax: Int): Unit = root match {
-      case null =>
-      case _ =>
-        if (root.value >= curMax) res += 1
-        check(root.left, curMax.max(root.value))
-        check(root.right, curMax.max(root.value))
-    }
+    def cnt(ndOpts: Option[TreeNode], max: Int): Int = ndOpts.map(nd => {
+      val curr = if (nd.value >= max) 1 else 0
+      curr +
+        cnt(Option(nd.left), max.max(nd.value)) +
+        cnt(Option(nd.right), max.max(nd.value))
+    }).getOrElse(0)
 
-    check(root, root.value)
-    res
+    cnt(Option(root), root.value)
   }
 }
