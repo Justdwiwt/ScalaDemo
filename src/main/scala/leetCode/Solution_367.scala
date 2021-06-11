@@ -2,12 +2,14 @@ package leetCode
 
 object Solution_367 {
   def isPerfectSquare(num: Int): Boolean = {
-    var t = num
-    var i = 1
-    while (t > 0) {
-      t -= i
-      i += 2
+    @scala.annotation.tailrec
+    def f(divisor: Double): Boolean = {
+      val res: Double = math.pow(divisor, 2)
+      if (res == num) true
+      else if (res > num) false
+      else f(divisor + 1)
     }
-    t == 0
+
+    f(1D)
   }
 }
