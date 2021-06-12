@@ -1,24 +1,13 @@
 package leetCode
 
 object Solution_95 {
-  def generateTrees(n: Int): List[TreeNode] = n match {
-    case 0 => List()
-    case _ => func(1, n)
+  class TreeNode(_value: Int = 0, _left: TreeNode = null, _right: TreeNode = null) {
+    var value: Int = _value
+    var left: TreeNode = _left
+    var right: TreeNode = _right
   }
 
-  def func(start: Int, end: Int): List[TreeNode] = {
-    if (start > end) return List(null)
-    var res = List[TreeNode]()
-    (start to end).foreach(i => {
-      val left = func(start, i - 1)
-      val right = func(i + 1, end)
-      left.foreach(j => right.foreach(k => {
-        var node = new TreeNode(i)
-        node.left = j
-        node.right = k
-        res ::= node
-      }))
-    })
-    res
-  }
+  def generateTrees(r: Int, l: Int = 1): List[TreeNode] =
+    if (l > r) List(null)
+    else (l to r).toList.flatMap(m => generateTrees(m - 1, l).flatMap(tl => generateTrees(r, m + 1).map(tr => new TreeNode(m, tl, tr))))
 }
