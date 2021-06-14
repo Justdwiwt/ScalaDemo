@@ -1,16 +1,15 @@
 package leetCode
 
-import java.util
-
 object Solution_1296 {
   def isPossibleDivide(nums: Array[Int], k: Int): Boolean = {
-    if (nums.length % k != 0) return false
-    val pq = new util.PriorityQueue[Int]()
-    nums.foreach(i => pq.offer(i))
-    while (!pq.isEmpty) {
-      val top = pq.poll()
-      (1 until k).foreach(i => if (!pq.remove(top + i)) return false)
-    }
+    if (nums.isEmpty || k < 1 || nums.length % k != 0) return false
+    val m = collection.mutable.Map[Int, Int]()
+    nums.foreach(n => m += n -> (m.getOrElse(n, 0) + 1))
+    val sorted = nums.sorted
+    sorted.foreach(n => if (m(n) > 0) (n until n + k).foreach(i => {
+      if (!m.contains(i) || m(i) == 0) return false
+      m += i -> (m(i) - 1)
+    }))
     true
   }
 }
