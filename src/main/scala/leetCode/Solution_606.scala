@@ -2,11 +2,16 @@ package leetCode
 
 object Solution_606 {
   def tree2str(t: TreeNode): String = {
-    if (t == null) return ""
-    var res = t.value.toString
-    if (t.left == null && t.right == null) return res
-    res += "(" + tree2str(t.left) + ")"
-    if (t.right != null) res += "(" + tree2str(t.right) + ")"
-    res
+    val trim = "(\\(\\))+$".r
+
+    def f(root: TreeNode): String = root match {
+      case null => "()"
+      case r =>
+        val lt = trim.replaceFirstIn(f(r.left), "")
+        val rt = trim.replaceFirstIn(f(r.right), "")
+        r.value.toString + "(" + lt + ")(" + rt + ")"
+    }
+
+    trim.replaceFirstIn(f(t), "")
   }
 }
