@@ -1,24 +1,11 @@
 package leetCode
 
 object Solution_925 {
-  def isLongPressedName(name: String, typed: String): Boolean = {
-    var l = 0
-    var r = 0
-    if (name(0) != typed(0)) return false
-    while (l < name.length && r < typed.length) {
-      if (name(l) == typed(r)) {
-        l += 1
-        r += 1
-      } else if (name(l - 1) != typed(r)) return false
-      else r += 1
-    }
-    if (l != name.length) return false
-    l -= 1
-    r -= 1
-    while (r < typed.length) {
-      if (typed(r) != name(l)) return false
-      r += 1
-    }
-    true
+  @scala.annotation.tailrec
+  def isLongPressedName(name: String, typed: String, last: Option[Char] = None): Boolean = (name.headOption, typed.headOption) match {
+    case (None, None) => true
+    case (Some(h1), Some(h2)) if h1 == h2 => isLongPressedName(name.drop(1), typed.drop(1), Some(h1))
+    case (_, h2) if h2 == last => isLongPressedName(name, typed.drop(1), last)
+    case _ => false
   }
 }
