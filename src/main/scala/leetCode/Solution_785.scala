@@ -1,30 +1,17 @@
 package leetCode
 
-import java.util
-
 object Solution_785 {
-  var isVisited: Array[Int] = _
-  var graph: Array[Array[Int]] = _
-  var res = true
-
   def isBipartite(graph: Array[Array[Int]]): Boolean = {
-    isVisited = new Array[Int](graph.length)
-    util.Arrays.fill(isVisited, -1)
-    this.graph = graph
-    graph.indices.foreach(i => if (isVisited(i) == -1) dfs(i, 0))
-    res
-  }
+    val colors = collection.mutable.Map.empty[Int, Int]
 
-  def dfs(i: Int, needed: Int): Unit = {
-    if (isVisited(i) == -1) isVisited(i) = needed
-    else if (isVisited(i) == needed) return
-    else {
-      res = false
-      return
-    }
-    graph(i).indices.foreach(j => {
-      if (needed == 1) dfs(graph(i)(j), 0)
-      else dfs(graph(i)(j), 1)
-    })
+    def dye(vertex: Int, color: Int, neighbours: Array[Int]): Boolean = colors
+      .get(vertex)
+      .map(_ == color)
+      .getOrElse {
+        colors(vertex) = color
+        neighbours.forall(n => dye(n, 1 - color, graph(n)))
+      }
+
+    graph.indices.forall(vertex => colors.get(vertex).fold(dye(vertex, 0, graph(vertex)))(_ => true))
   }
 }
