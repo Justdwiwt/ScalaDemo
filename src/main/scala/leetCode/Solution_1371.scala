@@ -2,22 +2,12 @@ package leetCode
 
 object Solution_1371 {
   def findTheLongestSubstring(s: String): Int = {
-    var res = 0
-    var status = 0
-    val diff = Array.fill(32)(-1)
-    diff(0) = 0
-    s.indices.foreach(i => {
-      s(i) match {
-        case 'a' => status ^= 1 << 0
-        case 'e' => status ^= 1 << 1
-        case 'i' => status ^= 1 << 2
-        case 'o' => status ^= 1 << 3
-        case 'u' => status ^= 1 << 4
-        case _ =>
-      }
-      if (diff(status) != -1) res = res.max(i + 1 - diff(status))
-      else diff(status) = i + 1
-    })
-    res
+    val m = scala.collection.mutable.HashMap[Int, Int]()
+    m += (0 -> -1)
+    s.indices./:(0, 0)((b, a) => {
+      val cur = b._2 ^ 1 << "aeiou".indexOf(s.charAt(a)) + 1 >> 1
+      if (!m.contains(cur)) m += cur -> a
+      (b._1.max(a - m.getOrElse(cur, 0)), cur)
+    })._1
   }
 }
