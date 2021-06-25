@@ -1,26 +1,26 @@
 package leetCode
 
-import scala.collection.mutable.ArrayBuffer
-
 object Solution_967 {
-  def numsSameConsecDiff(N: Int, K: Int): Array[Int] = N match {
-    case 1 => Array.range(0, 10)
-    case _ =>
-      val res = new ArrayBuffer[Int]()
-
-      def func(i: Int): Unit = {
-        if (math.log10(i).toInt + 1 == N) {
-          res += i
-          return
+  def numsSameConsecDiff(N: Int, K: Int): Array[Int] = {
+    @scala.annotation.tailrec
+    def f(cnt: Int, res: List[Int]): Array[Int] =
+      if (cnt == N) res.toArray
+      else {
+        @inline
+        val next = res./:(List.empty[Int]) {
+          case (acc, num) => num % 10 match {
+            case unit if K == 0 => num * 10 + unit + K :: acc
+            case unit if unit + K < 10 && unit - K >= 0 => num * 10 + unit + K :: num * 10 + unit - K :: acc
+            case unit if unit + K < 10 => num * 10 + unit + K :: acc
+            case unit if unit - K >= 0 => num * 10 + unit - K :: acc
+            case _ => acc
+          }
         }
-        val pre = i % 10
-        if (pre >= K) func(10 * i + pre - K)
-        if (K != 0 && pre + K <= 9) func(10 * i + pre + K)
+
+        f(cnt + 1, next)
       }
 
-      (1 to 9).foreach(i => func(i))
-      val t = new Array[Int](res.length)
-      res.indices.foreach(i => t(i) = res(i))
-      t
+    if (N == 1) (0 to 9).toArray
+    else f(1, (1 to 9).toList)
   }
 }
