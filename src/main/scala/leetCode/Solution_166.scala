@@ -1,31 +1,25 @@
 package leetCode
 
-import scala.collection.mutable
+import scala.math.Integral.Implicits._
+import scala.math._
 
 object Solution_166 {
-  def fractionToDecimal(numerator: Int, denominator: Int): String = func(numerator.toLong, denominator.toLong)
+  def fractionToDecimal(numerator: Int, denominator: Int): String = {
+    val sign = if (signum(numerator) * signum(denominator) == -1) "-" else ""
+    sign + fractionToDecimal(abs(numerator.toLong), abs(denominator.toLong))
+  }
 
-  def func(numerator: Long, denominator: Long): String = {
-    var myInteger = (numerator / denominator).toString
-    if (numerator % denominator == 0) return myInteger
-    if ((numerator < 0 && denominator > 0) || (numerator > 0 && denominator < 0)) if (myInteger == "0") myInteger = "-0"
-    var _numerator = numerator.abs
-    var _denominator = denominator.abs
-    _numerator %= _denominator
-    var s = ""
-    val m = new mutable.HashMap[Long, Int]()
-    var pos = 0
-    while (_numerator > 0) {
-      m(_numerator) = pos
-      pos += 1
-      _numerator *= 10
-      s += (_numerator / _denominator + '0').toString
-      _numerator %= _denominator
-      if (m.contains(_numerator)) {
-        val idx = m(_numerator)
-        return myInteger + "." + s.substring(0, idx) + "(" + s.substring(idx) + ")"
-      }
+  private def fractionToDecimal(numerator: Long, denominator: Long): String = numerator./%(denominator) match {
+    case (quot, 0) => quot.toString
+    case (quot, rem) => quot.toString + "." + generateFractional(rem, denominator)
+  }
+
+  @scala.annotation.tailrec
+  private def generateFractional(numerator: Long, denominator: Long, numeratorToIdx: Map[Long, Int] = Map(), fractional: String = ""): String = numeratorToIdx.get(numerator) match {
+    case Some(index) => fractional.substring(0, index) + "(" + fractional.substring(index) + ")"
+    case _ => (10 * numerator)./%(denominator) match {
+      case (quot, 0) => fractional + quot
+      case (quot, rem) => generateFractional(rem, denominator, numeratorToIdx + (numerator -> fractional.length), fractional + quot)
     }
-    myInteger + "." + s
   }
 }
