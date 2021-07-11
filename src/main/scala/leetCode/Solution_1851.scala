@@ -23,7 +23,7 @@ object Solution_1851 {
       idx += 1
     })
 
-    arr.sortWith((a, b) => {
+    val sorted = arr.sortWith((a, b) => {
       if (a.x != b.x) a.x <= b.x
       else if (a.c != b.c) a.c > b.c
       else a.i <= b.i
@@ -31,7 +31,7 @@ object Solution_1851 {
 
     val tm = new mutable.TreeMap[Int, Int]()((a, b) => Integer.compare(m(a), m(b)))
 
-    arr.foreach(cur => {
+    sorted.foreach(cur => {
       if (cur.c == 1) tm += cur.i -> (tm.getOrElse(cur.i, 0) + 1)
       else if (cur.c == -1 && cur.i != -100) {
         tm += cur.i -> (tm(cur.i) - 1)
