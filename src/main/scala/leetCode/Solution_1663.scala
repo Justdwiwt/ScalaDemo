@@ -2,11 +2,17 @@ package leetCode
 
 object Solution_1663 {
   def getSmallestString(n: Int, k: Int): String = {
-    val s = Array.fill(n)('a')
-    val cnt = (k - n) / 25
-    val head = (k - n) % 25
-    s(n - cnt - 1) = ('a'.toInt + head).toChar
-    (n - cnt until n).foreach(i => s(i) = 'z')
-    s.mkString
+    val arr = Array.fill[Char](n)('a')
+    (n - 1 to 0 by -1)./:(k - n)((b, a) => {
+      if (b >= 25) {
+        arr(a) = 'z'
+        b - 25
+      }
+      else {
+        arr(a) = (b + 97).toChar
+        0
+      }
+    })
+    arr.mkString
   }
 }
