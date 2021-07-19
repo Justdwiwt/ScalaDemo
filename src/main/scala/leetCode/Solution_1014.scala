@@ -1,12 +1,6 @@
 package leetCode
 
 object Solution_1014 {
-  def maxScoreSightseeingPair(A: Array[Int]): Int = {
-    A.indices.tail.foldLeft(A.head -> -1) {
-      case ((_left, _res), i) =>
-        val res = _res.max(_left + A(i) - i)
-        val left = _left.max(A(i) + i)
-        (left, res)
-    }._2
-  }
+  def maxScoreSightseeingPair(A: Array[Int]): Int =
+    A./:((0, 0))((a, b) => (a._1.max(b + a._2), b.max(a._2) - 1))._1
 }
