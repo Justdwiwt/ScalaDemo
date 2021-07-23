@@ -1,17 +1,11 @@
 package leetCode
 
 object Solution_915 {
-  def partitionDisjoint(A: Array[Int]): Int = {
-    var res = 0
-    var pMax = A.head
-    var cur = pMax
-    A.indices.drop(1).foreach(i => {
-      cur = cur.max(A(i))
-      if (A(i) < pMax) {
-        pMax = cur
-        res = i
-      }
-    })
-    res + 1
-  }
+  def partitionDisjoint(nums: Array[Int]): Int = nums
+    .scanLeft(Int.MinValue)(_.max(_))
+    .zip(nums.scanRight(Int.MaxValue)(_.min(_)))
+    .zipWithIndex
+    .tail
+    .filter(x => x._1._1 <= x._1._2)
+    .head._2
 }
