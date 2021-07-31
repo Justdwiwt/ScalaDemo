@@ -1,24 +1,8 @@
 package leetCode
 
-import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
-
 object Solution_599 {
-  def findRestaurant(list1: Array[String], list2: Array[String]): Array[String] = {
-    var mn = Int.MaxValue
-    var res = new ArrayBuffer[String]()
-    val m = new mutable.HashMap[String, Int]()
-    list1.indices.foreach(i => m(list1(i)) = i)
-    list2.indices.foreach(i => {
-      if (m.contains(list2(i))) {
-        val sum = i + m(list2(i))
-        if (sum == mn) res.append(list2(i))
-        else if (sum < mn) {
-          mn = sum
-          res = ArrayBuffer(list2(i))
-        }
-      }
-    })
-    res.toArray
-  }
+  def findRestaurant(list1: Array[String], list2: Array[String]): Array[String] = List(list1, list2)
+    .reduce((a, b) => a intersect b)
+    .groupBy(e => list1.indexOf(e) + list2.indexOf(e))
+    ./:(Int.MaxValue -> Array[String]()) { case (min, p) => if (min._1 <= p._1) min else p }._2
 }
