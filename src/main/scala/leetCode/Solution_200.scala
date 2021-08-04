@@ -1,49 +1,29 @@
 package leetCode
 
 object Solution_200 {
+  val diff = Vector((0, 1), (0, -1), (1, 0), (-1, 0))
+
   def numIslands(grid: Array[Array[Char]]): Int = {
-    if (grid.isEmpty) 0
-    else {
-      val x = grid.length
-      val y = grid.head.length
-      var res = grid.map(row => row.count(_ == '1')).sum
 
-      val parent = (0 until x * y).toArray
+    if (grid.isEmpty || grid.head.isEmpty) return 0
 
-      def left(i: Int, j: Int) = j - 1 >= 0
+    val g = grid
+    var res = 0
 
-      def right(i: Int, j: Int) = j + 1 < y
+    grid.head.indices.foreach(x => grid.indices.withFilter(y => g(y)(x) == '1').foreach(y => {
+      res += 1
+      dfs(x, y)
+    }))
 
-      def up(i: Int, j: Int) = i - 1 >= 0
-
-      def down(i: Int, j: Int) = i + 1 < x
-
-      @annotation.tailrec
-      def root(p: Int): Int = {
-        if (p != parent(p)) {
-          parent(p) = parent(parent(p))
-          root(parent(p))
-        }
-        else p
-      }
-
-      def union(p: Int, q: Int): Unit = {
-        val rootP = root(p)
-        val rootQ = root(q)
-        if (rootP != rootQ) {
-          parent(rootP) = rootQ
-          res -= 1
-        }
-      }
-
-      (0 until x).foreach(row => (0 until y).withFilter(col => grid(row)(col) == '1').foreach(col => {
-        val p = row * y + col
-        if (left(row, col) && grid(row)(col - 1) == '1') union(p, row * y + (col - 1))
-        if (right(row, col) && grid(row)(col + 1) == '1') union(p, row * y + (col + 1))
-        if (up(row, col) && grid(row - 1)(col) == '1') union(p, (row - 1) * y + col)
-        if (down(row, col) && grid(row + 1)(col) == '1') union(p, (row + 1) * y + col)
-      }))
-      res
+    def dfs(x: Int, y: Int): Unit = (x, y) match {
+      case (x, _) if x < 0 || x >= grid.head.length =>
+      case (_, y) if y < 0 || y >= grid.length =>
+      case (x, y) if g(y)(x) == '1' =>
+        g(y)(x) = '0'
+        diff.foreach(d => dfs(x + d._1, y + d._2))
+      case _ =>
     }
+
+    res
   }
 }
