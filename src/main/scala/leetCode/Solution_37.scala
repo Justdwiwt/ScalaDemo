@@ -1,31 +1,26 @@
 package leetCode
 
-import scala.util.control.Breaks._
-
 object Solution_37 {
-  def solveSudoku(board: Array[Array[Char]]): Unit = func(board, 0, 0)
-
-  def func(board: Array[Array[Char]], _i: Int, _j: Int): Boolean = {
-    if (_i == 9) return true
-    if (_j >= 9) return func(board, _i + 1, 0)
-    if (board(_i)(_j) != '.') return func(board, _i, _j + 1)
-    ('1' to '9').foreach(c => {
-      breakable {
-        if (!isValid(board, _i, _j, c)) break()
-      }
-      board(_i)(_j) = c
-      if (func(board, _i, _j + 1)) return true
-      board(_i)(_j) = '.'
+  def valid(board: Array[Array[Char]], row: Int, col: Int, c: Char): Boolean = {
+    (0 until 9).foreach(i => {
+      if (board(i)(col) == c || board(row)(i) == c) return false
+      if (board(3 * (row / 3) + i / 3)(3 * (col / 3) + i % 3) == c) return false
     })
-    false
-  }
-
-  def isValid(board: Array[Array[Char]], _i: Int, _j: Int, _v: Char): Boolean = {
-    (0 until 9).foreach(x => if (board(x)(_j) == _v) return false)
-    (0 until 9).foreach(y => if (board(_i)(y) == _v) return false)
-    val row = _i - _i % 3
-    val col = _j - _j % 3
-    (0 until 3).foreach(x => (0 until 3).foreach(y => if (board(x + row)(y + col) == _v) return false))
     true
   }
+
+  def solve(board: Array[Array[Char]]): Boolean = {
+    board.indices.foreach(i => board.head.indices.foreach(j => if (board(i)(j) == '.') {
+      ('1' to '9').foreach(c => if (valid(board, i, j, c)) {
+        board(i)(j) = c
+        if (solve(board)) return true
+        else board(i)(j) = '.'
+      })
+      return false
+    }))
+    true
+  }
+
+  def solveSudoku(board: Array[Array[Char]]): Unit =
+    solve(board)
 }
