@@ -2,8 +2,8 @@ package leetCode
 
 object Solution_1980 {
   def findDifferentBinaryString(nums: Array[String]): String = {
-    val res = Array.fill(nums.length)('0')
-    res.indices.foreach(i => if (nums(i)(i) == '0') res(i) = '1')
-    res.mkString
+    val st = nums.map(Integer.parseInt(_, 2)).toSet
+    (0 until (1 << nums.length)).foreach(i => if (!st.contains(i)) return "0" * (nums.length - i.toBinaryString.length) + i.toBinaryString)
+    ""
   }
 }
