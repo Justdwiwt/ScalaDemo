@@ -1,20 +1,7 @@
 package leetCode
 
 object Solution_1441 {
-  def buildArray(target: Array[Int], n: Int): List[String] = {
-    var cnt = 1
-    var res = List.empty[String]
-    target.indices.foreach(i => {
-      while (cnt < target(i)) {
-        res :+= "Push"
-        res :+= "Pop"
-        cnt += 1
-      }
-      if (cnt == target(i)) {
-        res :+= "Push"
-        cnt += 1
-      }
-    })
-    res
-  }
+  def buildArray(target: Array[Int], n: Int): List[String] = (1 until n.min(target.max) + 1)
+    .toList
+    .flatMap(x => if (target.contains(x)) Array("Push") else Array("Push", "Pop"))
 }
