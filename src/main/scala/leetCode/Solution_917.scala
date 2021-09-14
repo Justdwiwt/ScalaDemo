@@ -1,14 +1,10 @@
 package leetCode
 
-import java.util
-
 object Solution_917 {
   def reverseOnlyLetters(S: String): String = {
-    val letters: util.Stack[Character] = new util.Stack()
-    val res: StringBuilder = new StringBuilder
-    S.toCharArray.foreach(c => if (Character.isLetter(c)) letters.push(c))
-    S.toCharArray.foreach(c => if (Character.isLetter(c)) res.append(letters.pop())
-    else res.append(c))
-    res.toString
+    val (p, q) = S.zipWithIndex.partition(x => x._1.toInt >= 65 && x._1.toInt <= 90 || x._1.toInt >= 97 && x._1.toInt <= 122)
+    var res = p.reverse.map(x => x._1).mkString
+    q.foreach(i => res = res.patch(i._2, i._1.toString, 0))
+    res
   }
 }
