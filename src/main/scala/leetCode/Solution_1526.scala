@@ -2,8 +2,7 @@ package leetCode
 
 object Solution_1526 {
   def minNumberOperations(target: Array[Int]): Int = {
-    var res = target.head
-    (1 until target.length).foreach(i => if (target(i) > target(i - 1)) res += (target(i) - target(i - 1)))
-    res
+    val l = target.toList
+    l.zip(0 :: l)./:(0)({ case (acc, (p, c)) => acc + 0.max(p - c) })
   }
 }
