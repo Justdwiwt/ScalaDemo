@@ -2,13 +2,16 @@ package leetCode
 
 object Solution_304 {
 
-  class NumMatrix(_matrix: Array[Array[Int]]) {
+  class NumMatrix(matrix: Array[Array[Int]]) {
+    private val (m, n) = (matrix.length, matrix.head.length)
 
-    def sumRegion(row1: Int, col1: Int, row2: Int, col2: Int): Int = {
-      val line = (row1 to row2).filter(_ < _matrix.length).map((_, col1))
-      val point = (col1 to col2).filter(_ < _matrix.head.length).flatMap(col => line.map(rec => (rec._1, col)))
-      point./:(0)((sum, point) => sum + _matrix(point._1)(point._2))
-    }
+    private val prefixSums = Array.ofDim[Int](m + 1, n + 1)
+
+    matrix.indices.foreach(i => matrix(i).indices.foreach(j =>
+      prefixSums(i + 1)(j + 1) = matrix(i)(j) + prefixSums(i)(j + 1) + prefixSums(i + 1)(j) - prefixSums(i)(j)))
+
+    def sumRegion(row1: Int, col1: Int, row2: Int, col2: Int): Int =
+      prefixSums(row2 + 1)(col2 + 1) - prefixSums(row1)(col2 + 1) - prefixSums(row2 + 1)(col1) + prefixSums(row1)(col1)
 
   }
 
