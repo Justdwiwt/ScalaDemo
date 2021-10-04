@@ -1,11 +1,24 @@
 package leetCode
 
 object Solution_680 {
-  def validPalindrome(s: String): Boolean = f(s)
+  def validPalindrome(s: String): Boolean = {
+    val start = 0
+    val end = s.length - 1
 
-  def f(s: String, flag: Boolean = false): Boolean =
-    if (s.length < 2) true
-    else if (s.head == s.last) f(s.drop(1).dropRight(1), flag)
-    else if (s.head != s.last && !flag) f(s.drop(1), flag = true) || f(s.dropRight(1), flag = true)
-    else false
+    @scala.annotation.tailrec
+    def isPalindrome(start: Int, end: Int): Boolean = start match {
+      case i if i >= end => true
+      case i if s.charAt(i) != s.charAt(end) => confirmPalindrome(start + 1, end) || confirmPalindrome(start, end - 1)
+      case _ => isPalindrome(start + 1, end - 1)
+    }
+
+    @scala.annotation.tailrec
+    def confirmPalindrome(start: Int, end: Int): Boolean = start match {
+      case i if i >= end => true
+      case i if s.charAt(i) != s.charAt(end) => false
+      case _ => confirmPalindrome(start + 1, end - 1)
+    }
+
+    isPalindrome(start, end)
+  }
 }
