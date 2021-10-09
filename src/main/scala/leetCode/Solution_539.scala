@@ -2,16 +2,10 @@ package leetCode
 
 object Solution_539 {
   def findMinDifference(timePoints: List[String]): Int = {
-    var res = Int.MaxValue
-    var nums = Array.emptyIntArray
-    timePoints.foreach(i => {
-      val h = i.substring(0, 2).toInt
-      val m = i.substring(3).toInt
-      nums :+= h * 60 + m
-    })
-    val t = nums.sorted
-    timePoints.indices.drop(1).foreach(i => res = res.min(t(i) - t(i - 1)))
-    res.min(1440 + t.head - t.last)
-    res.min(1440 + t.head - t.last)
+    val sorted = timePoints.sorted.map(s => (s.take(2).toInt, s.takeRight(2).toInt))
+    (sorted.zip(sorted.tail) :+ (sorted.head, sorted.last)).map({ case ((h1, m1), (h2, m2)) =>
+      val x = (h2 - h1) * 60 + m2 - m1
+      x.min(1440 - x)
+    }).min
   }
 }
