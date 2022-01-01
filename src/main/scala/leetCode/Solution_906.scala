@@ -1,19 +1,21 @@
 package leetCode
 
 object Solution_906 {
-  def superpalindromesInRange(L: String, R: String): Int = {
-    var ans = 0
-    (1 to math.pow(10, (R.length + 1) / 2).toInt)
-      .withFilter(i => isPalindrome(i.toString))
-      .withFilter(i => func(BigInt(i) * BigInt(i), BigInt(L)))
-      .foreach(i => {
-        if (BigInt(i) * BigInt(i) > BigInt(R)) return ans
-        ans += 1
-      })
-    ans
+  lazy val st: Set[BigInt] = (1 to 9)./:(Set.empty[BigInt])((a, b) => a + b) | (1 to 10000)./:(Set.empty[BigInt])((a, b) => {
+    val l = b.toString
+    val r = l.reverse
+    val res = a + BigInt(l + r)
+    (0 to 9)./:(res)((a, b) => a + BigInt(l + b + r))
+  })
+
+  def superpalindromesInRange(left: String, right: String): Int = {
+    val l = BigInt(left)
+    val r = BigInt(right)
+    st./:(0)((a, b) => {
+      val bSquare = b * b
+      val f = bSquare.toString
+      if (bSquare >= l && bSquare <= r && f == f.reverse) a + 1
+      else a
+    })
   }
-
-  def func(n: BigInt, L: BigInt): Boolean = n >= L && isPalindrome(n.toString)
-
-  def isPalindrome(s: String): Boolean = s.reverse == s
 }
