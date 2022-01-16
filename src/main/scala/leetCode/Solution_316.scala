@@ -1,21 +1,22 @@
 package leetCode
 
-import scala.collection.mutable
-import scala.util.control.Breaks._
-
 object Solution_316 {
   def removeDuplicateLetters(s: String): String = {
-    val st = mutable.Stack[Char]()
-    val m = mutable.Map[Char, Int]()
-    s.indices.foreach(i => m(s(i)) = i)
-    s.indices.foreach(i => breakable {
-      val t = s(i)
-      if (st.contains(t)) break()
-      while (st.nonEmpty && st.top > t && m(st.top) > i) {
-        val top = st.pop
+    if (s.length == 1) return s
+    val arr = Array.fill(26)(26)
+    s.zipWithIndex.foreach({ case (c, i) => arr(c - 'a') = i })
+    val seen = Array.fill(26)(false)
+    var st = List.empty[Char]
+    s.zipWithIndex.foreach({ case (c, i) =>
+      if (!seen(c - 'a')) {
+        while (st.nonEmpty && st.head > c && arr(st.head - 'a') > i) {
+          seen(st.head - 'a') = false
+          st = st.tail
+        }
+        seen(c - 'a') = true
+        st = c +: st
       }
-      st.push(t)
     })
-    st.mkString.reverse
+    st.reverse.mkString
   }
 }

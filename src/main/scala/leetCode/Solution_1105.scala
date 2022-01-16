@@ -1,29 +1,20 @@
 package leetCode
 
-import scala.util.control.Breaks._
-
 object Solution_1105 {
   def minHeightShelves(books: Array[Array[Int]], shelf_width: Int): Int = {
-    val cache = Array.fill(books.length)(-1)
-
-    def dfs(books: Array[Array[Int]], idx: Int, width: Int, cache: Array[Int]): Int = {
-      if (idx >= books.length) return 0
-      if (cache(idx) != -1) return cache(idx)
-      var curWidth = 0
-      var mxHeight = 0
-      var res = Int.MaxValue
-      breakable {
-        (idx until books.length).foreach(i => {
-          curWidth += books(i)(0)
-          mxHeight = mxHeight.max(books(i)(1))
-          if (curWidth > width) break()
-          res = res.min(mxHeight + dfs(books, i + 1, width, cache))
+    val dp = new Array[Int](books.length + 1)
+    dp.indices.drop(1).foreach(i => {
+      val width = books(i - 1)(0)
+      var height = books(i - 1)(1)
+      dp(i) = dp(i - 1) + height
+      (1 until i)
+        .reverse
+        .withFilter(j => width + books.map(n => n.head).slice(j - 1, i - 1).sum <= shelf_width)
+        .foreach(j => {
+          height = height.max(books(j - 1)(1))
+          dp(i) = dp(i).min(dp(j - 1) + height)
         })
-      }
-      cache(idx) = res
-      res
-    }
-
-    dfs(books, 0, shelf_width, cache)
+    })
+    dp(books.length)
   }
 }
