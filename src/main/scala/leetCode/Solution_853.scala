@@ -1,24 +1,19 @@
 package leetCode
 
-import scala.collection.mutable
-import scala.util.control.Breaks._
-
 object Solution_853 {
   def carFleet(target: Int, position: Array[Int], speed: Array[Int]): Int = {
+    val sorted = position.indices.sortBy(i => -position(i))
     var res = 0
-    var cur = 0.0
-    val q = new mutable.PriorityQueue[(Int, Int)]()
-    position.indices.foreach(i => q.enqueue((position(i), speed(i))))
-    while (q.nonEmpty) {
-      val t = q.head
-      q.dequeue
-      val time = (target - t._1) / t._2
-      breakable {
-        if (time <= cur) break
+    var next = 0.0
+    sorted.foreach(i => {
+      val distance = target - position(i)
+      val timeReached = distance / speed(i).toDouble
+      if (timeReached <= next) {}
+      else {
+        res += 1
+        next = timeReached
       }
-      cur = time
-      res += 1
-    }
+    })
     res
   }
 }

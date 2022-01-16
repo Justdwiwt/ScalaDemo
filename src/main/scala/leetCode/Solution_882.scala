@@ -1,38 +1,42 @@
 package leetCode
 
 import scala.collection.mutable
-import scala.util.control.Breaks._
 
 object Solution_882 {
-  def reachableNodes(edges: Array[Array[Int]], M: Int, N: Int): Int = {
-    var res = 0
-    val flag = Array.fill(N)(false)
-    val q = new mutable.PriorityQueue[(Int, Int)]()
-    val graph = Array.fill(N, N)(-1)
-    q.enqueue((M, 0))
-    edges.foreach(edge => {
-      graph(edge(0))(edge(1)) = edge(2)
-      graph(edge(1))(edge(0)) = edge(2)
-    })
-    while (q.nonEmpty) {
-      val t = q.head
-      q.dequeue
-      val move = t._1
-      val cur = t._2
-      breakable {
-        if (flag(cur)) break
-      }
-      flag(cur) = true
-      res += 1
-      (0 until N).foreach(i => {
-        breakable {
-          if (graph(cur)(i) == -1) break
-        }
-        if (move > graph(cur)(i) && !flag(i)) q.enqueue((move - graph(cur)(i) - 1, i))
-        graph(i)(cur) -= move.min(graph(cur)(i))
-        res += move.min(graph(cur)(i))
+  case class Node(node: Int, dist: Int)
+
+  def reachableNodes(edges: Array[Array[Int]], maxMoves: Int, n: Int): Int = {
+    val graph = mutable.HashMap.empty[Int, mutable.HashMap[Int, Int]]
+    edges
+      .withFilter({ case Array(_, _, _) => true; case _ => false })
+      .foreach({ case Array(u, v, w) =>
+        graph.getOrElseUpdate(u, mutable.HashMap[Int, Int]()) += v -> w
+        graph.getOrElseUpdate(v, mutable.HashMap[Int, Int]()) += u -> w
       })
+    val pq = mutable.PriorityQueue.empty[Node](Ordering.by(_.dist)).reverse
+    pq += Node(0, 0)
+    val distMap = mutable.HashMap[Int, Int](0 -> 0)
+    val used = mutable.HashMap.empty[Int, Int]
+    var res = 0
+    while (pq.nonEmpty) {
+      val Node(node, dist) = pq.dequeue()
+      if (dist <= distMap.getOrElse(node, 0)) {
+        res += 1
+        if (graph.contains(node)) {
+          graph(node).keySet.foreach(nei => {
+            val weight = graph(node)(nei)
+            val v = weight.min(maxMoves - dist)
+            used += n * node + nei -> v
+            val d2 = dist + weight + 1
+            if (d2 < distMap.getOrElse(nei, maxMoves + 1)) {
+              pq += Node(nei, d2)
+              distMap += nei -> d2
+            }
+          })
+        }
+      }
     }
+    edges.foreach(x => res += x(2).min(used.getOrElse(x.head * n + x(1), 0) + used.getOrElse(x(1) * n + x.head, 0)))
     res
   }
 }

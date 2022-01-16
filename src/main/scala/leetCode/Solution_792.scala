@@ -1,32 +1,16 @@
 package leetCode
 
 import scala.collection.mutable
-import scala.util.control.Breaks._
 
 object Solution_792 {
-  def numMatchingSubseq(S: String, words: Array[String]): Int = {
-    if (S.isEmpty) return 0
-    val pass = new mutable.HashSet[String]()
-    val fail = new mutable.HashSet[String]()
-    var res = 0
-    words.foreach(word => {
-      breakable {
-        if (pass.contains(word) || fail.contains(word)) {
-          if (pass.contains(word)) res += 1
-          break()
-        }
-      }
-      var i = 0
-      var j = 0
-      while (i < S.length && j < word.length) {
-        if (S(i) == word(j)) j += 1
-        i += 1
-      }
-      if (j == word.length) {
-        res += 1
-        pass.add(word)
-      } else fail.add(word)
+  def numMatchingSubseq(s: String, words: Array[String]): Int = {
+    val m = mutable.Map.empty[Char, List[String]]
+    words.foreach(x => m(x.head) = x.tail :: m.getOrElse(x.head, Nil))
+    s.foreach(c => if (m.contains(c)) {
+      val t = m(c)
+      m -= c
+      t.foreach(x => if (x.nonEmpty) m(x.head) = x.tail :: m.getOrElse(x.head, Nil))
     })
-    res
+    words.length - m.map({ case (_, str) => if (str.isEmpty) 1 else str.size }).sum
   }
 }
