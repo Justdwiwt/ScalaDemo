@@ -1,30 +1,14 @@
 package leetCode
 
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
-
 object Solution_491 {
   def findSubsequences(nums: Array[Int]): List[List[Int]] = {
-    var res = new ListBuffer[List[Int]]
-    if (nums.isEmpty) return List.empty
-    backTrack(nums, Array.fill(nums.length)(0), 0, -1, Int.MinValue)
+    def f(nums: Array[Int]): List[List[Int]] =
+      if (nums.length == 1) List(List(nums.head))
+      else f(nums.dropRight(1)).flatMap(l => {
+        if (l.last <= nums.last) List(l, l :+ nums.last)
+        else List(l)
+      }) :+ List(nums.last)
 
-    def backTrack(nums: Array[Int], tmp: Array[Int], curPos: Int, preIdx: Int, pre: Int): Unit = {
-      if (curPos > 1) {
-        var t = List.empty[Int]
-        (0 until curPos).foreach(i => t :+= tmp(i))
-        res :+= t
-      }
-      var s = new mutable.HashSet[Int]()
-      (preIdx + 1 until nums.length).foreach(i => {
-        if (!s.contains(nums(i)) && nums(i) >= pre) {
-          s += nums(i)
-          tmp(curPos) = nums(i)
-          backTrack(nums, tmp, curPos + 1, i, nums(i))
-        }
-      })
-    }
-
-    res.toList
+    f(nums).filter(_.length != 1).distinct
   }
 }
