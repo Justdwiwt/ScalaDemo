@@ -4,16 +4,15 @@ import scala.collection.mutable
 
 object Solution_956 {
   def tallestBillboard(rods: Array[Int]): Int = {
-    val dp = new mutable.HashMap[Int, Int]()
-    dp(0) = 0
-    rods.foreach(rod => {
-      val cur = dp
-      cur.foreach(kv => {
-        val k = kv._1
-        dp(k + rod) = dp(k + rod).max(cur(k))
-        dp(math.abs(k - rod)) = dp(math.abs(k - rod)).max(cur(k) + rod.min(k))
+    val dp = mutable.HashMap.empty[Int, Int]
+    dp += 0 -> 0
+    rods.foreach(x => {
+      val cur = dp.clone()
+      cur.keySet.foreach(d => {
+        dp += (d + x) -> cur.getOrElse(d, 0).max(dp.getOrElse(x + d, 0))
+        dp += (d - x).abs -> (cur.getOrElse(d, 0) + d.min(x)).max(dp.getOrElse((d - x).abs, 0))
       })
     })
-    dp(0)
+    dp.getOrElse(0, 0)
   }
 }
