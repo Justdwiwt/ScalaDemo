@@ -24,11 +24,8 @@ object Solution_1261 {
       root
     }
 
-    def addChildren(node: TreeNode, list: List[TreeNode]): List[TreeNode] = {
-      List(node.left, node.right).foldLeft(list) {
-        (acc, child) => if (child != null) acc :+ child else acc
-      }
-    }
+    def addChildren(node: TreeNode, list: List[TreeNode]): List[TreeNode] = List(node.left, node.right)
+      ./:(list)((acc, child) => if (child != null) acc :+ child else acc)
 
     _root.value = 0
 
