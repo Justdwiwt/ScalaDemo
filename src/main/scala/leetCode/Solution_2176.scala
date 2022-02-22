@@ -2,8 +2,15 @@ package leetCode
 
 object Solution_2176 {
   def countPairs(nums: Array[Int], k: Int): Int = {
-    var cnt = 0
-    nums.indices.foreach(i => (i + 1 until nums.length).foreach(j => if (nums(i) == nums(j) && (i * j) % k == 0) cnt += 1))
-    cnt
+    @scala.annotation.tailrec
+    def f(i: Int, j: Int, cnt: Int): Int =
+      if (i == nums.length - 1) cnt
+      else {
+        if (j == nums.length) f(i + 1, i + 2, cnt)
+        else if (nums(i) == nums(j) && (i * j % k == 0)) f(i, j + 1, cnt + 1)
+        else f(i, j + 1, cnt)
+      }
+
+    f(0, 1, 0)
   }
 }
