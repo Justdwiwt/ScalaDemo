@@ -1,13 +1,19 @@
 package leetCode
 
 object Solution_537 {
-  def complexNumberMultiply(a: String, b: String): String = {
-    val x = a.split("[+i]")
-    val y = b.split("[+i]")
-    val aReal = x(0).toInt
-    val aImg = x(1).toInt
-    val bReal = y(0).toInt
-    val bImg = y(1).toInt
-    (aReal * bReal - aImg * bImg) + "+" + (aReal * bImg + aImg * bReal) + "i"
+  case class Complex(re: Int, im: Int) {
+    override def toString: String = re.toString + "+" + im + "i"
+
+    def f(that: Complex): Complex =
+      Complex(this.re * that.re - this.im * that.im, this.re * that.im + this.im * that.re)
   }
+
+  object Complex {
+    def apply(s: String): Complex = {
+      Complex(s.takeWhile(_ != '+').toInt, s.dropWhile(_ != '+').tail.takeWhile(_ != 'i').toInt)
+    }
+  }
+
+  def complexNumberMultiply(num1: String, num2: String): String =
+    String.valueOf(Complex(num1).f(Complex(num2)))
 }
