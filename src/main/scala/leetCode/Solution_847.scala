@@ -1,29 +1,29 @@
 package leetCode
 
-import java.util
+import scala.collection.mutable
 
 object Solution_847 {
   def shortestPathLength(graph: Array[Array[Int]]): Int = {
-    val INF = 0x3f3f3f3f
-    val n = graph.length
-    val mask = 1 << n
-    val dist = Array.ofDim[Int](mask, n)
-    (0 until mask).foreach(i => dist(i) = Array.fill(i)(INF))
-    val d = new util.ArrayDeque[Array[Int]]()
-    graph.indices.foreach(i => {
-      dist(1 << i)(i) = 0
-      d.addLast(Array(1 << i, i))
-    })
-    while (!d.isEmpty) {
-      val poll = d.pollFirst()
-      val state = poll.head
-      val u = poll(1)
-      val step = dist(state)(u)
-      if (state == mask - 1) return step
-      graph(u).foreach(i => if (dist(state | (1 << i))(i) == INF) {
-        dist(state | (1 << i))(i) = step + 1
-        d.addLast(Array(state | (1 << i), i))
+    val q = mutable.Queue.empty[(Int, Int)]
+    val st = mutable.HashSet.empty[(Int, Int)]
+    val fullMask = (1 << graph.length) - 1
+    graph.indices.foreach(i => q += ((i, 1 << i)))
+    var step = 0
+    while (q.nonEmpty) {
+      val size = q.size
+      (0 until size).foreach(_ => {
+        val (ending, mask) = q.dequeue()
+        if (mask == fullMask) return step
+        val next = graph(ending)
+        next.foreach(n => {
+          val nextMask = mask | (1 << n)
+          if (!st.contains((n, nextMask))) {
+            q += ((n, nextMask))
+            st += ((n, nextMask))
+          }
+        })
       })
+      step += 1
     }
     -1
   }
