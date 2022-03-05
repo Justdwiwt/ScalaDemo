@@ -7,7 +7,7 @@ object Solution_1514 {
     val res = Array.fill(n)(0d)
     res(start) = 1d
     f(res,
-      edges.zip(succProb).foldLeft(Array.fill(n)(Seq.empty[(Int, Double)]))((g, e) => {
+      edges.zip(succProb)./:(Array.fill(n)(Seq.empty[(Int, Double)]))((g, e) => {
         g(e._1.head) = (e._1.last, e._2) +: g(e._1.head)
         g(e._1.last) = (e._1.head, e._2) +: g(e._1.last)
         g
