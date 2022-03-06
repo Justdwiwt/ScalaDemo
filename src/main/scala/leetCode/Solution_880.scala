@@ -9,6 +9,6 @@ object Solution_880 {
       case _ => f(size - 1, S.tail, K % size)
     }
 
-    f(S.foldLeft(0L)((size, curr) => if (curr.isDigit) size * (curr - '0') else size + 1), S.reverse, K.toLong)
+    f(S./:(0L)((size, curr) => if (curr.isDigit) size * (curr - '0') else size + 1), S.reverse, K.toLong)
   }
 }
