@@ -9,6 +9,6 @@ object Solution_903 {
       case 'I' => (1 to i + 1).foreach(j => dp(i + 1)(j) = (dp(i + 1)(j - 1) + dp(i)(j - 1)) % M)
       case 'D' => (i to 0 by -1).foreach(j => dp(i + 1)(j) = (dp(i + 1)(j + 1) + dp(i)(j)) % M)
     })
-    (0 to S.length).map(dp(S.length)).foldLeft(0)((sum, x) => (sum + x) % M)
+    (0 to S.length).map(dp(S.length))./:(0)((sum, x) => (sum + x) % M)
   }
 }
