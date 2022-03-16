@@ -2,22 +2,9 @@ package leetCode
 
 object Solution_2202 {
   def maximumTop(nums: Array[Int], k: Int): Int = {
+    if (nums.length == 1) return if (k % 2 == 1) -1 else nums(0)
     var res = 0
-    val n = nums.length
-    if (n == 1 && k % 2 == 1) return -1
-    if (n == 1 && k % 2 == 0) return nums.head
-    if (k > n) {
-      nums.foreach(i => res = res.max(i))
-      return res
-    }
-    else if (k == n) {
-      (0 until k - 1).foreach(i => res = res.max(nums(i)))
-      return res
-    }
-    else if (k < n) {
-      (0 until k - 1).foreach(i => res = res.max(nums(i)))
-      return res.max(nums(k))
-    }
+    nums.indices.foreach(i => if (k == i || k >= i + 2) res = res.max(nums(i)))
     res
   }
 }
