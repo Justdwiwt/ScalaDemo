@@ -1,19 +1,22 @@
 package leetCode
 
+import scala.collection.mutable
+
 object Solution_907 {
-  def sumSubarrayMins(A: Array[Int]): Int = {
-    val M = 1000000007
-    val dq = new java.util.ArrayDeque[Int]()
-    var res = 0
-    (0 to A.length).foreach(i => {
-      val cur = if (i == A.length) 0 else A(i)
-      while (!dq.isEmpty && A(dq.peek()) > cur) {
-        val j = dq.pop()
-        val k = if (dq.isEmpty) -1 else dq.peek()
-        res = (res + A(j) * (i - j) * (j - k)) % M
+  def sumSubarrayMins(arr: Array[Int]): Int = {
+    val M = (1e9 + 7).toInt
+    var sum = 0L
+    val stack = mutable.Stack[Int]()
+    val a = 0 +: arr :+ 0
+    a.indices.foreach(i => {
+      while (stack.nonEmpty && a(stack.top) > a(i)) {
+        val j = stack.pop()
+        val k = stack.top
+        val s = (a(j).toLong * (i - j) * (j - k)) % M
+        sum = (sum + s) % M
       }
-      dq.push(i)
+      stack.push(i)
     })
-    res
+    sum.toInt
   }
 }
