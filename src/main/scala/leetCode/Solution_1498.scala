@@ -3,16 +3,16 @@ package leetCode
 object Solution_1498 {
   def numSubseq(nums: Array[Int], target: Int): Int = {
     var res = 0
-    val arr = nums.sorted
+    val sorted = nums.sorted
     val M = (1e9 + 7).toInt
     var r = nums.length - 1
     val dic = Array.fill(nums.length)(0)
     dic(0) = 1
-    (1 until nums.length).foreach(i => dic(i) = (dic(i - 1) << 1) % M)
+    nums.indices.drop(1).foreach(i => dic(i) = (dic(i - 1) << 1) % M)
     var l = 0
     while (l <= r) {
-      while (arr(r) + arr(l) > target && r > l) r -= 1
-      if (arr(r) + arr(l) <= target) {
+      while (sorted(r) + sorted(l) > target && r > l) r -= 1
+      if (sorted(r) + sorted(l) <= target) {
         res += dic(r - l)
         res %= M
       }
@@ -29,7 +29,7 @@ object Cal {
   def getMod(x: Long, flag: Boolean = true): Long = if (flag) x % M else x
 
   def sum(seq: Seq[Int], flag: Boolean = true): Int =
-    getMod(seq.foldLeft(zero) { (acc, x) => acc + x.toLong }, flag).toInt
+    getMod(seq./:(zero)((acc, x) => acc + x.toLong), flag).toInt
 
   def mul(x: Int, y: Int, flag: Boolean = true): Int =
     getMod(x.toLong * y.toLong, flag).toInt
