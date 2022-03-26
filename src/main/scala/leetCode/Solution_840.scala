@@ -21,7 +21,7 @@ object Solution_840 {
     if (grid.length < 3 || grid(0).length < 3) 0
     else {
       val idx = (0 until grid.length - 2).flatMap(x => List(x).zipAll(0 until grid(0).length - 2, x, x)).toList
-      idx.foldLeft(0)(f)
+      idx./:(0)(f)
     }
   }
 }
