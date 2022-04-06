@@ -1,7 +1,7 @@
 package leetCode
 
 object Solution_923 {
-  private val M = 1000000007
+  val M = 1000000007
 
   def threeSumMulti(A: Array[Int], target: Int): Int = {
     val data = A.groupBy(p => p).map(p => p._1 -> p._2.length.toLong)
@@ -16,14 +16,14 @@ object Solution_923 {
       }
       else 0L
 
-    (start /: (idL until idR)) { (s, id3) =>
+    (idL until idR)./:(start)((s, id3) => {
       val x3 = sorted(id3)
       val n = data(x3)
       (s + n * (n - 1) * data.getOrElse(target - x3 * 2, 0L) / 2 + data(x3) * solveFor2(data, sorted, id3, target - x3)) % M
-    }.toInt
+    }).toInt
   }
 
-  private def solveFor2(data: Map[Int, Long], vals: Array[Int], id3: Int, target: Int) = {
+  def solveFor2(data: Map[Int, Long], vals: Array[Int], id3: Int, target: Int): Long = {
     val idL = bS(vals, target / 2)
     val idR = bS(vals, target).min(id3)
 
@@ -34,13 +34,13 @@ object Solution_923 {
       }
       else 0L
 
-    (start /: (idL until idR)) { (s, id2) =>
+    (idL until idR)./:(start)((s, id2) => {
       val x2 = vals(id2)
       (s + (data(x2) * data.getOrElse(target - x2, 0L))) % M
-    }
+    })
   }
 
-  private def bS(vals: Array[Int], v: Int) = {
+  def bS(vals: Array[Int], v: Int): Int = {
     val id = java.util.Arrays.binarySearch(vals, v + 1)
     if (id < 0) -id - 1 else id
   }
