@@ -11,5 +11,6 @@ object Solution_13 {
     case x :: xs if curr == x => f(xs, acc + m(x), curr)
     case x :: xs if m(x) < m(curr) => f(xs, acc - m(x), curr)
     case x :: xs if m(x) > m(curr) => f(xs, acc + m(x), x)
+    case _ => acc
   }
 }
