@@ -2,15 +2,18 @@ package leetCode
 
 object Solution_2226 {
   def maximumCandies(candies: Array[Int], k: Long): Int = {
-    var l = 0L
-    var r = 10000000L
-    while (l < r) {
-      val mid = (l + r + 1) / 2
-      var cnt = 0L
-      candies.foreach(x => cnt += (x / mid))
-      if (cnt < k) r = mid - 1
-      else l = mid
-    }
-    l.toInt
+    def canAllocate(count: Int): Boolean =
+      candies./:(0L)((kidsHappy, pile) => kidsHappy + pile / count) >= k
+
+    @annotation.tailrec
+    def binarySearch(l: Int, r: Int): Int =
+      if (l >= r) l
+      else {
+        val mid = (l + r + 1) / 2
+        if (canAllocate(mid)) binarySearch(l = mid, r)
+        else binarySearch(l, mid - 1)
+      }
+
+    binarySearch(l = 0, r = candies.max)
   }
 }
