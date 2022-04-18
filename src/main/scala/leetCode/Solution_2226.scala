@@ -5,7 +5,7 @@ object Solution_2226 {
     def canAllocate(count: Int): Boolean =
       candies./:(0L)((kidsHappy, pile) => kidsHappy + pile / count) >= k
 
-    @annotation.tailrec
+    @scala.annotation.tailrec
     def binarySearch(l: Int, r: Int): Int =
       if (l >= r) l
       else {
