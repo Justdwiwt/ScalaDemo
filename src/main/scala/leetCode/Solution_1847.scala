@@ -1,40 +1,34 @@
 package leetCode
 
-import java.util
+import scala.collection.immutable.SortedSet
 
 object Solution_1847 {
-  def closestRoom(rooms: Array[Array[Int]], queries: Array[Array[Int]]): Array[Int] = {
-    val n = rooms.length
-    val m = queries.length
-    val res = Array.fill(m)(0)
-    val pos = new Array[Integer](m)
-    queries.indices.foreach(i => pos(i) = i)
-    util.Arrays.sort(pos, (a: Integer, b: Integer) => queries(b)(1) - queries(a)(1))
-    val t: Array[Array[Int]] = rooms
-    util.Arrays.sort(t, (o1: Array[Int], o2: Array[Int]) => o2(1) - o1(1))
-    val rSorted = t
-    var k = 0
-    val ts = new util.TreeSet[Int]()
-    pos.foreach(x => {
-      val id = queries(x).head
-      val area = queries(x)(1)
-      while (k < n && rSorted(k)(1) >= area) {
-        ts.add(rooms(k).head)
-        k += 1
-      }
-      if (ts.size() == 0) res(x) = -1
-      else {
-        val floor: Integer = ts.floor(id)
-        val ceil: Integer = ts.ceiling(id)
-        if (floor == null || ceil == null)
-          res(x) = if (floor == null) ceil else floor
-        else {
-          val a = (floor - id).abs
-          val b = (ceil - id).abs
-          res(x) = if (a <= b) floor else ceil
-        }
-      }
-    })
-    res
-  }
+  //  def closestRoom(rooms: Array[Array[Int]], queries: Array[Array[Int]]): Array[Int] = {
+  //    rooms.sortInPlaceBy { case Array(id, size) => (-size, id) }
+  //
+  //    val indices = queries.indices.sortBy(i => -queries(i)(1))
+  //
+  //    val res = Array.fill(queries.length)(-1)
+  //
+  //    indices
+  //      .iterator
+  //      .zip(indices
+  //        .iterator
+  //        .map(queries(_)(1))
+  //        .scanLeft(SortedSet.empty[Int], rooms.iterator) {
+  //          case ((ids, it), minSize) => it.span(_ (1) >= minSize) match {
+  //            case (prefix, suffix) => (ids ++ prefix.map(_.head), suffix)
+  //          }
+  //        }
+  //        .map(_._1)
+  //        .drop(1))
+  //      .foreach { case (i, ids) =>
+  //        res(i) = Iterator(ids.rangeTo(queries(i).head).lastOption, ids.rangeFrom(queries(i).head).headOption)
+  //          .flatten
+  //          .minByOption(id => (id - queries(i)(0)).abs)
+  //          .getOrElse(-1)
+  //      }
+  //
+  //    res
+  //  }
 }
