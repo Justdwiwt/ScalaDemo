@@ -2,27 +2,23 @@ package leetCode
 
 object Solution_284 {
 
-  class PeekingIterator(iterator: Iterator[Int]) extends Iterator[Int] {
-    var cur = 0
-    var isPeek = false
+  class GenPeekingIterator[A](iterator: Iterator[A]) {
+    var peeked: Option[A] = None
 
-    def peek(): Int = {
-      if (isPeek) cur
-      else {
-        isPeek = true
-        cur = iterator.next
-        cur
-      }
+    def peek(): A = peeked.getOrElse {
+      val res = iterator.next()
+      peeked = Some(res)
+      res
     }
 
-    override def next(): Int = {
-      if (isPeek) {
-        isPeek = false
-        cur
-      } else iterator.next
+    def next(): A = peeked.fold(iterator.next) { x =>
+      peeked = None
+      x
     }
 
-    override def hasNext(): Boolean = isPeek || iterator.hasNext
+    def hasNext(): Boolean = peeked.nonEmpty || iterator.hasNext
   }
+
+  class PeekingIterator(it: Iterator[Int]) extends GenPeekingIterator[Int](it)
 
 }
