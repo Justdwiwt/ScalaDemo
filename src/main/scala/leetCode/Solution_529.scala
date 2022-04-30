@@ -1,37 +1,37 @@
 package leetCode
 
 import scala.collection.mutable
-import scala.util.control.Breaks._
 
 object Solution_529 {
   def updateBoard(board: Array[Array[Char]], click: Array[Int]): Array[Array[Char]] = {
-    if (board.isEmpty || board(0).isEmpty) return Array.empty
-    val Q = new mutable.Queue[(Int, Int)]()
-    Q.enqueue((click(0), click(1)))
-    while (Q.nonEmpty) {
-      val row = Q.front._1
-      val col = Q.front._2
-      var cnt = 0
-      Q.dequeue
-      var neighbor = Array.empty[(Int, Int)]
-      if (board(row)(col) == 'M') board(row)(col) = 'X'
-      else {
-        (-1 until 2).foreach(i => (-1 until 2).foreach(j => {
-          val x = row + i
-          val y = col + j
-          breakable {
-            if (x < 0 || x >= board.length || y < 0 || y >= board(0).length) break
-          }
-          if (board(x)(y) == 'M') cnt += 1
-          else if (cnt == 0 && board(x)(y) == 'E') neighbor :+= (x, y)
-        }))
-      }
-      if (cnt > 0) board(row)(col) = (cnt + '0').toChar
-      else neighbor.foreach(nei => {
-        board(nei._1)(nei._2) = 'B'
-        Q.enqueue(nei)
-      })
+    if (board(click.head)(click(1)) == 'M') {
+      board(click.head)(click(1)) = 'X'
+      return board
     }
+
+    val processed = mutable.Set.empty[(Int, Int)]
+
+    def process(board: Array[Array[Char]], curr: (Int, Int)): Unit = {
+      processed += curr
+      val surroundings = getSurrounding(curr, board.length, board.head.length)
+      val minesAround = surroundings./:(0)((acc, curr) => if (board(curr._1)(curr._2) == 'M') acc + 1 else acc)
+      if (minesAround == 0) {
+        board(curr._1)(curr._2) = 'B'
+        surroundings.filterNot(processed.contains).foreach(process(board, _))
+      }
+      else board(curr._1)(curr._2) = minesAround.toString.head
+    }
+
+    process(board, (click.head, click(1)))
     board
+  }
+
+  def getSurrounding(cur: (Int, Int), rows: Int, cols: Int): Array[(Int, Int)] = {
+    val res = mutable.ListBuffer.empty[(Int, Int)]
+    (cur._1 - 1 to cur._1 + 1).foreach(x => (cur._2 - 1 to cur._2 + 1).foreach(y =>
+      if (x >= 0 && x < rows && y >= 0 && y < cols && (x, y) != cur)
+        res += (x -> y)
+    ))
+    res.toArray
   }
 }
