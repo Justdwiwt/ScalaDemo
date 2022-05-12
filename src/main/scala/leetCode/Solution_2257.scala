@@ -2,51 +2,24 @@ package leetCode
 
 object Solution_2257 {
   def countUnguarded(m: Int, n: Int, guards: Array[Array[Int]], walls: Array[Array[Int]]): Int = {
-    val arr = Array.fill(m)(Array.fill(n)('o'))
+    val grid = Array.fill(m, n)(0)
+    val dir = Array((0, 1), (1, 0), (-1, 0), (0, -1))
 
-    def isObstacle(i: Int, j: Int): Boolean =
-      arr(i)(j) == 'G' || arr(i)(j) == 'W'
+    (guards ++ walls).foreach { case Array(r, c) => grid(r)(c) = 1 }
 
-    @scala.annotation.tailrec
-    def markIPlus(i: Int, j: Int): Unit =
-      if (i < m && !isObstacle(i, j)) {
-        arr(i)(j) = 'g'
-        markIPlus(i + 1, j)
+    def inGrid(r: Int, c: Int, dr: Int, dc: Int): Boolean =
+      r + dr >= 0 && r + dr < m && c + dc >= 0 && c + dc < n
+
+    guards
+      .withFilter { case Array(_, _) => true; case _ => false }
+      .foreach { case Array(r, c) => dir
+        .foreach { case (dr, dc) => Iterator
+          .iterate((r, c)) { case (r, c) => (r + dr, c + dc) }
+          .takeWhile { case (r, c) => inGrid(r, c, dr, dc) && grid(r + dr)(c + dc) != 1 }
+          .foreach { case (r, c) => grid(r + dr)(c + dc) = 2 }
+        }
       }
 
-    @scala.annotation.tailrec
-    def markIMinus(i: Int, j: Int): Unit =
-      if (i >= 0 && !isObstacle(i, j)) {
-        arr(i)(j) = 'g'
-        markIMinus(i - 1, j)
-      }
-
-    @scala.annotation.tailrec
-    def markJPlus(i: Int, j: Int): Unit =
-      if (j < n && !isObstacle(i, j)) {
-        arr(i)(j) = 'g'
-        markJPlus(i, j + 1)
-      }
-
-    @scala.annotation.tailrec
-    def markJMinus(i: Int, j: Int): Unit =
-      if (j >= 0 && !isObstacle(i, j)) {
-        arr(i)(j) = 'g'
-        markJMinus(i, j - 1)
-      }
-
-    guards.foreach { case Array(i, j) => arr(i)(j) = 'G' }
-    walls.foreach { case Array(i, j) => arr(i)(j) = 'W' }
-
-    guards.foreach { case Array(i, j) =>
-      markIPlus(i + 1, j)
-      markIMinus(i - 1, j)
-      markJPlus(i, j + 1)
-      markJMinus(i, j - 1)
-    }
-
-    var res = 0
-    (0 until m).foreach(i => (0 until n).foreach(j => if (arr(i)(j) == 'o') res += 1))
-    res
+    grid.map(r => r.count(_ == 0)).sum
   }
 }
