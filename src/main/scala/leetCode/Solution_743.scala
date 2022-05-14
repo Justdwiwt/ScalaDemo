@@ -3,41 +3,39 @@ package leetCode
 import scala.collection.mutable
 
 object Solution_743 {
-  def networkDelayTime(times: Array[Array[Int]], N: Int, K: Int): Int = {
-    val graph = mutable.Map[Int, Array[(Int, Int)]]()
-    (0 until N).foreach(i => graph(i) = Array())
-    times.indices.foreach(i => {
-      val k = times(i)
-      val e = graph(k(0) - 1)
-      graph(k(0) - 1) = e :+ ((k(1) - 1, k(2)))
-    })
-    val res = path(graph.toMap, K - 1, N)
-    if (res.contains(Int.MaxValue)) -1 else res.max
-  }
+  def networkDelayTime(times: Array[Array[Int]], n: Int, k: Int): Int = {
+    val visited = mutable.HashMap.empty[Int, Int].withDefaultValue(Int.MaxValue)
+    val adj = mutable.HashMap.empty[Int, mutable.HashSet[(Int, Int)]]
 
-  def path(graph: Map[Int, Array[(Int, Int)]], node: Int, N: Int): Array[Int] = {
-    val vis = Array.fill[Boolean](N)(false)
-    vis(node) = true
-    val dis = Array.fill[Int](N)(Int.MaxValue)
-    dis(node) = 0
-    var prev = node
-    (0 until N).foreach(_ => {
-      graph(prev).foreach({ case (n, x) => if (!vis(n)) {
-        val newDis = dis(prev) + x
-        if (newDis < dis(n)) dis(n) = newDis
+    def bfs(i: Int): Unit = {
+      val q = mutable.Queue.empty[(Int, Int)]
+      q.enqueue((i, 0))
+      visited.put(i, 0)
+      while (q.nonEmpty) {
+        val (x, cost) = q.dequeue()
+        adj
+          .getOrElse(x, mutable.HashSet.empty[(Int, Int)])
+          .foreach { case (neighbor, c) =>
+            if (!visited.contains(neighbor) || cost + c < visited(neighbor)) {
+              visited.put(neighbor, cost + c)
+              q.enqueue((neighbor, cost + c))
+            }
+          }
       }
-      })
-      var curMn = Int.MaxValue
-      var cuMnNode = 0
-      dis.indices.foreach(i => if (!vis(i)) {
-        if (curMn > dis(i)) {
-          curMn = dis(i)
-          cuMnNode = i
+    }
+
+    times
+      .withFilter { case Array(_, _, _) => true; case _ => false }
+      .foreach { case Array(u, v, t) =>
+        adj.get(u) match {
+          case None => adj.put(u, mutable.HashSet((v, t)))
+          case Some(s) => s.add((v, t))
         }
-      })
-      prev = cuMnNode
-      vis(prev) = true
-    })
-    dis
+      }
+
+    bfs(k)
+
+    if (visited.size != n) -1
+    else visited.values.max
   }
 }
