@@ -26,10 +26,11 @@ object SafeCal {
   private val zero = 0.toLong
   private val mod = 1e9.toLong + 7
 
-  def getMod(x: Long, flag: Boolean = true): Long = if (flag) x % mod else x
+  def getMod(x: Long, flag: Boolean = true): Long =
+    if (flag) x % mod else x
 
   def sum(seq: Seq[Int], flag: Boolean = true): Int =
-    getMod(seq.foldLeft(zero) { (acc, x) => acc + x.toLong }, flag).toInt
+    getMod(seq./:(zero)((acc, x) => acc + x.toLong), flag).toInt
 
   def mul(x: Int, y: Int, flag: Boolean = true): Int =
     getMod(x.toLong * y.toLong, flag).toInt
@@ -40,11 +41,14 @@ object SafeCal {
 
 object Math {
   @scala.annotation.tailrec
-  def gcd(x: Int, y: Int): Int = if (x % y == 0) y else gcd(y, x % y)
+  def gcd(x: Int, y: Int): Int =
+    if (x % y == 0) y else gcd(y, x % y)
 
-  def lcm(x: Int, y: Int): Int = x / gcd(x, y) * y
+  def lcm(x: Int, y: Int): Int =
+    x / gcd(x, y) * y
 
-  def hasBitK(x: Int, k: Int): Boolean = (x & (1 << k)) != 0
+  def hasBitK(x: Int, k: Int): Boolean =
+    (x & (1 << k)) != 0
 }
 
 object Solution {
@@ -52,12 +56,17 @@ object Solution {
     val dp = Array.fill(1 << hats.length)(0)
     val hatsID = hats.flatten.distinct.toArray
     dp(0) = 1
-    hats.flatten.distinct.indices.foreach(i => ((1 << hats.length) - 1 to 1 by (-1)).foreach(state =>
-      dp(state) = SafeCal.add(dp(state), SafeCal.sum(hats.indices
-        .withFilter(k => Math.hasBitK(state, k))
-        .withFilter(k => hats(k).contains(hatsID(i)))
-        .map(k => dp(state - (1 << k))))))
-    )
+    hats
+      .flatten
+      .distinct
+      .indices
+      .foreach(i => ((1 << hats.length) - 1 to 1 by (-1))
+        .foreach(state => dp(state) = SafeCal.add(dp(state), SafeCal.sum(hats
+          .indices
+          .withFilter(Math.hasBitK(state, _))
+          .withFilter(hats(_).contains(hatsID(i)))
+          .map(k => dp(state - (1 << k))))))
+      )
     dp.last
   }
 }
