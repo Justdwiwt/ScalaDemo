@@ -1,15 +1,12 @@
 package leetCode
 
 object Solution_2293 {
+  @scala.annotation.tailrec
   def minMaxGame(nums: Array[Int]): Int = {
-    var n = nums.length
-    while (n > 1) {
-      (0 until n / 2).foreach(i => {
-        if ((i & 1) == 0) nums(i) = nums(i << 1).min(nums((i << 1) + 1))
-        else nums(i) = nums(i << 1).max(nums((i << 1) + 1))
-      })
-      n >>= 1
-    }
-    nums.head
+    if (nums.length == 1) nums.head
+    else minMaxGame((0 until nums.length / 2).map(i => {
+      if (i % 2 == 0) nums(2 * i).min(nums(2 * i + 1))
+      else nums(2 * i).max(nums(2 * i + 1))
+    }).toArray)
   }
 }
