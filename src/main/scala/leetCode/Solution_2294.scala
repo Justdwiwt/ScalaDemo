@@ -3,16 +3,13 @@ package leetCode
 object Solution_2294 {
   def partitionArray(nums: Array[Int], k: Int): Int = {
     val sorted = nums.sorted
-    var l = 0
-    var r = 0
-    var res = 1
-    while (r < nums.length) {
-      if (sorted(r) - sorted(l) > k) {
-        l = r
-        res += 1
-      }
-      r += 1
+    if (sorted.isEmpty) return 0
+
+    def f(first: Int, list: List[Int]): Int = list match {
+      case Nil => 1
+      case head :: tail => if (head - first > k) 1 + f(head, tail) else f(first, tail)
     }
-    res
+
+    f(sorted.head, sorted.tail.toList)
   }
 }
