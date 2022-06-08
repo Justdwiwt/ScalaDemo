@@ -5,7 +5,7 @@ import scala.collection.mutable
 object Solution_2296 {
   class TextEditor() {
 
-    var sb = new mutable.StringBuilder()
+    val sb = new mutable.StringBuilder()
     var cur = 0
 
     def addText(text: String): Unit = {
@@ -14,35 +14,20 @@ object Solution_2296 {
     }
 
     def deleteText(k: Int): Int = {
-      if (cur <= k) {
-        val old = cur
-        sb.replace(0, old, "")
-        cur = 0
-        old
-      } else {
-        sb.replace(cur - k, cur, "")
-        cur -= k
-        k
-      }
+      val t = cur.min(k)
+      sb.delete(cur - t, cur)
+      cur -= t
+      t
     }
 
     def cursorLeft(k: Int): String = {
-      if (cur >= k) {
-        cur -= k
-        if (cur >= 10) sb.substring(cur - 10, cur)
-        else sb.substring(0, cur)
-      } else {
-        cur = 0
-        ""
-      }
+      cur -= k.min(cur)
+      sb.substring((cur - 10).max(0), cur)
     }
 
     def cursorRight(k: Int): String = {
-      val length = sb.length
-      if (cur + k <= length) cur += k
-      else cur = length
-      if (cur >= 10) sb.substring(cur - 10, cur)
-      else sb.substring(0, cur)
+      cur = (cur + k).min(sb.length)
+      sb.substring((cur - 10).max(0), cur)
     }
 
   }
