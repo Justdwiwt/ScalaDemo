@@ -4,10 +4,13 @@ object Solution_30 {
   def findSubstring(s: String, words: Array[String]): List[Int] = {
     if (s.isEmpty || words.isEmpty) return Nil
 
-    def toSet(w: Seq[String]): Set[(String, Int)] = w.groupBy(identity).mapValues(_.length).toSet
+    def toSet(w: Seq[String]): Set[(String, Int)] = w
+      .groupBy(identity)
+      .mapValues(_.length)
+      .toSet
 
     val target = toSet(words)
-    (0 until words.head.length)
+    words.head.indices
       .flatMap(i => s.substring(i)
         .sliding(words.head.length, words.head.length)
         .sliding(words.length, 1)
