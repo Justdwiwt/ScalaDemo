@@ -1,17 +1,8 @@
 package leetCode
 
 object Solution_2303 {
-  def calculateTax(brackets: Array[Array[Int]], income: Int): Double = {
-    var res = 0.0
-    res += income.min(brackets.head.head) * brackets.head(1) / 100.0
-    var in = income - brackets.head.head
-    if (in <= 0) return res
-    var i = 1
-    while (i < brackets.length && in > 0) {
-      res += in.min(brackets(i).head - brackets(i - 1).head) * brackets(i)(1) / 100.0
-      in -= (brackets(i).head - brackets(i - 1).head)
-      i += 1
-    }
-    res
-  }
+  def calculateTax(brackets: Array[Array[Int]], income: Int): Double = brackets./:((0.0, 0.0))((acc, cur) => {
+    if (income > cur.head) (acc._1 + (cur.head - acc._2) * cur(1) / 100.0, cur.head)
+    else return acc._1 + ((income - acc._2) * cur(1) / 100.0)
+  })._1
 }
