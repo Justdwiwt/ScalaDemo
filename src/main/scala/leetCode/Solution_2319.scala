@@ -1,12 +1,9 @@
 package leetCode
 
 object Solution_2319 {
-  def checkXMatrix(grid: Array[Array[Int]]): Boolean = {
-    grid.indices.foreach(i => grid.indices.foreach(j => {
-      if (i == j || i + j == grid.length - 1) {
-        if (grid(i)(j) == 0) return false
-      } else if (grid(i)(j) != 0) return false
-    }))
-    true
-  }
+  def checkXMatrix(grid: Array[Array[Int]]): Boolean = grid
+    .indices
+    .forall(x => grid(x)
+      .indices
+      .forall(y => (x == y || (x + y) == grid.indices.last) ^ (grid(x)(y) == 0)))
 }
