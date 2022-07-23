@@ -1,21 +1,15 @@
 package leetCode
 
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.mutable
 
 object Solution_2094 {
   def findEvenNumbers(digits: Array[Int]): Array[Int] = {
-    val cnt = Array.fill(10)(0)
-    val res = ArrayBuffer.empty[Int]
-    digits.foreach(d => cnt(d) += 1)
-    (1 to 9).foreach(i => (0 to 9).foreach(j => (0 to 9 by 2).foreach(k => {
-      cnt(i) -= 1
-      cnt(j) -= 1
-      cnt(k) -= 1
-      if (cnt(i) >= 0 && cnt(j) >= 0 && cnt(k) >= 0) res += i * 100 + j * 10 + k
-      cnt(i) += 1
-      cnt(j) += 1
-      cnt(k) += 1
-    })))
-    res.toArray
+    val st = mutable.HashSet.empty[Int]
+    val sorted = digits.sortWith(_ < _)
+    digits.indices.withFilter(i => sorted(i) != 0).foreach(i =>
+      digits.indices.withFilter(j => i != j).foreach(j =>
+        digits.indices.withFilter(k => k != i && k != j && sorted(k) % 2 == 0).foreach(k =>
+          st += (100 * sorted(i) + 10 * sorted(j) + sorted(k)))))
+    st.toArray.sortWith(_ < _)
   }
 }
