@@ -1,21 +1,31 @@
 package leetCode
 
-import scala.collection.immutable.TreeMap
-
 object Solution_2333 {
-  //  def minSumSquareDiff(nums1: Array[Int], nums2: Array[Int], k1: Int, k2: Int): Long = {
-  //    val diffs = TreeMap.from(nums1.zip(nums2).map { case (n1, n2) => (n1 - n2).abs }.groupMapReduce(identity)(_ => 1)(_ + _))
-  //    Iterator
-  //      .iterate((diffs, k1 + k2)) { case (diffs, k) =>
-  //        val (maxDiff, count) = diffs.last
-  //        val diffs1 = if (count.min(k) == count) diffs.removed(maxDiff) else diffs.updated(maxDiff, count - k)
-  //        val diffs2 = diffs1.updated(maxDiff - 1, diffs.getOrElse(maxDiff - 1, 0) + count.min(k))
-  //        (diffs2, k - count.min(k))
-  //      }
-  //      .dropWhile { case (diffs, k) => diffs.lastOption.exists(_._1 > 0) && k > 0 }
-  //      .next()
-  //      ._1
-  //      .map { case (diff, count) => count.toLong * diff * diff }
-  //      .sum
-  //  }
+  def minSumSquareDiff(nums1: Array[Int], nums2: Array[Int], k1: Int, k2: Int): Long = {
+    val numbers = nums1.zip(nums2)./:(Map.empty[Int, Int]) { case (m, (n1, n2)) =>
+      val d = (n1 - n2).abs
+      m.updated(d, m.getOrElse(d, 0) + 1)
+    }
+
+    numbers.toList.sortBy(-_._1) match {
+      case Nil => ???
+      case (v, cnt) :: tail => minimize(v, cnt, tail, k1 + k2)./:(0L) { case (sum, (v, c)) => sum + v.toLong * v * c }
+    }
+  }
+
+  @scala.annotation.tailrec
+  def minimize(value: Int, count: Int, list: List[(Int, Int)], operations: Int): List[(Int, Int)] =
+    if (value == 0) (value, count) :: list
+    else list match {
+      case Nil =>
+        if (count <= operations) minimize(value - 1, count, Nil, operations - count)
+        else (value, count - operations) :: (value - 1, operations) :: Nil
+      case (v, cnt) :: tail =>
+        if (count <= operations && value - 1 == v) minimize(v, count + cnt, tail, operations - count)
+        else if (count <= operations) minimize(value - 1, count, list, operations - count)
+        else {
+          val mid = if (value - 1 == v) List((v, cnt + operations)) else List((value - 1, operations), (v, cnt))
+          (value, count - operations) :: mid ::: tail
+        }
+    }
 }
