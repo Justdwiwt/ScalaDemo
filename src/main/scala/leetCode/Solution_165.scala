@@ -1,12 +1,8 @@
 package leetCode
 
 object Solution_165 {
-  def compareVersion(version1: String, version2: String): Int = {
-    List(version1, version2).map(_.split('.').map(_.toInt)) match {
-      case List(a, b) => a.zipAll(b, 0, 0).dropWhile { case (a, b) => a == b }.toList match {
-        case Nil => 0
-        case List((a, b), _*) => if (a > b) 1 else -1
-      }
-    }
-  }
+  def compareVersion(version1: String, version2: String): Int = version1
+    .split('.')
+    .zipAll(version2.split('.'), "0", "0")
+    ./:(0) { case (acc, (v1, v2)) => if (acc != 0) return acc else v1.toInt.compare(v2.toInt) }
 }
