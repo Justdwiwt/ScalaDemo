@@ -1,16 +1,13 @@
 package leetCode
 
 object Solution_2366 {
-  def minimumReplacement(nums: Array[Int]): Long = {
-    val n = nums.length
-    var res = 0L
-    (n - 2 to 0 by -1).foreach(i => {
-      if (nums(i) > nums(i + 1)) {
-        var t = (nums(i) - 1) / nums(i + 1)
-        res += t
-        nums(i) /= (t + 1)
+  def minimumReplacement(nums: Array[Int]): Long = nums
+    .:\(Int.MaxValue, 0L) { case (n, (right, cnt)) =>
+      if (n <= right) (n, cnt)
+      else {
+        val div = (n - 1) / right + 1
+        (n / div, cnt + div - 1)
       }
-    })
-    res
-  }
+    }
+    ._2
 }
