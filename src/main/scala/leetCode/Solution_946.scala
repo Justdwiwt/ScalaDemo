@@ -7,6 +7,9 @@ object Solution_946 {
       if (stack.headOption.forall(_ != popped(idx))) (stack, idx)
       else f(stack.tail, idx + 1)
 
-    pushed./:(Seq.empty[Int], 0)({ case ((stack, idx), n) => f(n +: stack, idx) })._1.isEmpty
+    pushed
+      ./:(Seq.empty[Int], 0) { case ((stack, idx), n) => f(n +: stack, idx) }
+      ._1
+      .isEmpty
   }
 }
