@@ -10,8 +10,8 @@ object Solution_460 {
     def get(key: Int): Int = {
       if (cache.contains(key)) {
         val (v, cnt) = cache(key)
-        cache.remove(key)
-        cache.put(key, (v, cnt + 1))
+        cache -= key
+        cache += key -> (v, cnt + 1)
       }
       cache(key)._1
     }
@@ -19,12 +19,12 @@ object Solution_460 {
     def put(key: Int, value: Int): Unit =
       if (capacity != 0) {
         if (cache.contains(key))
-          cache.put(key, (value, cache(key)._2 + 1))
+          cache += key -> (value, cache(key)._2 + 1)
         else if (cache.size == capacity) {
-          cache.remove(cache.minBy(_._2._2)._1)
-          cache.put(key, (value, 1))
+          cache -= cache.minBy(_._2._2)._1
+          cache += key -> (value, 1)
         }
-        else cache.put(key, (value, 1))
+        else cache += key -> (value, 1)
       }
   }
 }
