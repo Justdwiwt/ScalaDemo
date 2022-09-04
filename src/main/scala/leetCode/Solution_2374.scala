@@ -1,11 +1,10 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_2374 {
-  def edgeScore(edges: Array[Int]): Int = {
-    val m = mutable.Map.empty[Int, Long].withDefaultValue(0)
-    edges.zipWithIndex.foreach { case (node, idx) => m(node) -= idx }
-    m.toList.map(_.swap).min._2
-  }
+  def edgeScore(edges: Array[Int]): Int = edges
+    .zip(Stream.from(0))
+    .groupBy(_._1)
+    .map(n => (n._1, n._2.map(_._2.toLong).sum))
+    .maxBy(n => (n._2, -n._1))
+    ._1
 }
