@@ -17,7 +17,7 @@ object Solution_1898 {
     def search(start: Int, end: Int): Int =
       if (start + 1 == end) start
       else {
-        val mid = (start + end) / 2
+        val mid = (start + end) >>> 1
         if (isSubsequence(mid)) search(mid, end) else search(start, mid)
       }
 
