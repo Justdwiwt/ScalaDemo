@@ -1,20 +1,14 @@
 package leetCode
 
 object Solution_2401 {
-  def longestNiceSubarray(nums: Array[Int]): Int = {
-    var mask = 0
-    var mx = 1
-    var i = 0
-    var j = 0
-    while (i < nums.length) {
-      while ((mask & nums(i)) != 0) {
-        mask ^= nums(j)
-        j += 1
-      }
-      mask ^= nums(i)
-      mx = mx.max(i - j + 1)
-      i += 1
+  def longestNiceSubarray(nums: Array[Int]): Int = nums
+    .indices
+    ./:(0, 0, 0) { case ((left, bitmask, max), right) =>
+      val (newLeft, newBitmask) = Iterator
+        .iterate((left, bitmask)) { case (left, bitmask) => (left + 1, bitmask ^ nums(left)) }
+        .dropWhile { case (_, bitmask) => (bitmask & nums(right)) != 0 }
+        .next()
+      (newLeft, newBitmask | nums(right), max.max(right - newLeft + 1))
     }
-    mx
-  }
+    ._3
 }

@@ -13,15 +13,20 @@ object Solution_336 {
 
     words
       .zipWithIndex
-      .flatMap({ case (_, i) => getPairs(dictR, words(i).reverse).map(List(_, i)) ++ getPairs(dictL, words(i)).map(List(i, _)) })
+      .flatMap { case (_, i) => getPairs(dictR, words(i).reverse).map(List(_, i)) ++ getPairs(dictL, words(i)).map(List(i, _)) }
       .filter(p => p.head != p(1))
       .distinct
       .toList
   }
 
-  def convertWord(s: String): Option[Word] = s.toList./:(Option.empty[Word])((prev: Option[Word], c: Char) => Some(Word(c, prev)))
+  def convertWord(s: String): Option[Word] = s
+    .toList
+    ./:(Option.empty[Word])((prev: Option[Word], c: Char) => Some(Word(c, prev)))
 
-  def dict(words: Array[String]): Map[Option[Word], Int] = words.map(convertWord).zipWithIndex.toMap
+  def dict(words: Array[String]): Map[Option[Word], Int] = words
+    .map(convertWord)
+    .zipWithIndex
+    .toMap
 
   def getPairs(dict: Map[Option[Word], Int], s: String): List[Int] = getPolindroms(s)
     .:\((List.empty[Option[Word]], convertWord(s), s.length - 1))(getPrefixes)
@@ -54,6 +59,8 @@ object Solution_336 {
   }
 
   @scala.annotation.tailrec
-  def getR(s: String, L: Int, R: Int): Int = if (R == s.length || s(R - L) != s(R)) R - 1 else getR(s, L, R + 1)
+  def getR(s: String, L: Int, R: Int): Int =
+    if (R == s.length || s(R - L) != s(R)) R - 1
+    else getR(s, L, R + 1)
 
 }
