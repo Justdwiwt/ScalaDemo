@@ -1,35 +1,23 @@
 package leetCode
 
 object Solution_891 {
-  val M = 1000000007
-
-  def sumSubseqWidths(A: Array[Int]): Int = solve2(getPow2(A.length, Nil).reverse.toArray)(A.sorted)
-
-  def solve2(table: Array[Int])(sa: Array[Int]): Int = cumSolver(table)(sa, cum(sa), cum(sa.reverse))
-
-  def cumSolver(table: Array[Int])(sa: Array[Int], fCum: Array[Int], lCum: Array[Int]): Int = sa.indices.dropRight(1).toArray.map(pn => ((lCum(pn) - fCum(pn)) * BigInt(table(pn)) % M).toInt)./:(0)(modAdd)
-
-  def cum(A: Array[Int]): Array[Int] =
-    if (A.isEmpty) Array[Int]()
-    else {
-      val res = Array.fill(A.length)(A.head)
-      A.indices.drop(1).foreach(i => res(i) = A(i) + res(i - 1))
-      res
-    }
-
-  def modAdd(x: Int, y: Int): Int = (x + y) % M
-
-  @scala.annotation.tailrec
-  def getPow2(n: Int, list: List[Int]): List[Int] = (n, list) match {
-    case (_, Nil) => getPow2(n - 1, List(1))
-    case (x: Int, h :: t) if x > 0 => getPow2(x - 1, (h * 2 % M) :: h :: t)
-    case (0, _ :: _) => list
+  def sumSubseqWidths(nums: Array[Int]): Int = {
+    val sorted = nums.sorted
+    var n = 1L
+    var sum = 0L
+    var s = sorted.head.toLong
+    var M = 1000000007
+    nums.indices.drop(1).foreach(i => {
+      sum = sum + sorted(i) * n % M - s
+      if (sum >= M) sum -= M
+      else if (sum < 0) sum += M
+      s <<= 1
+      s += sorted(i)
+      s %= M
+      n <<= 1
+      n |= 1
+      n %= M
+    })
+    sum.toInt
   }
-
-  def solve(table: Array[Int])(sa: Array[Int]): Int = sa.indices.flatMap(i => f(i, sa.length)(i + 1, Nil)).map(g(sa, table))./:(0)(modAdd)
-
-  @scala.annotation.tailrec
-  def f(i: Int, n: Int)(j: Int, acc: List[(Int, Int)]): List[(Int, Int)] = if (j < n) f(i, n)(j + 1, (i, j) :: acc) else acc
-
-  def g(A: Array[Int], table: Array[Int])(x: (Int, Int)): Int = (table(x._2 - x._1 - 1) * BigInt(A(x._2) - A(x._1)) % M).toInt
 }
