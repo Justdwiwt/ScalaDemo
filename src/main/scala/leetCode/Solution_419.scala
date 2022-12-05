@@ -2,13 +2,17 @@ package leetCode
 
 object Solution_419 {
   def countBattleships(board: Array[Array[Char]]): Int = {
-    if (board.isEmpty || board(0).isEmpty) return 0
-    var res = 0
-    board.indices.foreach(i => board(0).indices.foreach(j =>
-      if (board(i)(j) == 'X')
-        if ((i == 0 && (j == 0 || (j > 0 && board(i)(j - 1) != 'X'))) || (i > 0 && board(i - 1)(j) != 'X') && (j == 0 || j > 0 && board(i)(j - 1) != 'X'))
-          res += 1
-    ))
-    res
+    @scala.annotation.tailrec
+    def f(row: Int, column: Int, sameBattleship: Boolean, returnValue: Int): Int =
+      if (row >= board.length) returnValue
+      else if (column >= board(row).length) f(row + 1, 0, sameBattleship = false, returnValue)
+      else (board(row)(column), sameBattleship, if (row == 0) None else Some(board(row - 1)(column))) match {
+        case ('.', _, _) => f(row, column + 1, sameBattleship = false, returnValue)
+        case ('X', true, _) => f(row, column + 1, sameBattleship = true, returnValue)
+        case ('X', false, Some('X')) => f(row, column + 1, sameBattleship = false, returnValue)
+        case ('X', false, _) => f(row, column + 1, sameBattleship = true, returnValue + 1)
+      }
+
+    f(0, 0, sameBattleship = false, 0)
   }
 }

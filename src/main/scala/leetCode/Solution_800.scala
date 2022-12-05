@@ -11,7 +11,7 @@ object Solution_800 {
       var ori = Integer.parseInt(sub, 16)
       if (ori % 17 < 9) ori = ori / 17
       else ori = ori / 17 + 1
-      sb.append(String.format("%02x", ori * 17))
+      sb.append((ori * 17).formatted("%02x"))
     })
     sb.mkString
   }
