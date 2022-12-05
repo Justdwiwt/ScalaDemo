@@ -1,29 +1,38 @@
 package leetCode
 
 object Solution_200 {
-  val diff = Vector((0, 1), (0, -1), (1, 0), (-1, 0))
-
   def numIslands(grid: Array[Array[Char]]): Int = {
+    val m = grid.length
+    val n = grid.head.length
 
-    if (grid.isEmpty || grid.head.isEmpty) return 0
+    case class P(x: Int, y: Int)
 
-    val g = grid
-    var res = 0
+    def isGround(p: P): Boolean =
+      grid(p.x)(p.y) == '1'
 
-    grid.head.indices.foreach(x => grid.indices.withFilter(y => g(y)(x) == '1').foreach(y => {
-      res += 1
-      dfs(x, y)
-    }))
+    def adjacentGround(p: P): Set[P] = Set(P(p.x + 1, p.y), P(p.x, p.y + 1), P(p.x - 1, p.y), P(p.x, p.y - 1))
+      .filter(pt => pt.x >= 0 && pt.x < m && pt.y >= 0 && pt.y < n)
+      .filter(isGround)
 
-    def dfs(x: Int, y: Int): Unit = (x, y) match {
-      case (x, _) if x < 0 || x >= grid.head.length =>
-      case (_, y) if y < 0 || y >= grid.length =>
-      case (x, y) if g(y)(x) == '1' =>
-        g(y)(x) = '0'
-        diff.foreach(d => dfs(x + d._1, y + d._2))
-      case _ =>
+    @scala.annotation.tailrec
+    def explore(toGo: List[P], acc: Set[P]): Set[P] = toGo match {
+      case Nil => acc
+      case p :: ps =>
+        val as = adjacentGround(p).filter(!acc.contains(_))
+        if (as.isEmpty) explore(ps, acc)
+        else explore(as.toList ++ toGo, acc ++ as)
     }
 
-    res
+    @scala.annotation.tailrec
+    def run(i: Int, j: Int, acc: Set[Set[P]]): Set[Set[P]] =
+      if (j >= n) run(i + 1, 0, acc)
+      else if (i >= m) acc
+      else if (isGround(P(i, j)) && !acc.exists(_.contains(P(i, j)))) {
+        val p = P(i, j)
+        run(i, j + 1, acc + explore(List(p), Set(p)))
+      }
+      else run(i, j + 1, acc)
+
+    run(0, 0, Set()).size
   }
 }

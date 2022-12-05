@@ -14,7 +14,7 @@ object Solution_79 {
         exist
       }
 
-    board.indices.foreach(y => board(0).indices.foreach(x => if (dfs(y, x, 0)) return true))
+    board.indices.foreach(y => board.head.indices.foreach(x => if (dfs(y, x, 0)) return true))
     false
   }
 }
