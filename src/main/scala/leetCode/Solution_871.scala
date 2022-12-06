@@ -1,23 +1,12 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_871 {
-  def minRefuelStops(target: Int, startFuel: Int, stations: Array[Array[Int]]): Int = {
-    var res = 0
-    var i = 0
-    var s = startFuel
-    val q = new mutable.PriorityQueue[Int]()
-    while (s < target) {
-      while (i < stations.length && stations(i)(0) <= s) {
-        q.enqueue(stations(i)(1))
-        i += 1
-      }
-      if (q.isEmpty) return -1
-      s += q.head
-      q.dequeue
-      res += 1
+  def minRefuelStops(target: Int, startFuel: Int, stations: Array[Array[Int]]): Int = stations
+    ./:(Seq[Int](startFuel)) {
+      case (dp, Array(pos, fuel)) => (0 +: dp :+ 0)
+        .sliding(2)
+        .map { case Seq(x, y) => y.max(if (x < pos) x else x + fuel) }
+        .toSeq
     }
-    res
-  }
+    .indexWhere(_ >= target)
 }
