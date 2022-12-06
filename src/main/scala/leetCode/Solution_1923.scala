@@ -1,36 +1,40 @@
 package leetCode
 
-import scala.collection.mutable
-import scala.util.control.Breaks._
-
 object Solution_1923 {
   def longestCommonSubpath(n: Int, paths: Array[Array[Int]]): Int = {
-    val mn = paths.map(_.length).min
-    var left = 0
-    var right = mn
-    val base = 100001.toLong
-    val M = math.pow(10, 12).toLong + 9
-    while (left <= right) {
-      val mid = left + (right - left) / 2
-      var common = mutable.HashSet[Long]()
-      breakable {
-        paths.indices.foreach(i => {
-          var hash = 0.toLong
-          var d = 1.toLong
-          val st = mutable.HashSet[Long]()
-          paths(i).indices.foreach(j => {
-            hash = (hash * base + paths(i)(j)) % M
-            if (j >= mid) hash = (hash + M - paths(i)(j - mid) * d % M) % M
-            else d = d * base % M
-            if (j >= mid - 1 && (i == 0 || common.contains(hash))) st += hash
-          })
-          common = st
-        })
-        if (common.isEmpty) break
+    val (base, mod) = (1L << 17, 8417508174513L)
+
+    def hash(nums: Array[Int]): Long = nums
+      .map(_.toLong)
+      .reduce((x, y) => ((x * base + y) % mod + mod) % mod)
+
+    def allHash(path: Array[Int], len: Int): Set[Long] =
+      if (path.length == len) Set(hash(path))
+      else {
+        val baseAcc = hash(1 +: Array.fill(len - 1)(0))
+        path
+          .sliding(path.length - len, len)
+          .toArray
+          .transpose
+          .scanLeft(hash(path.take(len))) {
+            case (pre, Array(oldVal, newVal)) => (((pre - baseAcc * oldVal % mod) * base + newVal) % mod + mod) % mod
+          }
+          .toSet
       }
-      if (common.isEmpty) right = mid - 1
-      else left = mid + 1
+
+    def check(len: Int): Boolean = paths
+      .map(allHash(_, len))
+      .reduce(_ & _)
+      .nonEmpty
+
+    var (lo, hi) = (1, paths.minBy(_.length).length + 1)
+
+    while (lo < hi) {
+      val mid = (lo + hi) >>> 1
+      if (check(mid)) lo = mid + 1
+      else hi = mid
     }
-    right
+
+    lo - 1
   }
 }
