@@ -5,5 +5,5 @@ object Solution_953 {
     .map(_.toList.map(c => (order.indexOf(c.toString) + 'a').toChar).mkString)
     .toList
     .sliding(2)
-    .forall({ case List(a, b) => a <= b; case _ => false })
+    .forall { case List(a, b) => a <= b; case _ => false }
 }
