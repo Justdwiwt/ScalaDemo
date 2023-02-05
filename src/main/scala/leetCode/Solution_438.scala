@@ -1,22 +1,17 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_438 {
   def findAnagrams(s: String, p: String): List[Int] = {
-    val m = mutable.HashMap.empty[Char, Int]
-    p.foreach(updateMap(m, _, 1))
 
-    (0 until s.length).toList.filter(i => {
-      if (i >= p.length) updateMap(m, s(i - p.length), 1)
-      updateMap(m, s(i), -1)
-      m.isEmpty
-    }).map(_ - p.length + 1)
-  }
+    @scala.annotation.tailrec
+    def f(idx: Int, acc: List[Int]): List[Int] =
+      if (idx + p.length > s.length) acc
+      else {
+        val isAnagram = s.slice(idx, idx + p.length).sorted == p.sorted
+        if (isAnagram) f(idx + 1, idx :: acc)
+        else f(idx + 1, acc)
+      }
 
-  def updateMap(m: mutable.HashMap[Char, Int], ch: Char, incrementer: Int): Unit = m.get(ch) match {
-    case Some(number) if number + incrementer == 0 => m -= ch
-    case Some(number) => m += (ch -> (number + incrementer))
-    case None => m += (ch -> incrementer)
+    f(0, Nil)
   }
 }
