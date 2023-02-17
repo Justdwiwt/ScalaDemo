@@ -10,11 +10,11 @@ object Solution_1139 {
       true
     }
 
-    (grid.length.min(grid(0).length) to 1).by(-1).foreach(k => grid.indices.foreach(i => grid(i).indices
-      .map({ j => val x = i + k - 1; (j, x) })
-      .map({ case (j, x) => val y = j + k - 1; (j, x, y) })
-      .withFilter({ case (_, x, y) => x < grid.length && y < grid(0).length })
-      .foreach({ case (j, _, _) => if (f(i, j, k)) return k * k })))
+    (grid.length.min(grid.head.length) to 1).by(-1).foreach(k => grid.indices.foreach(i => grid(i).indices
+      .map { j => val x = i + k - 1; (j, x) }
+      .map { case (j, x) => val y = j + k - 1; (j, x, y) }
+      .withFilter { case (_, x, y) => x < grid.length && y < grid.head.length }
+      .foreach { case (j, _, _) => if (f(i, j, k)) return k * k }))
     0
   }
 }
