@@ -2,18 +2,9 @@ package leetCode
 
 object Solution_2564 {
   def substringXorQueries(s: String, queries: Array[Array[Int]]): Array[Array[Int]] = {
-    val res = Array.fill(queries.length)(new Array[Int](2))
-    queries.indices.foreach(j => {
-      val x = (queries(j).head ^ queries(j)(1)).toBinaryString
-      val i = s.indexOf(x)
-      if (i < 0) {
-        res(j)(0) = -1
-        res(j)(1) = -1
-      } else {
-        res(j)(0) = i
-        res(j)(1) = x.length + i - 1
-      }
-    })
-    res
+    val pairings = (30 to 1 by -1)
+      .flatMap(sz => (s.length - sz to 0 by -1).map(l => Integer.parseInt(s.slice(l, l + sz), 2) -> Array(l, l + sz - 1)))
+    val map = pairings.toMap.withDefaultValue(Array(-1, -1))
+    queries.map { case Array(i, j) => map(i ^ j) }
   }
 }
