@@ -1,18 +1,38 @@
 package leetCode
 
+import scala.collection.mutable
+
 object Solution_1140 {
-  def stoneGameII(piles: Array[Int]): Int = {
-    val dp = Array.ofDim[Int](101, 101)
-    val arr = Array.fill(piles.length + 1)(0)
-    (1 to piles.length).foreach(i => arr(i) = arr(i - 1) + piles(i - 1))
-    (0 to piles.length).foreach(i => dp(piles.length)(i) = 0)
-    (piles.length - 1 to 0 by (-1)).foreach(i => {
-      val t = piles.length - i
-      (piles.length - 1 until 0 by (-1)).foreach(j => {
-        if (j >= t) dp(i)(j) = arr(piles.length) - arr(i)
-        else (1 to j).foreach(k => dp(i)(j) = dp(i)(j).max(arr(piles.length) - arr(i) - dp(i + k)((piles.length - 1).min((2 * k).max(j)))))
-      })
-    })
-    dp(0)(1).max(dp(0)(2))
+  implicit class ArrayOps[T](val arr: Array[T]) extends AnyVal {
+
+    def get(i: Int): Option[T] = if (0 <= i && i < arr.length) Some(arr(i)) else None
+
+    def getOrElse(i: Int, v: => T): T = get(i).getOrElse(v)
   }
+
+  case class State(i: Int, m: Int)
+
+  class Solver(piles: Array[Int]) {
+
+    def compute(s: State): Int = bare(s)
+
+    final protected def bare(s: State): Int =
+      if (s.i >= piles.length) 0
+      else (1 to 2 * s.m).map(j => {
+        val nextM = math.max(s.m, j)
+        val next = (1 to 2 * nextM).map(k => compute(State(s.i + j + k, nextM.max(k)))).min
+        (s.i until s.i + j).map(piles.getOrElse(_, 0)).sum + next
+      }).max
+  }
+
+  final class SolverTab(piles: Array[Int], tab: mutable.Map[State, Int]) extends Solver(piles) {
+    override def compute(s: State): Int = tab.getOrElse(s, {
+      val res = bare(s)
+      tab(s) = res
+      res
+    })
+  }
+
+  def stoneGameII(piles: Array[Int]): Int =
+    new SolverTab(piles, mutable.Map.empty[State, Int]).compute(State(0, 1))
 }
