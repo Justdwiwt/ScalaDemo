@@ -19,7 +19,7 @@ object Solution_1140 {
     final protected def bare(s: State): Int =
       if (s.i >= piles.length) 0
       else (1 to 2 * s.m).map(j => {
-        val nextM = math.max(s.m, j)
+        val nextM = s.m.max(j)
         val next = (1 to 2 * nextM).map(k => compute(State(s.i + j + k, nextM.max(k)))).min
         (s.i until s.i + j).map(piles.getOrElse(_, 0)).sum + next
       }).max
