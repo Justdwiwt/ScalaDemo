@@ -1,17 +1,17 @@
 package leetCode
 
 object Solution_2444 {
-  def countSubarrays(nums: Array[Int], minK: Int, maxK: Int): Long = {
-    var idx1 = -1
-    var idx2 = -1
-    var base = 0
-    var res = 0L
-    nums.indices.foreach(i => {
-      if (nums(i) == minK) idx1 = i
-      if (nums(i) == maxK) idx2 = i
-      if (nums(i) < minK || nums(i) > maxK) base = i + 1
-      res += 0.max(idx1.min(idx2) - base + 1)
-    })
-    res
-  }
+  def countSubarrays(nums: Array[Int], minK: Int, maxK: Int): Long = nums
+    .zipWithIndex
+    ./:(0L, 0, -1, -1) {
+      case ((cnt, left, lastMinK, lastMaxK), (num, right)) =>
+        if (num < minK || num > maxK) (cnt, right + 1, lastMinK, lastMaxK)
+        else {
+          val newLastMinK = if (num == minK) right else lastMinK
+          val newLastMaxK = if (num == maxK) right else lastMaxK
+          val newCount = if (newLastMinK < left || newLastMaxK < left) 0 else newLastMinK.min(newLastMaxK) - left + 1
+          (cnt + newCount, left, newLastMinK, newLastMaxK)
+        }
+    }
+    ._1
 }
