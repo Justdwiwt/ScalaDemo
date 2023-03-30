@@ -2,15 +2,13 @@ package leetCode
 
 object Solution_87 {
   def isScramble(s1: String, s2: String): Boolean = {
-    if (s1 == s2) return true
-    if (s1.length != s2.length) return false
-    val m = Array.fill(26)(0)
-    s1.indices.foreach(i => {
-      m(s1(i) - 'a') += 1
-      m(s2(i) - 'a') -= 1
-    })
-    (0 until 26).foreach(i => if (m(i) != 0) return false)
-    (1 until s1.length).foreach(i => if (isScramble(s1.substring(0, i), s2.substring(0, i)) && isScramble(s1.substring(i), s2.substring(i)) || (isScramble(s1.substring(0, i), s2.substring(s1.length - i)) && isScramble(s1.substring(i), s2.substring(0, s1.length - i)))) return true)
-    false
+    val res = Array.ofDim[Boolean](s1.length + 1, s1.length, s1.length)
+    s1.indices.foreach(i => s1.indices.withFilter(j => s1(i) == s2(j)).foreach(j => res(1)(i)(j) = true))
+    (2 to s1.length).foreach(l => (0 to s1.length - l).foreach(i => (0 to s1.length - l).foreach(j => {
+      var flag = false
+      (1 until l).foreach(s => flag = flag || res(s)(i)(j) && res(l - s)(i + s)(j + s) || res(s)(i)(j + l - s) && res(l - s)(i + s)(j))
+      res(l)(i)(j) = flag
+    })))
+    res(s1.length).head.head
   }
 }
