@@ -1,14 +1,14 @@
 package leetCode
 
 object Solution_2598 {
-  //  def findSmallestInteger(nums: Array[Int], value: Int): Int = {
-  //    val modules = scala.collection.mutable.Map.empty[Int, Int].withDefaultValue(0)
-  //    nums.foreach(i => modules(java.lang.Math.floorMod(i, value)) += 1)
-  //    val mexs = LazyList.from(0).dropWhile(i => {
-  //      val ind = i % value
-  //      modules(ind) -= 1
-  //      modules(ind) >= 0
-  //    })
-  //    mexs.head
-  //  }
+  def findSmallestInteger(nums: Array[Int], value: Int): Int = {
+    val arr = new Array[Int](value)
+    nums.indices.foreach(i => {
+      val k = ((nums(i) % value) + value) % value
+      arr(k) += 1
+    })
+    var stop = 0
+    arr.indices.foreach(i => if (arr(i) < arr(stop)) stop = i)
+    arr(stop) * value + stop
+  }
 }
