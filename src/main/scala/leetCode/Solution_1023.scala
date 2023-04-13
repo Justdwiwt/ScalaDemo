@@ -1,7 +1,7 @@
 package leetCode
 
 object Solution_1023 {
-  def camelMatch(queries: Array[String], pattern: String): Array[Boolean] = queries.map(query => {
+  def camelMatch(queries: Array[String], pattern: String): List[Boolean] = queries.map(query => {
     val (fp, fq) = query./:((pattern, "")) {
       case ((p, r), c) => if (p.isEmpty) (p, r + c)
       else {
@@ -12,5 +12,5 @@ object Solution_1023 {
       }
     }
     fp.isEmpty && fq.forall(c => c.isLower)
-  })
+  }).toList
 }
