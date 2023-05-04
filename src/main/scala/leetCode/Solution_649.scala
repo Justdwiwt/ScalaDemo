@@ -1,23 +1,20 @@
 package leetCode
 
+import scala.collection.mutable
+
 object Solution_649 {
   def predictPartyVictory(senate: String): String = {
-    val ch = senate.toCharArray
-    val R = new java.util.LinkedList[Int]()
-    val D = new java.util.LinkedList[Int]()
-    ch.indices.foreach(i => if (ch(i) == 'R') R.offer(i) else D.offer(i))
-    var pos = ch.length
-    while (!R.isEmpty && !D.isEmpty) {
-      val r = R.remove()
-      val d = D.remove()
-      if (r < d) {
-        R.offer(pos)
-        pos += 1
-      } else {
-        D.offer(pos)
-        pos += 1
-      }
+    val (radiant, dire) = senate.zipWithIndex./:(mutable.Queue[Int](), mutable.Queue[Int]())((acc, cur) => {
+      if (cur._1 == 'R') acc._1 += cur._2
+      else acc._2 += cur._2
+      acc
+    })
+    while (radiant.nonEmpty && dire.nonEmpty) {
+      val r = radiant.dequeue
+      val d = dire.dequeue
+      if (r < d) radiant += (r + senate.length)
+      else dire += (d + senate.length)
     }
-    if (R.isEmpty) "Dire" else "Radiant"
+    if (radiant.isEmpty) "Dire" else "Radiant"
   }
 }
