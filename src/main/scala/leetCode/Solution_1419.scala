@@ -15,6 +15,7 @@ object Solution_1419 {
       case 'a' :: tail => f(c, r, o - 1, a + 1, min, tail)
       case 'k' :: _ if a == 0 => -1
       case 'k' :: tail => f(c, r, o, a - 1, min, tail)
+      case _ => -1
     }
 
     f(0, 0, 0, 0, 0, croakOfFrogs.toList)
