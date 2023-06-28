@@ -1,29 +1,54 @@
 package leetCode
 
-import scala.util.control.Breaks._
-
 object Solution_1681 {
   def minimumIncompatibility(nums: Array[Int], k: Int): Int = {
-    val n = 0
-    val memo = Array.fill(1 << 16)(0)
+    val n = nums.length
+    val m = 1 << n
+    val q = n / k
 
-    def dfs(nums: Array[Int], state: Int, seen: Int, pos: Int, N: Int, K: Int, min: Int, max: Int): Int = {
-      if (N == 0) {
-        return max - min + (if (memo(state) != 0) memo(state) else {
-          memo(state) = if (k == 1) 0 else dfs(nums, state, 0, 0, n, K - 1, 1000, 0)
-          memo(state)
-        })
-      }
-      var res = 1000
-      breakable((pos until nums.length).foreach(i => {
-        if (N == n && nums.length - i < n * K) break()
-        breakable(if ((state & (1 << i)) != 0 || (seen & (1 << nums(i))) != 0) break())
-        res = math.min(dfs(nums, state | (1 << i), seen | (1 << nums(i)), i + 1, N - 1, K, math.min(min, nums(i)), math.max(max, nums(i))), res)
-      }))
-      res
-    }
+    if (n % k != 0) return -1
 
-    val res = dfs(nums, 0, 0, 0, n, k, 1000, 0)
-    if (res == 1000) -1 else res
+    var cnt = Array.fill(n + 1)(0)
+    nums.foreach(n => {
+      cnt(n) += 1
+      if (cnt(n) > k) return -1
+    })
+
+    val INF = 0x3f3f3f3f
+    var list = Array.empty[Array[Int]]
+    var tot = Array.empty[Int]
+
+    (1 until m).foreach(i => {
+      cnt = Array.fill(cnt.length)(0)
+      var success = true
+      var t = 0
+      var mx = 0
+      var mn = n + 1
+      nums.indices.foreach(j => {
+        if ((i >> j & 1) == 1) {
+          cnt(nums(j)) += 1
+          if (cnt(nums(j)) > 1) success = false
+          mx = mx.max(nums(j))
+          mn = mn.min(nums(j))
+          t += 1
+        }
+      })
+
+      if (success && t == q) list :+= Array(i, mx - mn)
+      if (t % q == 0) tot :+= i
+    })
+
+    val dp = Array.fill(m)(0)
+    (1 until m).foreach(i => dp(i) = INF)
+    list.foreach(in => {
+      val v = in.head
+      val w = in(1)
+      tot.indices.reverse.foreach(i => {
+        val s = tot(i)
+        if ((s & v) == v) dp(s) = dp(s).min(dp(s ^ v) + w)
+      })
+    })
+
+    if (dp(m - 1) >= INF) -1 else dp(m - 1)
   }
 }
