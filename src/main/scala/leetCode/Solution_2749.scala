@@ -1,11 +1,11 @@
 package leetCode
 
 object Solution_2749 {
-  def makeTheIntegerZero(num1: Int, num2: Int): Int = {
-    (1 to 50).foreach(i => {
-      val p = num1.toLong - num2.toLong * i
-      if (p >= i && java.lang.Long.bitCount(p) <= i) return i
+  def makeTheIntegerZero(num1: Int, num2: Int): Int = (0 to 60)
+    .find(k => {
+      val target = num1.toLong - k.toLong * num2
+      val bitCount = target.toBinaryString.count(_ == '1')
+      target >= 0 && bitCount <= k && k <= target
     })
-    -1
-  }
+    .getOrElse(-1)
 }
