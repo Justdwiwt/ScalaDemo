@@ -2,13 +2,11 @@ package leetCode
 
 object Solution_2750 {
   def numberOfGoodSubarraySplits(nums: Array[Int]): Int = {
-    var cnt = 1L
-    val M = 1000000007
-    var last = -1
-    nums.indices.foreach(i => if (nums(i) == 1) {
-      if (last > -1) cnt = (cnt * (i - last)) % M
-      last = i
-    })
-    if (last == -1) 0 else cnt.toInt
+    val arr = nums.dropWhile(_ == 0)
+    if (arr.isEmpty) 0
+    else arr./:((1L, 0)) { case ((cnt, zeros), num) =>
+      if (num == 0) (cnt, zeros + 1)
+      else ((cnt * (zeros + 1)) % 1000000007, 0)
+    }._1.toInt
   }
 }
