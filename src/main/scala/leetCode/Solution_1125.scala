@@ -1,14 +1,24 @@
 package leetCode
 
-object Solution_1125 {
-  def smallestSufficientTeam(skills: Array[String], people: List[List[String]]): Array[Int] =
-    f(skills.toSet, people, 0, Set.empty, None).map(_.toArray).orNull
+import scala.collection.mutable
 
-  def f(skills: Set[String], people: List[List[String]], ide: Int, team: Set[Int], mnTeam: Option[Set[Int]]): Option[Set[Int]] = (skills, people, team, mnTeam) match {
-    case (_, _, _, Some(sst)) if team.size == sst.size => mnTeam
-    case (_, _, _, _) if skills.isEmpty => Some(team)
-    case (_, head :: tail, _, _) if head.exists(skills.contains) => f(skills, tail, ide + 1, team, f(skills -- head, tail, ide + 1, team + ide, mnTeam))
-    case (_, _ :: tail, _, _) => f(skills, tail, ide + 1, team, mnTeam)
-    case _ => mnTeam
+object Solution_1125 {
+  def smallestSufficientTeam(req_skills: Array[String], people: List[List[String]]): Array[Int] = {
+    val map = req_skills.zipWithIndex.toMap
+    val cand = people.map(_./:(0)((acc, skill) => acc | (1 << map(skill))))
+    val cache = mutable.Map[(Int, Int), List[Int]]()
+
+    def f(i: Int, mask: Int): List[Int] = mask match {
+      case 0 => List.empty
+      case _ if i == people.length => List.fill(100)(0)
+      case _ if (mask & cand(i)) == 0 => f(i + 1, mask)
+      case _ if cache.contains((i, mask)) => cache((i, mask))
+      case _ =>
+        val res = List(f(i + 1, mask), i :: f(i + 1, mask & ~cand(i))).minBy(_.length)
+        cache((i, mask)) = res
+        res
+    }
+
+    f(0, (1 << req_skills.length) - 1).toArray
   }
 }
