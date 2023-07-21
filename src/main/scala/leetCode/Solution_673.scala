@@ -2,21 +2,24 @@ package leetCode
 
 object Solution_673 {
   def findNumberOfLIS(nums: Array[Int]): Int = {
-    val lengthMap = Map.empty[Int, List[Int]]
-    val finalMap = nums.toList.zipWithIndex./:(lengthMap)((lengthMap, idx) => f(lengthMap, idx._2 + 1, idx._1))
-    if (finalMap.isEmpty) 0 else finalMap(finalMap.keySet.max).size
-  }
-
-  @scala.annotation.tailrec
-  def f(lengthMap: Map[Int, List[Int]], length: Int, num: Int): Map[Int, List[Int]] = {
-    if (length == 0) lengthMap.updated(1, lengthMap.getOrElse(1, Nil) :+ num)
-    else if (lengthMap.isDefinedAt(length)) {
-      val cnt = lengthMap.getOrElse(length, Nil)./:(0)((cur, v) => if (v < num) cur + 1 else cur)
-      if (cnt > 0) {
-        val cur = lengthMap.getOrElse(length + 1, Nil) ::: List.fill(cnt)(num)
-        lengthMap.updated(length + 1, cur)
+    @scala.annotation.tailrec
+    def g(i: Int, j: Int, maxLen: Int, count: Int, a: Array[(Int, Int)]): (Int, Int) =
+      if (j >= nums.length) (maxLen, count)
+      else if (nums(i) < nums(j)) {
+        val (len, c) = a(j)
+        g(i, j + 1, maxLen.max(len + 1), if (len + 1 > maxLen) c else if (len + 1 == maxLen) c + count else count, a)
       }
-      else f(lengthMap, length - 1, num)
-    } else f(lengthMap, length - 1, num)
+      else g(i, j + 1, maxLen, count, a)
+
+    @scala.annotation.tailrec
+    def f(i: Int, maxLen: Int, count: Int, a: Array[(Int, Int)]): Int =
+      if (i < 0) count
+      else {
+        a(i) = g(i, i + 1, 1, 1, a)
+        val (len, c) = a(i)
+        f(i - 1, maxLen.max(len), if (len > maxLen) c else if (len == maxLen) count + c else count, a)
+      }
+
+    f(nums.length - 2, 1, 1, Array.fill(nums.length)(1 -> 1))
   }
 }
