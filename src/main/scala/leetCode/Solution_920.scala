@@ -9,6 +9,6 @@ object Solution_920 {
       dp(i)(j) = (dp(i - 1)(j - 1) * (n - j + 1)) % M
       if (j > k) dp(i)(j) = (dp(i)(j) + (dp(i - 1)(j) * (j - k)) % M) % M
     }))
-    dp(goal)(n).toInt
+    dp.last.last.toInt
   }
 }
