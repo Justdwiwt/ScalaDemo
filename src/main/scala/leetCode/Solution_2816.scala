@@ -1,18 +1,18 @@
 package leetCode
 
 object Solution_2816 {
-  def doubleIt(head: ListNode): ListNode = {
-    if (f(head)) {
-      val res = new ListNode(1)
-      res.next = head
-      res
-    } else head
+  class ListNode(_x: Int = 0, _next: ListNode = null) {
+    var next: ListNode = _next
+    var x: Int = _x
   }
 
-  private def f(node: ListNode): Boolean = {
-    if (node == null) return false
-    val v = node.x * 2 + (if (f(node.next)) 1 else 0)
-    node.x = v % 10
-    if (v > 9) true else false
+  def doubleIt(head: ListNode): ListNode = {
+    val doubled = f(new ListNode(0, head))
+    if (doubled.x == 0) doubled.next else doubled
   }
+
+
+  private def f(node: ListNode): ListNode =
+    if (node.next == null) new ListNode(node.x * 2 % 10, null)
+    else new ListNode(node.x * 2 % 10 + node.next.x * 2 / 10, f(node.next))
 }
