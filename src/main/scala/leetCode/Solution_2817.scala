@@ -1,18 +1,21 @@
 package leetCode
 
-import scala.collection.immutable.TreeSet
+import java.util
+import scala.collection.JavaConverters._
 
 object Solution_2817 {
-  def minAbsoluteDifference(nums: List[Int], x: Int): Int = nums
-    .zip(nums.drop(x))
-    ./:((TreeSet.empty[Int], Int.MaxValue))(f)
-    ._2
-
-  private def f(state: (TreeSet[Int], Int), elem: (Int, Int)): (TreeSet[Int], Int) = {
-    val ((set, min), (left, right)) = (state, elem)
-    val nSet = set + left
-    val diffs = List(nSet.maxBefore(right), nSet.minAfter(right)).flatten.map(n => (right - n).abs)
-    (nSet, (min :: diffs).min)
-    null
+  def minAbsoluteDifference(nums: List[Int], x: Int): Int = {
+    val a = nums.asJava.stream().mapToInt(i => i).toArray
+    var res = Integer.MAX_VALUE
+    val n = a.length
+    val s = new util.TreeSet[Integer]()
+    s.add(Integer.MAX_VALUE)
+    s.add(Integer.MIN_VALUE / 2)
+    (x until n by 1).foreach(i => {
+      s.add(a(i - x))
+      val y = a(i)
+      res = math.min(res, math.min(s.ceiling(y) - y, y - s.floor(y)))
+    })
+    res
   }
 }
