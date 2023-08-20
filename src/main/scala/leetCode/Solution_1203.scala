@@ -1,72 +1,87 @@
 package leetCode
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 object Solution_1203 {
   def sortItems(n: Int, m: Int, group: Array[Int], beforeItems: List[List[Int]]): Array[Int] = {
-    def topologicalSort(graph: Map[Int, List[Int]], inDegrees: Array[Int]): Array[_ <: Int] = {
-      val q = new mutable.Queue[Int]()
-      graph.keys.withFilter(node => inDegrees(node) == 0).foreach(node => q += node)
-      val res = new Array[Int](inDegrees.length)
-      var i = 0
-      var visCnt = 0
-      while (q.nonEmpty) {
-        val head = q.dequeue()
-        res(i) = head
-        visCnt += 1
-        i += 1
-        graph(head).foreach(child => {
-          inDegrees(child) -= 1
-          if (inDegrees(child) == 0) q += child
+    val lmp = mutable.Map[Int, ListBuffer[Int]]()
+    val graph = mutable.Map[Int, mutable.Set[Int]]()
+    val nodesInG = mutable.Set[Int]()
+    val inDegree = Array.ofDim[Int](n)
+    val groupGraph = mutable.Map[Int, mutable.Set[Int]]()
+    val groupNodesInG = mutable.Set[Int]()
+    val groupInDegree = Array.ofDim[Int](m + 1)
+    (0 until n)
+      .withFilter(i => beforeItems(i).nonEmpty)
+      .foreach(i => beforeItems(i).foreach(prev => {
+        if (!graph.contains(prev)) graph.put(prev, mutable.Set[Int]())
+        graph(prev).add(i)
+        inDegree(i) += 1
+        nodesInG.add(prev)
+        nodesInG.add(i)
+        val prevGroupIndex = if (group(prev) == -1) m else group(prev)
+        val nextGroupIndex = if (group(i) == -1) m else group(i)
+        if (prevGroupIndex != nextGroupIndex) {
+          if (!groupGraph.contains(prevGroupIndex)) groupGraph.put(prevGroupIndex, mutable.Set[Int]())
+          if (groupGraph(prevGroupIndex).add(nextGroupIndex)) {
+            groupNodesInG add prevGroupIndex
+            groupNodesInG add nextGroupIndex
+            groupInDegree(nextGroupIndex) += 1
+          }
+        }
+      }))
+
+    val queue = mutable.Queue[Int]()
+    var isVisited = mutable.Set[Int]()
+    (0 until n).withFilter(i => graph.contains(i) && (inDegree(i) | 0) == 0).foreach(i => queue.enqueue(i))
+    while (queue.nonEmpty) {
+      val curr = queue.dequeue()
+      val k = if (group(curr) == -1) m else group(curr)
+      isVisited.add(curr)
+      if (!lmp.contains(k)) lmp.put(k, new ListBuffer[Int]())
+      lmp(k).append(curr)
+      if (graph.contains(curr)) {
+        graph(curr).foreach(nb => {
+          inDegree(nb) -= 1
+          if ((inDegree(nb) | 0) == 0) queue.enqueue(nb)
         })
       }
-
-      if (visCnt != graph.keys.size) Array() else res
     }
+    if (isVisited.size != nodesInG.size) return Array()
+    queue.clear()
 
-    var groupToGroup = Map[Int, List[Int]]()
-    var parentToChildren = Map[Int, List[Int]]()
-    val groupInDegree = new Array[Int](m + 1)
-    val nodeInDegree = new Array[Int](n)
-    val beforeItemsArr = beforeItems.toArray
-    group.indices.foreach(i => {
-      if (group(i) == -1) group(i) = m
-      parentToChildren += ((i, List()))
-    })
-
-    (0 to m).foreach(i => groupToGroup += ((i, List())))
-    beforeItemsArr.indices.foreach(i => {
-      val before = beforeItemsArr(i)
-      before.foreach(b => {
-        parentToChildren += ((b, parentToChildren.get(b).map(i :: _).getOrElse(List(i))))
-        nodeInDegree(i) += 1
-        val bGroup = group(b)
-        val iGroup = group(i)
-        if (bGroup != iGroup) {
-          groupToGroup += ((bGroup, groupToGroup.get(bGroup).map(iGroup :: _).getOrElse(List(iGroup))))
-          groupInDegree(iGroup) += 1
-        }
+    (0 until n)
+      .withFilter(i => !isVisited.contains(i))
+      .foreach(i => {
+        val k = if (group(i) == -1) m else group(i)
+        if (!lmp.contains(k)) lmp.put(k, new ListBuffer[Int]())
+        lmp(k).append(i)
       })
-    })
 
-    val parentToChildrenSorted = topologicalSort(parentToChildren, nodeInDegree)
-    if (parentToChildrenSorted.isEmpty) return Array()
-    val groupsSorted = topologicalSort(groupToGroup, groupInDegree)
-    if (groupsSorted.isEmpty) return Array()
+    isVisited = new mutable.LinkedHashSet[Int]()
+    (0 to m).withFilter(i => groupGraph.contains(i) && (groupInDegree(i) | 0) == 0).foreach(i => queue.enqueue(i))
+    while (queue.nonEmpty) {
+      val curr = queue.dequeue()
+      isVisited.add(curr)
+      if (groupGraph.contains(curr)) {
+        groupGraph(curr).foreach(nb => {
+          groupInDegree(nb) -= 1
+          if ((groupInDegree(nb) | 0) == 0) queue.enqueue(nb)
+        })
+      }
+    }
+    if (isVisited.size != groupNodesInG.size) return Array()
 
-    var groupToItem = Map[Int, Vector[Int]]()
-    parentToChildrenSorted.foreach(n => {
-      val grp = group(n)
-      groupToItem += ((grp, groupToItem.get(grp).map(_ :+ n).getOrElse(Vector(n))))
-    })
+    (0 to m).withFilter(i => !isVisited.contains(i)).foreach(i => isVisited.add(i))
 
-    val result = new Array[Int](n)
-    var i = 0
-    groupsSorted.foreach(group => if (groupToItem.contains(group)) groupToItem(group).foreach(node => {
-      result(i) = node
-      i += 1
-    }))
-
-    result
+    var index = 0
+    isVisited
+      .withFilter(k => lmp.contains(k))
+      .foreach(k => lmp(k).foreach(a => {
+        group(index) = a
+        index += 1
+      }))
+    group
   }
 }
