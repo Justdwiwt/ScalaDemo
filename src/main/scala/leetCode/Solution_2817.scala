@@ -1,20 +1,18 @@
 package leetCode
 
-import java.util
-import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 object Solution_2817 {
   def minAbsoluteDifference(nums: List[Int], x: Int): Int = {
-    val a = nums.asJava.stream().mapToInt(i => i).toArray
-    var res = Integer.MAX_VALUE
-    val n = a.length
-    val s = new util.TreeSet[Integer]()
-    s.add(Integer.MAX_VALUE)
-    s.add(Integer.MIN_VALUE / 2)
-    (x until n by 1).foreach(i => {
-      s.add(a(i - x))
-      val y = a(i)
-      res = math.min(res, math.min(s.ceiling(y) - y, y - s.floor(y)))
+    val arr = nums.toArray
+    val st = mutable.TreeSet[Int]()
+    var res = (arr.last - arr.head).abs
+    (x until arr.length).foreach(i => {
+      st += arr(i - x)
+      val left = (st to arr(i)).lastOption.getOrElse(-1000000001)
+      res = res.min(arr(i) - left)
+      val right = (arr(i) to st.last).headOption.getOrElse(2000000001)
+      res = res.min(right - arr(i))
     })
     res
   }
