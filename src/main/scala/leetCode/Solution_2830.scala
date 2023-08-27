@@ -1,25 +1,16 @@
 package leetCode
 
-import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 object Solution_2830 {
   def maximizeTheProfit(n: Int, offers: List[List[Int]]): Int = {
-    val m = mutable.HashMap.empty[Int, List[List[Int]]]
-    offers.foreach(offer => {
-      val end = offer(1)
-      var t = m.getOrElse(end, Nil)
-      t ::= offer
-      m += end -> t
+    val groups: Array[ArrayBuffer[Array[Int]]] = Array.fill(n)(ArrayBuffer.empty)
+    offers.foreach(offer => groups(offer(1)) += Array(offer.head, offer(2)))
+    val arr = Array.ofDim[Int](n + 1)
+    (0 until n).foreach(end => {
+      arr(end + 1) = arr(end)
+      groups(end).foreach(p => arr(end + 1) = arr(end + 1).max(arr(p.head) + p(1)))
     })
-    val dp = Array.fill(n + 1)(0)
-    (1 to n).foreach(i => {
-      dp(i) = dp(i - 1)
-      m.getOrElse(i - 1, Nil).foreach(offer => {
-        val start = offer.head
-        val gold = offer(2)
-        dp(i) = dp(i).max(dp(start) + gold)
-      })
-    })
-    dp(n)
+    arr(n)
   }
 }
