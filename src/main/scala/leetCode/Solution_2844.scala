@@ -1,22 +1,17 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_2844 {
-  def minimumOperations(num: String): Int = {
-    val m = mutable.HashMap.empty[Char, Char]
-    m += '0' -> '0'
-    m += '2' -> '5'
-    m += '5' -> '0'
-    m += '7' -> '5'
-    val st = mutable.HashSet.empty[Char]
-    var flag = false
-    num.indices.reverse.foreach(i => {
-      val ch = num(i)
-      if (ch == '0') flag = true
-      if (m.contains(ch) && st.contains(m(ch))) return num.length - i - 2
-      st += ch
-    })
-    if (flag) num.length - 1 else num.length
-  }
+  def minimumOperations(num: String): Int =
+    f(num.reverse.toList, found0 = false, found5 = false, 0)
+
+  @scala.annotation.tailrec
+  private def f(chars: List[Char], found0: Boolean, found5: Boolean, rm: Int): Int =
+    chars match {
+      case Nil => rm - (if (found0) 1 else 0)
+      case ('2' | '7') :: tail if found5 => rm - 1
+      case ('5' | '0') :: tail if found0 => rm - 1
+      case '0' :: tail => f(tail, found0 = true, found5 = found5, rm + 1)
+      case '5' :: tail => f(tail, found0, found5 = true, rm + 1)
+      case _ :: tail => f(tail, found0, found5, rm + 1)
+    }
 }
