@@ -2,13 +2,13 @@ package leetCode
 
 object Solution_2843 {
   def countSymmetricIntegers(low: Int, high: Int): Int = {
-    var res = 0
-    (low to high).foreach(i => {
-      val s = i.toString
-      var t = 0
-      (0 until s.length / 2).foreach(j => t += s(j) - s(s.length - j - 1))
-      if (s.length % 2 == 0 && t == 0) res += 1
-    })
-    res
+    def f(str: String): Boolean = {
+      val n = str.length
+      n % 2 == 0 && str.take(n / 2).map(_.toInt).sum == str.drop(n / 2).map(_.toInt).sum
+    }
+
+    (low to high)
+      .withFilter(i => f(i.toString))
+      .map(_ => 1).size
   }
 }
