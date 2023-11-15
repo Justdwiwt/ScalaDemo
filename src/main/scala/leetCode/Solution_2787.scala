@@ -1,18 +1,21 @@
 package leetCode
 
+import scala.collection.mutable
+
 object Solution_2787 {
   def numberOfWays(n: Int, x: Int): Int = {
-    val res = Array.fill(n + 1)(0)
-    res(0) = 1
-    var i = 1
-    val p = math.pow(i, x).toInt
-    while (p <= n) {
-      (n to p by -1).foreach(j => {
-        res(j) += res(j - p)
-        res(j) %= 1000000007
-      })
-      i += 1
+    val M = (1e9 + 7).toInt
+    val nums = mutable.Buffer.empty[Int]
+    var idx = 1
+    while (math.pow(idx, x) <= n) {
+      nums += math.pow(idx, x).toInt
+      idx += 1
     }
-    res(n)
+
+    val dp = Array.fill(n + 1)(0)
+    dp(0) = 1
+
+    nums.indices.foreach(i => (n to nums(i) by -1).foreach(j => dp(j) = (dp(j) + dp(j - nums(i))) % M))
+    dp(n)
   }
 }
