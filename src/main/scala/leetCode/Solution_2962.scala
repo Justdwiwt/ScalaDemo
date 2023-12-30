@@ -2,19 +2,19 @@ package leetCode
 
 object Solution_2962 {
   def countSubarrays(nums: Array[Int], k: Int): Long = {
+    val m = nums.max
     val n = nums.length
-    val mx = nums.max
-    var cnt = 0
-    var res = 0L
-    var j = 0
-    nums.indices.foreach(i => {
-      while (j < nums.length && cnt < k) {
-        if (nums(j) == mx) cnt += 1
-        j += 1
+
+    @scala.annotation.tailrec
+    def f(i: Int, j: Int, cur: Int, res: Long, flag: Boolean): Long = {
+      if (j == n) res
+      else {
+        val t = if (nums(j) == m && flag) cur + 1 else cur
+        if (t >= k) f(i + 1, j, t - (if (nums(i) == m) 1 else 0), res, flag = false)
+        else f(i, j + 1, t, res + i, flag = true)
       }
-      if (cnt >= k) res += n - j + 1
-      if (nums(i) == mx) cnt -= 1
-    })
-    res
+    }
+
+    f(0, 0, 0, 0L, flag = true)
   }
 }
