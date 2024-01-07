@@ -1,58 +1,48 @@
 package leetCode
 
 object Solution_707 {
+  class ListNode(_value: Int) {
+    var value: Int = _value
+    var next: ListNode = _
+  }
+
   class MyLinkedList() {
-
-    trait List[+A]
-
-    case object Nil extends List[Nothing]
-
-    case class Cons[A](hd: A, tl: List[A]) extends List[A]
-
-    private var head: List[Int] = Nil
+    var size = 0
+    var head: ListNode = new ListNode(0)
 
     def get(index: Int): Int = {
-      @scala.annotation.tailrec
-      def iter(hd: List[Int], index: Int): Int = hd match {
-        case Nil => -1
-        case Cons(h, t) => if (index == 0) h else iter(t, index - 1)
-      }
-
-      iter(head, index)
+      if (index < 0 || index >= size) return -1
+      var cur: ListNode = head
+      Range(0, index + 1, 1).foreach(i => cur = cur.next)
+      cur.value
     }
 
-    def addAtHead(`val`: Int): Unit =
-      head = Cons(`val`, head)
+    def addAtHead(`val`: Int): Unit = {
+      addAtIndex(0, `val`)
+    }
 
     def addAtTail(`val`: Int): Unit = {
-      def iter(hd: List[Int], v: Int): List[Int] = hd match {
-        case Nil => Cons(v, Nil)
-        case Cons(h, t) => Cons(h, iter(t, v))
-      }
-
-      head = iter(head, `val`)
+      addAtIndex(size, `val`)
     }
 
-    def addAtIndex(index: Int, `val`: Int): Unit = {
-      def iter(hd: List[Int], index: Int, `val`: Int): List[Int] = (hd, index) match {
-        case (Nil, i) => if (i == 0) Cons(`val`, Nil) else Nil
-        case (Cons(h, d), 1) => Cons(h, Cons(`val`, d))
-        case (Cons(h, d), i) => Cons(h, iter(d, i - 1, `val`))
-      }
-
-      head = iter(head, index, `val`)
+    private def addAtIndex(_index: Int, `val`: Int): Unit = {
+      var index = _index
+      if (index > size) return
+      index = 0.max(index)
+      size += 1
+      var pred: ListNode = head
+      Range(0, index, 1).foreach(i => pred = pred.next)
+      val toAdd: ListNode = new ListNode(`val`)
+      toAdd.next = pred.next
+      pred.next = toAdd
     }
 
     def deleteAtIndex(index: Int): Unit = {
-      def iter(hd: List[Int], index: Int): List[Int] = (hd, index) match {
-        case (Nil, _) => Nil
-        case (Cons(_, t), 0) => t
-        case (Cons(h, Cons(_, d2)), 1) => Cons(h, d2)
-        case (Cons(h, d), k) => Cons(h, iter(d, k - 1))
-      }
-
-      head = iter(head, index)
+      if (index < 0 || index >= size) return
+      size -= 1
+      var pred: ListNode = head
+      Range(0, index, 1).foreach(_ => pred = pred.next)
+      pred.next = pred.next.next
     }
-
   }
 }
