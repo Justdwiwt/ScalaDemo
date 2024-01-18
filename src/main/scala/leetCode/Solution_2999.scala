@@ -7,7 +7,6 @@ object Solution_2999 {
     val n = high.length
     var t = ""
     (0 until (n - low.length)).foreach(_ => t += "0")
-    println("t = " + t)
     low = t + low
     val memo = Array.fill(n)(-1L)
     dfs(0, limitLow = true, limitHigh = true, low.toCharArray, high.toCharArray, limit, s.toCharArray, memo)
