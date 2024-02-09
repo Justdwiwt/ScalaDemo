@@ -2,16 +2,14 @@ package leetCode
 
 object Solution_3011 {
   def canSortArray(nums: Array[Int]): Boolean = {
-    val n = nums.length
-    var i = 0
-    while (i < n) {
-      val start = i
-      val ones = java.lang.Integer.bitCount(nums(i))
-      i = i + 1
-      while (i < n && Integer.bitCount(nums(i)) == ones) i += 1
-      java.util.Arrays.sort(nums, start, i)
-    }
-    nums.indices.drop(1).foreach(i => if (nums(i) < nums(i - 1)) return false)
-    true
+    val res = nums.zip(nums.map(_.toBinaryString).map(_.count(_ == '1')))
+
+    @scala.annotation.tailrec
+    def f(next: Array[(Int, Int)], i: Int, temp: List[Int], res: List[Int]): List[Int] =
+      if (next.isEmpty) res ++ temp.sorted
+      else if (next.head._2 == i) f(next.tail, i, next.head._1 +: temp, res)
+      else f(next, next.head._2, Nil, res ++ temp.sorted)
+
+    f(res, 0, Nil, Nil).equals(nums.toList.sorted)
   }
 }
