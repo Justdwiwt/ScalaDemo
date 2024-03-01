@@ -1,22 +1,23 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_2368 {
   def reachableNodes(n: Int, edges: Array[Array[Int]], restricted: Array[Int]): Int = {
-    val st = restricted.toSet
-    val visited = mutable.Set.empty[Int]
-    val m = mutable.Map[Int, List[Int]]()
-    edges.foreach(edge => {
-      m += (edge.head -> (List(edge(1)) ::: m.getOrElse(edge.head, Nil)))
-      m += (edge(1) -> (List(edge.head) ::: m.getOrElse(edge(1), Nil)))
-    })
+    val graph = {
+      val zero = Map[Int, List[Int]]().withDefaultValue(List.empty)
+      edges./:(zero)((acc, arr) => {
+        val a = arr.head
+        val b = arr(1)
+        acc.updated(a, acc(a) :+ b).updated(b, acc(b) :+ a)
+      })
+    }
 
-    def dfs(from: Int): Unit =
-      if (!st.contains(from) && visited.add(from))
-        m.getOrElse(from, Nil).foreach(dfs)
+    @scala.annotation.tailrec
+    def f(nodes: List[Int], restricted: Set[Int], seen: Set[Int], amount: Int): Int = nodes match {
+      case Nil => amount
+      case head :: tail if restricted.contains(head) || seen.contains(head) => f(tail, restricted, seen, amount)
+      case head :: tail => f(tail ++ graph(head), restricted, seen + head, amount + 1)
+    }
 
-    dfs(0)
-    visited.size
+    f(0 :: graph(0), restricted.toSet, Set.empty, 0)
   }
 }
