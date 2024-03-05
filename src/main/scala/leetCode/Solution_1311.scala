@@ -1,42 +1,30 @@
 package leetCode
 
-import java.util
-
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
-import scala.util.control.Breaks._
-
 object Solution_1311 {
   def watchedVideosByFriends(watchedVideos: List[List[String]], friends: Array[Array[Int]], id: Int, level: Int): List[String] = {
-    val m = new util.HashMap[String, Int]()
-    val q = new util.LinkedList[Int]()
-    var visited = new mutable.HashSet[Int]()
-    q.addLast(id)
-    visited += id
-    var depth = -1
-    breakable {
-      while (!q.isEmpty) {
-        depth += 1
-        if (depth >= level) {
-          q.forEach(fri => watchedVideos(fri).foreach(s => m.put(s, m.getOrDefault(s, 0) + 1)))
-          break()
-        }
-        val size = q.size()
-        (0 until size).foreach(_ => {
-          val fir = q.removeFirst()
-          friends(fir).foreach(f => {
-            if (!visited.contains(f)) {
-              q.addLast(f)
-              visited += f
-            }
-          })
-        })
-      }
+    lazy val group = friends.iterator.zipWithIndex.map { case (fs, i) => i -> fs.toSet }.toMap
+
+    @scala.annotation.tailrec
+    def f(lvl: Int, prev: Set[Int], visited: Set[Int]): Set[Int] = {
+      def reducer(a: Set[Int], b: Set[Int]): Set[Int] =
+        a ++ b
+
+      lazy val next = prev.map(i => group(i) -- visited)./:(Set.empty[Int])(reducer)
+      if (lvl == level) next
+      else f(lvl + 1, next, visited ++ next)
     }
-    val list = new util.ArrayList[String](m.keySet)
-    list.sort((o1, o2) => if (m.get(o1).equals(m.get(o2))) o1.compareTo(o2) else m.get(o1) - m.get(o2))
-    var res = ListBuffer.empty[String]
-    list.forEach(i => res += i)
-    res.toList
+
+    lazy val x0 = f(1, Set(id), Set(id))
+
+    watchedVideos
+      .zipWithIndex
+      .filter { case (_, i) => x0.contains(i) }
+      .flatMap(_._1)
+      .groupBy(identity)
+      .mapValues(_.size)
+      .map { case (x, y) => (y, x) }
+      .toList
+      .sorted
+      .map(_._2)
   }
 }
