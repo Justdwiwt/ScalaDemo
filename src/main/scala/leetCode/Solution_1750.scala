@@ -2,12 +2,16 @@ package leetCode
 
 object Solution_1750 {
   def minimumLength(s: String): Int = {
-    var (l, r) = (0, s.length - 1)
-    while (l < r) {
-      if (s(l) != s(r)) return r - l + 1
-      while (l < r && s(l) == s(r)) l += 1
-      while (r >= l && s(l - 1) == s(r)) r -= 1
-    }
-    r - l + 1
+    @scala.annotation.tailrec
+    def f(start: Int, end: Int): Int =
+      if (start == end) 0
+      else {
+        (end - 1 until start by (-1)).takeWhile(s(_) == s(start)).size match {
+          case 0 => end - start
+          case n => f((start + 1 until end - n).find(s(_) != s(start)).getOrElse(end - n), end - n)
+        }
+      }
+
+    f(0, s.length)
   }
 }
