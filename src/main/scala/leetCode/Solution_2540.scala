@@ -1,8 +1,6 @@
 package leetCode
 
 object Solution_2540 {
-  def getCommon(nums1: Array[Int], nums2: Array[Int]): Int = {
-    val res = nums1.intersect(nums2)
-    if (res.isEmpty) -1 else res.min
-  }
+  def getCommon(nums1: Array[Int], nums2: Array[Int]): Int =
+    scala.util.Try(nums1.intersect(nums2).min).getOrElse(-1)
 }

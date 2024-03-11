@@ -3,46 +3,25 @@ package leetCode
 import scala.collection.mutable
 
 object Solution_1234 {
-  def balancedString(str: String): Int = {
-    if (str == null || str.length == 0 || str.length % 4 != 0) return Integer.MAX_VALUE
-    var q, e, w, r = 0
-    str.toCharArray.foreach(c => {
-      if (c == 'Q') q += 1
-      if (c == 'W') w += 1
-      if (c == 'E') e += 1
-      if (c == 'R') r += 1
-    })
-    val quater = str.length / 4
+  def balancedString(s: String): Int = {
+    val n = s.length
+    val k = n / 4
+    val m = mutable.Map.empty[Char, Int]
+    s.foreach(n => m.update(n, m.getOrElse(n, 0) + 1))
 
-    def greater(m1: mutable.Map[Char, Int], m0: mutable.Map[Char, Int]): Boolean = {
-      if (m1.size != m0.size) return false
-      var res = true
-      m1.keySet.foreach(k => if (!m0.contains(k) || m1(k) < m0(k)) res = false)
-      res
-    }
-
-    val bm, m = mutable.Map[Char, Int]()
-    if (q > quater) bm += 'Q' -> (q - quater)
-    if (e > quater) bm += 'E' -> (e - quater)
-    if (w > quater) bm += 'W' -> (w - quater)
-    if (r > quater) bm += 'R' -> (r - quater)
-    if (bm.isEmpty) return 0
-    var mnLen = str.length
-    var left = 0
-    var right = 0
-    while (left < str.length && right < str.length) {
-      val curr = str.charAt(right)
-      if (bm.contains(curr)) {
-        m += curr -> (m.getOrElse(curr, 0) + 1)
-        while (greater(m, bm) && left <= right) {
-          mnLen = mnLen.min(right - left + 1)
-          val leftChar = str.charAt(left)
-          if (bm.contains(leftChar)) m += leftChar -> (m(leftChar) - 1)
-          left += 1
-        }
+    @scala.annotation.tailrec
+    def f(l: Int, r: Int, res: Int, flag: Boolean): Int = {
+      if (r >= n) res
+      else {
+        if (flag) m.update(s(r), m.getOrElse(s(r), 0) - 1)
+        if (l < n && m.getOrElse('Q', 0) <= k && m.getOrElse('W', 0) <= k && m.getOrElse('E', 0) <= k && m.getOrElse('R', 0) <= k) {
+          val t = res.min(r - l + 1)
+          m.update(s(l), m.getOrElse(s(l), 0) + 1)
+          f(l + 1, r, t, flag = false)
+        } else f(l, r + 1, res, flag = true)
       }
-      right += 1
     }
-    mnLen
+
+    f(0, 0, n, flag = true)
   }
 }
