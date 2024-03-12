@@ -2,16 +2,7 @@ package leetCode
 
 object Solution_3033 {
   def modifiedMatrix(matrix: Array[Array[Int]]): Array[Array[Int]] = {
-    matrix
-      .head
-      .indices
-      .map { c => val col = matrix.map(_(c)); (c, col) }
-      .map { case (c, col) => val colMax = col.max; (c, col, colMax) }
-      .foreach { case (c, _, colMax) => matrix
-        .indices
-        .withFilter(r => matrix(r)(c) == -1)
-        .foreach(r => matrix(r)(c) = colMax)
-      }
-    matrix
+    val maxPerCol = matrix.transpose.map(_.max)
+    Array.tabulate(matrix.length, matrix.head.length)((i, j) => if (matrix(i)(j) != -1) matrix(i)(j) else maxPerCol(j))
   }
 }

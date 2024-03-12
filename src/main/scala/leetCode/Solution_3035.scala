@@ -1,22 +1,12 @@
 package leetCode
 
-import scala.collection.mutable
-
 object Solution_3035 {
   def maxPalindromesAfterOperations(words: Array[String]): Int = {
-    val m = mutable.HashMap.empty[Char, Int]
-    words.foreach(word => word.foreach(c => m(c) = m.getOrElse(c, 0) + 1))
-    var totalPairs = m.values.map(x => x / 2).sum
-    val sorted = words.map(_.length).sorted
-    var res = 0
-    sorted.foreach(l => {
-      val neededPairs = l / 2
-      if (neededPairs > totalPairs) return res
-      else {
-        res += 1
-        totalPairs -= neededPairs
-      }
-    })
-    res
+    val counter = words.mkString.groupBy(identity).mapValues(_.length)
+    val pairs = counter.values.map(_ / 2).sum
+    words.map(_.length).sorted.foldLeft(0, pairs) { case ((res, pairs), len) =>
+      val newPairs = pairs - len / 2
+      (if (newPairs >= 0) res + 1 else res, newPairs)
+    }._1
   }
 }

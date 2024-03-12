@@ -1,8 +1,10 @@
 package leetCode
 
 object Solution_3038 {
-  def maxOperations(nums: Array[Int]): Int = {
-    val sum = nums.take(2).sum
-    nums.grouped(2).takeWhile(arr => arr.length == 2 && arr.sum == sum).size
-  }
+  def maxOperations(nums: Array[Int]): Int = (nums :+ Int.MaxValue)
+    .grouped(2)
+    .map(_.sum)
+    .sliding(2)
+    .takeWhile { case Seq(a, b) => a == b }
+    .size + 1
 }
