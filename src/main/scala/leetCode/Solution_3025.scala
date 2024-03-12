@@ -2,22 +2,13 @@ package leetCode
 
 object Solution_3025 {
   def numberOfPairs(points: Array[Array[Int]]): Int = {
-    java.util.Arrays.sort(points, (a: Array[Int], b: Array[Int]) => {
-      if (a.head != b.head) return a.head - b.head
-      else return b(1) - a(1)
-    })
-    var res = 0
-    points.indices.foreach(i => {
-      val y0 = points(i)(1)
-      var mxY = Int.MinValue
-      (i + 1 until points.length).foreach(j => {
-        val y = points(j)(1)
-        if (y <= y0 && y > mxY) {
-          mxY = y
-          res += 1
-        }
+    val heights = points.sortBy { case Array(x, y) => (x, -y) }.map(_.last)
+    heights.indices.foldLeft(0)((res, i) => {
+      (i + 1 until points.length).foldLeft(res)((res, j) => {
+        if (heights(i) < heights(j)) res
+        else if ((i + 1 until j).exists(k => heights(k) <= heights(i) && heights(k) >= heights(j))) res
+        else res + 1
       })
     })
-    res
   }
 }
