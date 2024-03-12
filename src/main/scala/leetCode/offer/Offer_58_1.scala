@@ -1,0 +1,5 @@
+package leetCode.offer
+
+object Offer_58_1 {
+  def reverseWords(s: String): String = s.trim.split("\\s+").reverse.mkString(" ")
+}
