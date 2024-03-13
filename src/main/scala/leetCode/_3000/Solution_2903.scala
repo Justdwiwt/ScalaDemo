@@ -5,7 +5,7 @@ object Solution_2903 {
     .util
     .Try(nums.indices.flatMap(i => (i + indexDifference until nums.length)
       .withFilter(j => (nums(j) - nums(i)).abs >= valueDifference)
-      .map(j => Array(i, j)))
+        .map(Array(i, _)))
       .head)
     .getOrElse(Array(-1, -1))
 }

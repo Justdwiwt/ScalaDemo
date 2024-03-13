@@ -1,35 +1,26 @@
 package leetCode._3000
 
+import scala.collection.mutable
+
 object Solution_2901 {
   def getWordsInLongestSubsequence(n: Int, words: Array[String], groups: Array[Int]): List[String] = {
-    val f = Array.fill(n)(0)
-    val from = Array.fill(n)(0)
-    var mx = n - 1
-    (n - 1 to 0 by -1).foreach(i => {
-      (i + 1 until n).foreach(j => if (f(j) > f(i) && groups(j) != groups(i) && check(words(i), words(j))) {
-        f(i) = f(j)
-        from(i) = j
-      })
-      f(i) += 1
-      if (f(i) > f(mx)) mx = i
+    def isValid(i: Int, j: Int): Boolean = {
+      if (groups(i) == groups(j)) false
+      else if (words(i).length != words(j).length) false
+      else words(i).zip(words(j)).count { case (c1, c2) => c1 != c2 } == 1
+    }
+
+    val m = mutable.Map.empty[(Int, Int), Seq[String]]
+
+    def dfs(prev: Int, i: Int): Seq[String] = m.getOrElseUpdate((prev, i), {
+      if (i == n) Seq.empty
+      else {
+        val pick = if (prev == -1 || isValid(prev, i)) words(i) +: dfs(i, i + 1) else Seq.empty
+        val skip = dfs(prev, i + 1)
+        if (pick.length > skip.length) pick else skip
+      }
     })
 
-    val m = f(mx)
-    var res = List.empty[String]
-    (0 until m).foreach(_ => {
-      res = words(mx) :: res
-      mx = from(mx)
-    })
-    res.reverse
-  }
-
-  private def check(s: String, t: String): Boolean = {
-    if (s.length != t.length) return false
-    var flag = false
-    s.indices.foreach(i => if (s.charAt(i) != t.charAt(i)) {
-      if (flag) return false
-      flag = true
-    })
-    flag
+    dfs(prev = -1, i = 0).toList
   }
 }
