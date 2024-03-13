@@ -1,25 +1,20 @@
 package leetCode._3000
 
-import scala.collection.mutable
-
 object Solution_2998 {
   def minimumOperationsToMakeEqual(x: Int, y: Int): Int = {
-    val diff = Array(Array(1, 1), Array(1, -1), Array(5, 0), Array(11, 0))
-    val arr = Array.fill(10005)(-1)
-    arr(y) = 0
-    val q = mutable.Queue.empty[Int]
-    q += y
-    while (q.nonEmpty) {
-      val a = q.head
-      q.dequeue
-      diff.foreach(m => {
-        val d = a * m.head + m(1)
-        if (d >= 0 && d < 10005 && arr(d) == -1) {
-          arr(d) = arr(a) + 1
-          q += d
-        }
-      })
+    @scala.annotation.tailrec
+    def dfs(toVisit: Seq[Int], visited: Set[Int], steps: Int): Int = {
+      if (toVisit.contains(y)) steps
+      else {
+        val next = toVisit
+          .flatMap(n => Seq(n + 1, n - 1)
+            ++ (if (n % 11 == 0) Seq(n / 11) else Seq.empty[Int])
+            ++ (if (n % 5 == 0) Seq(n / 5) else Seq.empty[Int]))
+          .filterNot(visited.contains)
+        dfs(next, visited ++ next, steps + 1)
+      }
     }
-    arr(x)
+
+    dfs(toVisit = Seq(x), visited = Set(x), steps = 0)
   }
 }
