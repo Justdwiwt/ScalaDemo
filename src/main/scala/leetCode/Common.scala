@@ -46,7 +46,7 @@ object Common {
   def ip2Long(ip: String): Long = {
     val fragments = ip.split("[.]")
     var ipNum = 0L
-    (0 until fragments.length).foreach(i => ipNum = fragments(i).toLong | ipNum << 8L)
+    fragments.indices.foreach(i => ipNum = fragments(i).toLong | ipNum << 8L)
     ipNum
   }
 
@@ -54,7 +54,7 @@ object Common {
     var low = 0
     var high = lines.length - 1
     while (low <= high) {
-      val middle = (low + high) / 2
+      val middle = (low + high) >>> 1
       if ((ip >= lines(middle)._1) && (ip <= lines(middle)._2)) return middle
       if (ip < lines(middle)._1) high = middle - 1
       else low = middle + 1
@@ -62,9 +62,14 @@ object Common {
     -1
   }
 
-  def wordCount(list: List[String]): List[(String, Int)] = {
-    list.flatMap(_.split(" ")).map((_, 1)).groupBy(_._1).map(x => (x._1, x._2.length)).toList.sortBy(_._2).reverse
-  }
+  def wordCount(list: List[String]): List[(String, Int)] = list
+    .flatMap(_.split(" "))
+    .map((_, 1))
+    .groupBy(_._1)
+    .map(x => (x._1, x._2.length))
+    .toList
+    .sortBy(_._2)
+    .reverse
 
   def tuple2ToList[T](t: (T, T)): List[T] = List(t._1, t._2)
 
