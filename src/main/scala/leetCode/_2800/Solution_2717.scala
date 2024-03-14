@@ -1,7 +1,8 @@
 package leetCode._2800
 
 object Solution_2717 {
-  def semiOrderedPermutation(nums: Array[Int]): Int =
-    if (nums.indexOf(1) < nums.indexOf(nums.length)) nums.indexOf(1) + nums.length - nums.indexOf(nums.length) - 1
-    else nums.indexOf(1) + nums.length - nums.indexOf(nums.length) - 2
+  def semiOrderedPermutation(nums: Array[Int]): Int = {
+    val (i, j) = (nums.indexOf(nums.min), nums.indexOf(nums.max))
+    i + nums.length - j - (if (i < j) 1 else 2)
+  }
 }
