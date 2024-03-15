@@ -1,34 +1,30 @@
 package leetCode._2700
 
+import scala.collection.mutable
+
 object Solution_2685 {
-  private case class UnionFind(n: Int) {
-    val p: Array[Int] = Array.range(0, n)
-
-    private def find(a: Int): Int = {
-      if (p(a) == a) return a
-      p(a) = find(p(a))
-      p(a)
+  def countCompleteComponents(n: Int, edges: Array[Array[Int]]): Int = {
+    val collected = edges.collect { case Array(v1, v2) => (v1, v2) }
+    val dest = collected.foldLeft(Map.empty[Int, List[Int]].withDefaultValue(List.empty)) { case (map, (v1, v2)) =>
+      map.updated(v1, v2 :: map(v1)).updated(v2, v1 :: map(v2))
     }
-
-    def union(a: Int, b: Int): Boolean = {
-      val rootA = find(a)
-      val rootB = find(b)
-      if (rootA == rootB) return false
-      if (rootA < rootB) p(rootB) = rootA
-      else p(rootA) = rootB
-      true
-    }
+    (0 until n).foldLeft((Set.empty[Int], 0)) { case (st@(visited, cnt), v) =>
+      if (visited.contains(v)) st
+      else {
+        val component = f(v, dest)
+        val nCnt = if (component.forall(dest(_).size == component.size - 1)) cnt + 1 else cnt
+        (visited ++ component, nCnt)
+      }
+    }._2
   }
 
-  def countCompleteComponents(n: Int, edges: Array[Array[Int]]): Int = {
-    val uf = UnionFind(n)
-    edges.foreach(e => uf.union(e.head, e(1)))
-    edges.foreach(e => uf.union(e.head, e(1)))
-
-    val m1 = uf.p.groupBy(identity).mapValues(_.length).mapValues(n => n * (n - 1) / 2)
-    val ms = (0 until n).zip(uf.p).toMap
-    val m2 = edges.map(n => n(0)).map(ms.getOrElse(_, -1)).groupBy(identity).mapValues(_.length)
-
-    (m1.map(n => n._1 + "#" + n._2) ++ m2.map(n => n._1 + "#" + n._2)).groupBy(identity).mapValues(_.size).count(_._2 == 2) + m1.values.count(_ == 0)
+  private def f(init: Int, dest: Map[Int, List[Int]]): Vector[Int] = {
+    val visit = mutable.Stack(init)
+    val visited = mutable.Set.empty[Int]
+    while (visit.nonEmpty) {
+      val v = visit.pop()
+      if (visited.add(v)) visit.pushAll(dest(v))
+    }
+    visited.toVector
   }
 }
