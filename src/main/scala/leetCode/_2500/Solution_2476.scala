@@ -2,32 +2,16 @@ package leetCode._2500
 
 import leetCode.TreeNode
 
-import java.util
-
 object Solution_2476 {
-  private var tree = new util.TreeSet[Integer]()
 
   def closestNodes(root: TreeNode, queries: List[Int]): List[List[Int]] = {
-    tree = new util.TreeSet[Integer]()
-    dfs(root)
-    var res = List.empty[List[Int]]
-    queries.foreach(x => {
-      val a = tree.floor(x)
-      val b = tree.ceiling(x)
-      var t = List.empty[Int]
-      t ::= (if (a == null) -1 else a)
-      t = t.reverse
-      t ::= (if (b == null) -1 else b)
-      t = t.reverse
-      res ::= t
-    })
-    res.reverse
-  }
+    @scala.annotation.tailrec
+    def dfs(node: TreeNode, v: Int, lower: Int, higher: Int): List[Int] =
+      if (node == null) List(lower, higher)
+      else if (node.value == v) List(v, v)
+      else if (node.value > v) dfs(node.left, v, lower, node.value)
+      else dfs(node.right, v, node.value, higher)
 
-  private def dfs(node: TreeNode): Unit = {
-    if (node == null) return
-    dfs(node.left)
-    tree.add(node.value)
-    dfs(node.right)
+    queries.map(dfs(root, _, -1, -1))
   }
 }
