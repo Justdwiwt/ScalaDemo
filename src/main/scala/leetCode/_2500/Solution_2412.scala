@@ -1,11 +1,7 @@
 package leetCode._2500
 
 object Solution_2412 {
-  def minimumMoney(transactions: Array[Array[Int]]): Long = {
-    var neg = 0L
-    var res = 0L
-    transactions.foreach(tran => neg += 0L.max(tran.head - tran(1)))
-    transactions.foreach(tran => res = res.max(neg + tran.head.min(tran(1))))
-    res
-  }
+  def minimumMoney(transactions: Array[Array[Int]]): Long = transactions
+    .map { case Array(cost, cashback) => (cost.toLong - cashback).max(0L) }
+    .sum + transactions.map(_.min).max
 }

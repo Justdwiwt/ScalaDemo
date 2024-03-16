@@ -2,17 +2,16 @@ package leetCode._2500
 
 object Solution_2411 {
   def smallestSubarrays(nums: Array[Int]): Array[Int] = {
-    val postfix = Array.fill(nums.length)(0)
-    postfix(nums.length - 1) = nums.last
-    nums.indices.reverse.tail.foreach(i => postfix(i) = postfix(i + 1) | nums(i))
-    nums.indices.toArray.map(i => {
-      var j = i
-      var sum = 0
-      while (j < nums.length && sum < postfix(i)) {
-        sum |= nums(j)
-        j += 1
-      }
-      1.max(j - i)
-    })
+    val lastBitPos = nums
+      .indices
+      .scanRight(Seq.fill(30)(0))((i, pos) => pos.indices.map(bit => if ((nums(i) & 1 << bit) > 0) i else pos(bit)))
+
+    nums
+      .indices
+      .map(i => (0 until 30)
+        .map(lastBitPos(i)(_) - i + 1)
+        .max
+        .max(1))
+      .toArray
   }
 }
