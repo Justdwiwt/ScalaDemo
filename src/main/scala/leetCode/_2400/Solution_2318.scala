@@ -15,13 +15,13 @@ object Solution_2318 {
     .map { case (k, v) => k -> v.map(_._2).toArray }
 
   def distinctSequences(n: Int): Int = {
-    var roll: Array[(Int, Int, Long)] = (1 to 6).map(i => (-1, i, 1L)).toArray
+    var roll: Array[(Int, Int, Long)] = (1 to 6).map((-1, _, 1L)).toArray
 
     var ni = 1
 
     while (ni < n) {
       roll = roll
-        .flatMap { case (f, t, c) => transitions(t).filter(_ != f).map(v => (t, v, c)) }
+        .flatMap { case (f, t, c) => transitions(t).filter(_ != f).map((t, _, c)) }
         .groupBy { case (f, t, _) => (f, t) }
         .map { case ((f, t), cs) => (f, t, cs.map(_._3).sum % M) }
         .toArray
