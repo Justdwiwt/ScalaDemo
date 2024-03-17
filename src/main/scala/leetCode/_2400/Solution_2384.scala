@@ -15,10 +15,10 @@ object Solution_2384 {
 
     pair match {
       case (Nil, odd) => odd.head._1.toString
-      case (List((0, _)), odd) => odd.headOption.fold("0")(i => s"${i._1}")
+      case (List((0, _)), odd) => odd.headOption.fold("0")(_._1.toString)
       case (even, odd) =>
         val halfEven = even.map { case (i, cnt) => i.toString * cnt }.mkString
-        halfEven + odd.headOption.fold("")(i => i._1.toString) + halfEven.reverse
+        halfEven + odd.headOption.fold("")(_._1.toString) + halfEven.reverse
     }
   }
 }

@@ -16,7 +16,7 @@ object Solution_2392 {
         })
       }
 
-      Option(dfs(toVisit = (1 to k).filter(n => inDegree(n) == 0), inDegree)).filter(_.length == k)
+      Option(dfs(toVisit = (1 to k).filter(inDegree(_) == 0), inDegree)).filter(_.length == k)
     }
 
     val res = topSort(rowConditions.map(_.toSeq).distinct)

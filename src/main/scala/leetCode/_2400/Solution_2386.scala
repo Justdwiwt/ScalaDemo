@@ -1,34 +1,23 @@
 package leetCode._2400
 
+import scala.collection.mutable
+
 object Solution_2386 {
   def kSum(nums: Array[Int], k: Int): Long = {
-    var a = Array(0L)
-    nums.foreach(num => {
-      val b = Array.fill((a.length << 1).min(k))(0L)
-      var i = 0
-      var j = 0
-      var x = 0
-      while (x < b.length) {
-        if (i == a.length) {
-          b(x) = a(j)
-          x += 1
-          j += 1
-        } else if (j == a.length) {
-          b(x) = a(i) + num
-          x += 1
-          i += 1
-        } else if (a(i) + num >= a(j)) {
-          b(x) = a(i) + num
-          x += 1
-          i += 1
-        } else {
-          b(x) = a(j)
-          x += 1
-          j += 1
-        }
+    val maxSum = nums.map(_.toLong).filter(_ > 0).sum
+    if (k == 1) return maxSum
+
+    val sorted = nums.map(_.abs).sorted
+    val pq = mutable.PriorityQueue((maxSum - sorted.head, 0))
+
+    (0 until k - 2).foreach(_ => {
+      val (nextSum, i) = pq.dequeue()
+      if (sorted.isDefinedAt(i + 1)) {
+        pq += ((nextSum + sorted(i) - sorted(i + 1), i + 1))
+        pq += ((nextSum - sorted(i + 1), i + 1))
       }
-      a = b
     })
-    a(k - 1)
+
+    pq.dequeue()._1
   }
 }
