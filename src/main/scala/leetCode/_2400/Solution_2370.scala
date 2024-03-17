@@ -1,12 +1,10 @@
 package leetCode._2400
 
 object Solution_2370 {
-  def longestIdealString(s: String, k: Int): Int = {
-    val dp = Array.fill(32)(0)
-    s.map(_ - 'a').foreach(i => {
-      val pre = 0.max(i - k).until(32.min(i + k + 1)).map(dp)
-      dp(i) = dp(i).max(pre.max + 1)
+  def longestIdealString(s: String, k: Int): Int = s
+    .foldLeft(Array.ofDim[Int](100))((acc, cur) => {
+      acc(cur - 'a') = (0.max(cur - 'a' - k) to cur - 'a' + k).map(acc).max + 1
+      acc
     })
-    dp.max
-  }
+    .max
 }
