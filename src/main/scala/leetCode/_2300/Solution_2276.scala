@@ -7,19 +7,20 @@ object Solution_2276 {
     private var cnt = 0
 
     def add(left: Int, right: Int): Unit = {
-      if (Option(map.floorKey(right)).forall(l => map.get(l) < left)) {
+      if (Option(map.floorKey(right)).forall(map.get(_) < left)) {
         map.put(left, right)
         cnt += right - left + 1
       } else {
-        val (newLeft, newRight) = Iterator.iterate((left, right)) { case (left, right) =>
-          val l = map.floorKey(right)
-          val r = map.get(l)
-          cnt -= r - l + 1
-          map.remove(l)
-          (left.min(l), right.max(r))
-        }.dropWhile { case (left, right) =>
-          Option(map.floorKey(right)).exists(l => map.get(l) >= left)
-        }.next()
+        val (newLeft, newRight) = Iterator
+          .iterate((left, right)) { case (left, right) =>
+            val l = map.floorKey(right)
+            val r = map.get(l)
+            cnt -= r - l + 1
+            map.remove(l)
+            (left.min(l), right.max(r))
+          }
+          .dropWhile { case (left, right) => Option(map.floorKey(right)).exists(map.get(_) >= left) }
+          .next()
 
         map.put(newLeft, newRight)
         cnt += newRight - newLeft + 1

@@ -2,12 +2,14 @@ package leetCode._2300
 
 object Solution_2259 {
   def removeDigit(number: String, digit: Char): String = {
-    var res = ""
-    number.indices.foreach(i => if (number(i) == digit) {
-      val x = number.substring(0, i) + number.substring(i + 1)
-      if (x.compareTo(res) > 0)
-        res = x
-    })
-    res
+    val indices = number.indices.filter(number(_) == digit)
+
+    val drop = if (indices.length == 1) indices.head
+    else indices
+      .filterNot(_ == number.length - 1)
+      .find(i => number(i) < number(i + 1))
+      .getOrElse(indices.last)
+
+    number.substring(0, drop) ++ number.substring(drop + 1)
   }
 }
