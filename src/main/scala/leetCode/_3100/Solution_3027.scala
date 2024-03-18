@@ -6,7 +6,7 @@ object Solution_3027 {
 }
 
 private object CTPlacer {
-  object Point {
+  private object Point {
     def apply(arr: Array[Int]): Point = Point(arr.head, arr(1))
   }
 
