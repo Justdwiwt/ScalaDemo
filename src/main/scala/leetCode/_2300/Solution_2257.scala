@@ -20,6 +20,6 @@ object Solution_2257 {
         }
       }
 
-    grid.map(r => r.count(_ == 0)).sum
+    grid.map(_.count(_ == 0)).sum
   }
 }
