@@ -1,30 +1,28 @@
 package leetCode._2300
 
 object Solution_2245 {
-  // TODO:
-
-  //  def maxTrailingZeros(grid: Array[Array[Int]]): Int = {
-  //    val n = grid.headOption.map(_.length).getOrElse(0)
-  //    val numFactors = grid.map(_.map(x => (computeNumFactors(x, 2), computeNumFactors(x, 5))))
-  //    val verticalCumFactors = (0 until n).map(j => grid.indices.view.map(numFactors(_)(j)).scan(0, 0)(_ + _).toIndexedSeq)
-  //    grid
-  //      .indices
-  //      .iterator
-  //      .flatMap(i => {
-  //        val horizontalCumFactors = numFactors(i).scan(0, 0)(_ + _)
-  //        (0 until n)
-  //          .iterator
-  //          .flatMap(j => {
-  //            Iterator(horizontalCumFactors(j + 1) + verticalCumFactors(j)(i),
-  //              horizontalCumFactors(j + 1) + verticalCumFactors(j).last - verticalCumFactors(j)(i + 1),
-  //              horizontalCumFactors.last - horizontalCumFactors(j) + verticalCumFactors(j)(i),
-  //              horizontalCumFactors.last - horizontalCumFactors(j) + verticalCumFactors(j).last - verticalCumFactors(j)(i + 1))
-  //          })
-  //      })
-  //      .map { case (numTwos, numFives) => numTwos.min(numFives) }
-  //      .maxOption
-  //      .getOrElse(0)
-  //  }
+  def maxTrailingZeros(grid: Array[Array[Int]]): Int = {
+    val n = grid.headOption.map(_.length).getOrElse(0)
+    val numFactors = grid.map(_.map(x => (computeNumFactors(x, 2), computeNumFactors(x, 5))))
+    val verticalCumFactors = (0 until n).map(j => grid.indices.view.map(numFactors(_)(j)).scan(0, 0)(_ + _).toIndexedSeq)
+    Option(grid
+      .indices
+      .iterator
+      .flatMap(i => {
+        val horizontalCumFactors = numFactors(i).scan(0, 0)(_ + _)
+        (0 until n)
+          .iterator
+          .flatMap(j => {
+            Iterator(horizontalCumFactors(j + 1) + verticalCumFactors(j)(i),
+              horizontalCumFactors(j + 1) + verticalCumFactors(j).last - verticalCumFactors(j)(i + 1),
+              horizontalCumFactors.last - horizontalCumFactors(j) + verticalCumFactors(j)(i),
+              horizontalCumFactors.last - horizontalCumFactors(j) + verticalCumFactors(j).last - verticalCumFactors(j)(i + 1))
+          })
+      })
+      .map { case (numTwos, numFives) => numTwos.min(numFives) }
+      .max)
+      .getOrElse(0)
+  }
 
   @scala.annotation.tailrec
   private def computeNumFactors(x: Int, factor: Int, count: Int = 0): Int = x match {

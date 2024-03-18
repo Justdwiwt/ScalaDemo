@@ -9,7 +9,7 @@ object Solution_2226 {
     def binarySearch(l: Int, r: Int): Int =
       if (l >= r) l
       else {
-        val mid = (l + r + 1) / 2
+        val mid = (l + r) >>> 1
         if (canAllocate(mid)) binarySearch(l = mid, r)
         else binarySearch(l, mid - 1)
       }
