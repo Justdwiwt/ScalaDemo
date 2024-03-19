@@ -9,7 +9,7 @@ object Solution_2151 {
     def statementsHoldForAll(bitset: Int): Boolean = statements
       .indices
       .filter(i => (bitset >> i & 1) == 1)
-      .forall(i => statementsHoldForPerson(bitset, i))
+      .forall(statementsHoldForPerson(bitset, _))
 
     @annotation.tailrec
     def countOneBits(bitset: Int, bits: Int): Int =

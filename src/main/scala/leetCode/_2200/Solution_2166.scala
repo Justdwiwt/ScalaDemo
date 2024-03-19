@@ -1,50 +1,39 @@
 package leetCode._2200
 
+import scala.collection.mutable
+
 object Solution_2166 {
   class Bitset(_size: Int) {
 
-    private var tar = Array.fill(_size)('0')
-    private var rev = Array.fill(_size)('1')
-    private var cnt = 0
+    private var ones = mutable.HashSet.empty[Int]
+    private var zeroes = mutable.HashSet[Int](0 until _size: _*)
 
-    def fix(idx: Int) {
-      if (tar(idx) == '0') {
-        tar(idx) = '1'
-        cnt += 1
-      }
-      rev(idx) = '0'
+    def fix(idx: Int): Unit = {
+      ones.add(idx)
+      zeroes.remove(idx)
     }
 
-    def unfix(idx: Int) {
-      if (tar(idx) == '1') {
-        tar(idx) = '0'
-        cnt -= 1
-      }
-      rev(idx) = '1'
+    def unfix(idx: Int): Unit = {
+      ones.remove(idx)
+      zeroes.add(idx)
     }
 
-    def flip() {
-      val t = rev
-      rev = tar
-      tar = t
-      cnt = tar.length - cnt
+    def flip(): Unit = {
+      val tmp = ones
+      ones = zeroes
+      zeroes = tmp
     }
 
-    def all(): Boolean = {
-      cnt == tar.length
-    }
+    def all(): Boolean =
+      ones.size == _size
 
-    def one(): Boolean = {
-      cnt > 0
-    }
+    def one(): Boolean =
+      ones.nonEmpty
 
-    def count(): Int = {
-      cnt
-    }
+    def count(): Int =
+      ones.size
 
-    override def toString: String = {
-      tar.mkString
-    }
-
+    override def toString: String =
+      Array.tabulate(_size)(idx => if (ones.contains(idx)) 1 else 0).mkString
   }
 }
