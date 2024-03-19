@@ -1,23 +1,14 @@
 package leetCode._2200
 
 object Solution_2183 {
-  def countPairs(n: Array[Int], k: Int): Long = {
-    var res = 0L
-    val cnt = Array.fill(100001)(0)
-    n.indices.foreach(i => if (n(i) % k == 0) {
-      res += i
-      cnt(0) += 1
+  def countPairs(n: Array[Int], k: Int): Long = n
+    .foldLeft(Map.empty[Int, Int].withDefaultValue(0), 0L) { case ((g, r), n) =>
+      val cur = gcd(n, k)
+      val nextGcd = g.updated(cur, g(cur) + 1)
+      val nextRes = g.foldLeft(r) { case (r, (pre, cnt)) => if (cur.toLong * pre % k == 0) r + cnt else r }
+      (nextGcd, nextRes)
     }
-    else {
-      val g = gcd(k, n(i))
-      (0 until g).foreach(d => {
-        val find = k / g * d
-        res += cnt(find)
-      })
-      cnt(g) = cnt(g) + 1
-    })
-    res
-  }
+    ._2
 
   @scala.annotation.tailrec
   def gcd(a: Int, b: Int): Int =
