@@ -1,53 +1,47 @@
 package leetCode._2200
 
-import scala.collection.mutable
-import scala.util.control.Breaks._
-
 object Solution_2127 {
   def maximumInvitations(favorite: Array[Int]): Int = {
     val n = favorite.length
-    val arr = Array.ofDim[Int](n)
-    favorite.indices.foreach(i => arr(favorite(i)) += 1)
+    val (inDegree, dp) = (Array.fill(n)(0), Array.fill(n)(0))
+    favorite.foreach(fav => inDegree(fav) += 1)
+    val queue = favorite.indices.filter(inDegree(_) == 0)
+    val visited = Array.tabulate(n)(i => if (inDegree(i) == 0) 1 else 0)
 
-    val used = Array.fill(n)(false)
-    val f = Array.fill(n)(1)
-
-    val q = mutable.Queue.empty[Int]
-    favorite.indices.foreach(i => if (arr(i) == 0) q += i)
-
-    while (q.nonEmpty) {
-      val u = q.dequeue()
-      used(u) = true
-      val v = favorite(u)
-      f(v) = f(v).max(f(u) + 1)
-      arr(v) -= 1
-      if (arr(v) == 0) q += v
+    @scala.annotation.tailrec
+    def topologicalSort(queue: Seq[Int]): Unit = {
+      if (queue.isEmpty) return
+      val fav = favorite(queue.head)
+      dp(fav) = dp(fav).max(dp(queue.head) + 1)
+      inDegree(fav) -= 1
+      if (inDegree(fav) > 0) topologicalSort(queue.tail)
+      else {
+        visited(fav) = 1
+        topologicalSort(queue.tail :+ fav)
+      }
     }
 
-    var ring = 0
-    var total = 0
+    topologicalSort(queue)
 
-    favorite.indices.foreach(i => if (!used(i)) {
-      val j = favorite(i)
-      if (favorite(j) == i) {
-        total += f(i) + f(j)
-        used(i) = true
-        used(j) = true
-      }
+    @scala.annotation.tailrec
+    def maxLength(person: Int, length: Int): Int =
+      if (visited(person) == 1) length
       else {
-        var u = i
-        var cnt = 0
-        breakable({
-          while (true) {
-            cnt += 1
-            u = favorite(u)
-            used(u) = true
-            if (u == i) break
-          }
-        })
-        ring = ring.max(cnt)
+        visited(person) = 1
+        maxLength(favorite(person), length + 1)
       }
-    })
-    ring.max(total)
+
+    val (type1, type2) = favorite
+      .zipWithIndex
+      .foldLeft(0, 0) { case ((type1, type2), (fav, person)) =>
+        if (visited(person) == 1) (type1, type2)
+        else {
+          val length = maxLength(person, length = 0)
+          if (length == 2) (type1 + dp(person) + dp(fav) + 2, type2)
+          else (type1, type2.max(length))
+        }
+      }
+
+    type1.max(type2)
   }
 }
