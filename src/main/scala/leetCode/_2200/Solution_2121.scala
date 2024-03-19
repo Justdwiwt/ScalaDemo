@@ -2,7 +2,7 @@ package leetCode._2200
 
 object Solution_2121 {
   def getDistances(arr: Array[Int]): Array[Long] = {
-    val tmp = arr.zipWithIndex.groupBy(_._1).mapValues(v => v.map(_._2.toLong))
+    val tmp = arr.zipWithIndex.groupBy(_._1).mapValues(_.map(_._2.toLong))
     val res = Array.fill(arr.length)(0L)
     tmp.foreach({ case (_, v) =>
       val l = v.scanLeft(0L)(_ + _)

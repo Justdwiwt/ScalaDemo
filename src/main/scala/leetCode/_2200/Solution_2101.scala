@@ -36,7 +36,7 @@ object Solution_2101 {
       m(t) = m.getOrElse(t, 0) + 1
     })
     var res = 0
-    m.foreach({ case (_, v) => res = res.max(v) })
+    m.foreach { case (_, v) => res = res.max(v) }
     res
   }
 
@@ -59,7 +59,7 @@ object Solution_2101 {
 
     var mx = 0
     bombs.indices.foreach(i => {
-      bombs.indices.foreach(j => arr(j) = false)
+      bombs.indices.foreach(arr(_) = false)
       mx = mx.max(g(i))
     })
     mx
