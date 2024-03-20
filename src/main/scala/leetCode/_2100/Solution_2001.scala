@@ -10,6 +10,6 @@ object Solution_2001 {
     rectangles.groupBy[String](rec => {
       val g = gcd(rec.head, rec(1))
       rec.head / g + "@" + rec(1) / g
-    }).map({ case (_, a) => f((a.length - 1).toLong) }).sum
+    }).map { case (_, a) => f((a.length - 1).toLong) }.sum
   }
 }

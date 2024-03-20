@@ -2,7 +2,7 @@ package leetCode._2100
 
 object Solution_2012 {
   def sumOfBeauties(nums: Array[Int]): Int = {
-    val (forward, _) = nums.indices.drop(1).dropRight(1)./:((List.empty[Int], nums(0))) {
+    val (forward, _) = nums.indices.drop(1).dropRight(1)./:((List.empty[Int], nums.head)) {
       case ((acc, curMx), i) =>
         if (nums(i) > curMx) (2 :: acc, nums(i))
         else if (nums(i) > nums(i - 1)) (1 :: acc, curMx)
