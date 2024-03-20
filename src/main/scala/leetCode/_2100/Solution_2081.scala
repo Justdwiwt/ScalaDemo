@@ -13,7 +13,7 @@ object Solution_2081 {
       if (i == -1) false
       else {
         ab(i) += 1
-        (i + 1 until ab.size).foreach(i => ab(i) = 0)
+        (i + 1 until ab.size).foreach(ab(_) = 0)
         true
       }
     }

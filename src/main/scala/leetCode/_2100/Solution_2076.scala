@@ -15,15 +15,15 @@ object Solution_2076 {
       val t = arr.clone()
       t(root(t, a)) = root(t, b)
       restrictions
-        .withFilter({ case Array(_, _) => true; case _ => false })
-        .foreach({ case Array(c, d) => if (root(t, c) == root(t, d)) return (false, arr) })
+        .withFilter { case Array(_, _) => true; case _ => false }
+        .foreach { case Array(c, d) => if (root(t, c) == root(t, d)) return (false, arr) }
       (true, t)
     }
 
-    requests.map({ case Array(a, b) =>
+    requests.map { case Array(a, b) =>
       val (r, n) = procReq(a, b)
       arr = n
       r
-    })
+    }
   }
 }
