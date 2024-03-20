@@ -1,33 +1,24 @@
 package leetCode._2100
 
-object Solution_2035 {
-  def calCombinations(nums: Array[Int]): collection.mutable.Map[Int, java.util.TreeSet[java.lang.Integer]] = {
-    val res = collection.mutable.Map[Int, java.util.TreeSet[java.lang.Integer]]()
-    1.until(math.pow(2, nums.length).asInstanceOf[Int]).foreach(i => {
-      val comb = nums.indices.filter(j => (i & 1 << j) != 0).map(j => nums(j))
-      res.getOrElseUpdate(comb.length, new java.util.TreeSet[java.lang.Integer]()).add(comb.sum)
-    })
-    res
-  }
+import scala.collection.Searching.search
 
+object Solution_2035 {
   def minimumDifference(nums: Array[Int]): Int = {
-    val left = nums.slice(0, nums.length / 2)
-    val right = nums.slice(nums.length / 2, nums.length)
-    var res = left.sum
-    val leftComb = calCombinations(left)
-    val rightComb = calCombinations(right)
-    val half = nums.sum.asInstanceOf[Double] / 2
-    1.until(nums.length / 2).foreach(i => {
-      leftComb(i).forEach(num1 => {
-        val target = (half - num1).asInstanceOf[Int]
-        val n1 = rightComb(nums.length / 2 - i).ceiling(target)
-        val n2 = rightComb(nums.length / 2 - i).floor(target)
-        if (n1 != null && (half - res).abs > (half - (num1 + n1)).abs)
-          res = num1 + n1
-        if (n2 != null && (half - res).abs > (half - (num1 + n2)).abs)
-          res = num1 + n2
+    val n = nums.length / 2
+    val (l, r) = nums.splitAt(n)
+    val (lSum, rSum) = (l.sum, r.sum)
+    var minDiff = Int.MaxValue
+    (0 to n / 2).foreach(i => {
+      val leftDiffs = l.combinations(i).map(_.sum * 2 - lSum).toArray.sorted
+      r.combinations(n - i).foreach(rightCombo => {
+        val targetDiff = 2 * rightCombo.sum - rSum
+        val leftDiffIdx = leftDiffs.search(-targetDiff).insertionPoint
+        if (leftDiffIdx > 0)
+          minDiff = minDiff.min((leftDiffs(leftDiffIdx - 1) + targetDiff).abs)
+        if (leftDiffIdx < leftDiffs.length)
+          minDiff = minDiff.min((leftDiffs(leftDiffIdx) + targetDiff).abs)
       })
     })
-    (nums.sum - 2 * res).abs
+    minDiff
   }
 }

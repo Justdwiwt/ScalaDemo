@@ -4,34 +4,25 @@ import scala.collection.mutable
 
 object Solution_2039 {
   def networkBecomesIdle(edges: Array[Array[Int]], patience: Array[Int]): Int = {
-    val m = mutable.HashMap.empty[Int, mutable.ArrayBuffer[Int]]
-    edges
-      .withFilter({ case Array(_, _) => true; case _ => false })
-      .foreach({ case Array(from, to) =>
-        m.getOrElseUpdate(from, mutable.ArrayBuffer()).append(to)
-        m.getOrElseUpdate(to, mutable.ArrayBuffer()).append(from)
-      })
-
-    val arr = Array.fill[Int](m.size)(-1)
-    val pq = mutable.PriorityQueue[(Int, Int)]((0, 0))((x: (Int, Int), y: (Int, Int)) => y._2 - x._1)
-
-    while (pq.nonEmpty) {
-      val (node, d) = pq.dequeue()
-      if (arr(node) == -1 || arr(node) > d) {
-        arr(node) = d
-        m(node).foreach(child => pq += ((child, d + 1)))
-      }
+    val m = mutable.Map.empty[Int, mutable.ListBuffer[Int]]
+    edges.foreach { case Array(from, to) =>
+      m.getOrElseUpdate(from, mutable.ListBuffer.empty).append(to)
+      m.getOrElseUpdate(to, mutable.ListBuffer.empty).append(from)
     }
 
-    val cc = arr.map(_ * 2).zipWithIndex.map({ case (fullDist, idx) =>
-      if (idx == 0) 0
-      else {
-        val v = fullDist % patience(idx)
-        if (v != 0) 2 * fullDist - v
-        else 2 * fullDist - v - patience(idx)
-      }
-    })
+    var res = 0
+    val toVisit = mutable.Queue(m(0).map((_, 1)): _*)
+    val visited = mutable.Set(m(0) :+ 0: _*)
 
-    1 + cc.max
+    while (toVisit.nonEmpty) {
+      val (curr, distance) = toVisit.dequeue()
+      val lastRetryTimeLeft = (2 * distance - 1) / patience(curr) * patience(curr)
+      res = res.max(distance * 2 + lastRetryTimeLeft)
+      m(curr).foreach(next => {
+        if (!visited.contains(next)) visited.add(next)
+        toVisit.enqueue((next, distance + 1))
+      })
+    }
+    res + 1
   }
 }

@@ -23,7 +23,7 @@ object Solution_2050 {
     while (q.nonEmpty) {
       val course = q.dequeue()
       val in = incoming(course)
-      calcTimes(course) = time(course - 1) + (if (in.isEmpty) 0 else in.map(i => calcTimes(i)).max)
+      calcTimes(course) = time(course - 1) + (if (in.isEmpty) 0 else in.map(calcTimes(_)).max)
       outgoing(course).foreach(out => {
         unknownIncoming(out).remove(course)
         if (unknownIncoming(out).isEmpty)
