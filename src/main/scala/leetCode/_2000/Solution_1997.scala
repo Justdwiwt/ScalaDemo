@@ -2,15 +2,9 @@ package leetCode._2000
 
 object Solution_1997 {
   def firstDayBeenInAllRooms(nextVisit: Array[Int]): Int = {
-    val f = Array.fill[Long](nextVisit.length)(0)
-    val g = Array.fill[Long](nextVisit.length)(0)
-    f(0) = 1
-    g(0) = 2
-    val M = 1000000007L
-    nextVisit.indices.drop(1).foreach(i => {
-      f(i) = (g(i - 1) + 1) % M
-      g(i) = (2 * f(i) - f(nextVisit(i)) + 1) % M
-    })
-    ((f.last + M - 1) % M).toInt
+    val M = 1000000007
+    val dp = Array.fill(nextVisit.length)(0L)
+    nextVisit.indices.tail.foreach(day => dp(day) = (2 + 2 * dp(day - 1) - dp(nextVisit(day - 1)) + M) % M)
+    (dp.last % M).toInt
   }
 }
