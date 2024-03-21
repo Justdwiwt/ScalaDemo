@@ -8,7 +8,7 @@ object Solution_1981 {
       val next = Array.ofDim[Boolean](5000)
       arr
         .indices
-        .withFilter(value => arr(value))
+        .withFilter(arr(_))
         .foreach(value => row.foreach(num => next(num + value) = true))
       arr = next
     })

@@ -5,23 +5,24 @@ object Solution_1993 {
 
     val m = scala.collection.mutable.Map.empty[Int, Int]
 
-    val desc: Map[Int, Vector[Int]] = _parent
+    private val desc: Map[Int, Vector[Int]] = _parent
       .zipWithIndex
-      .groupBy({ case (par, _) => par })
+      .groupBy { case (par, _) => par }
       .map { case (p, desc) => p -> desc.map(_._2).toVector }
       .withDefaultValue(Vector.empty)
 
-    def noLockedAncestors(num: Int): Boolean = {
+    @scala.annotation.tailrec
+    private def noLockedAncestors(num: Int): Boolean = {
       val parent = _parent(num)
       if (m.contains(num)) false
       else if (parent == -1) true
       else noLockedAncestors(parent)
     }
 
-    def anyLockedDescendent(num: Int): Boolean =
+    private def anyLockedDescendent(num: Int): Boolean =
       desc(num).exists(n => m.contains(n) || anyLockedDescendent(n))
 
-    def unlockDescendents(num: Int): Unit =
+    private def unlockDescendents(num: Int): Unit =
       desc(num).foreach(n => {
         m -= n
         unlockDescendents(n)
