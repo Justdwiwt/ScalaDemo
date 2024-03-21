@@ -20,20 +20,18 @@ object Solution_1970 {
         else latestDayToCross(start, mid)
       }
 
-    def canCross(water: Set[(Int, Int)]) = {
+    def canCross(water: Set[(Int, Int)]): Boolean = {
       @scala.annotation.tailrec
       def canCross(states: Set[(Int, Int)], visited: Set[(Int, Int)]): Boolean = {
         if (states.isEmpty) false
         else if (states.exists(_._1 == numRows)) true
-        else canCross(
-          states.flatMap({
-            case (row, col) => Iterable((row - 1) -> col, (row + 1) -> col, row -> (col - 1), row -> (col + 1))
-              .filter({ case (row, col) => (1 to numRows).contains(row) && (1 to numCols).contains(col) })
-              .filterNot(water.contains)
-              .filterNot(states.contains)
-              .filterNot(visited.contains)
-          }),
-          visited ++ states)
+        else canCross(states.flatMap {
+          case (row, col) => Iterable((row - 1) -> col, (row + 1) -> col, row -> (col - 1), row -> (col + 1))
+            .filter { case (row, col) => (1 to numRows).contains(row) && (1 to numCols).contains(col) }
+            .filterNot(water.contains)
+            .filterNot(states.contains)
+            .filterNot(visited.contains)
+        }, visited ++ states)
       }
 
       canCross((1 to numCols).map(1 -> _).filterNot(water.contains).toSet, Set())
