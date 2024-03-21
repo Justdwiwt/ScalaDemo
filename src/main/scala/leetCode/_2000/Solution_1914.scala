@@ -27,16 +27,16 @@ object Solution_1914 {
     }
 
     (0 until l)
-      .map({ ci => val cl = circleLength(ci); (ci, cl) })
-      .map({ case (ci, cl) => val offset = k % cl; (ci, cl, offset) })
-      .withFilter({ case (_, _, offset) => offset != 0 })
-      .foreach({ case (ci, cl, offset) =>
+      .map { ci => val cl = circleLength(ci); (ci, cl) }
+      .map { case (ci, cl) => val offset = k % cl; (ci, cl, offset) }
+      .withFilter { case (_, _, offset) => offset != 0 }
+      .foreach { case (ci, cl, offset) =>
         val tmp = Array.fill[Int](offset)(0)
         (0 until offset).foreach(i => tmp(i) = get(ci, i))
         (0 until cl)
-          .map({ i => val fr = (i + offset) % cl; (i, fr) })
-          .foreach({ case (i, fr) => if (fr < offset) set(ci, i, tmp(fr)) else set(ci, i, get(ci, fr)) })
-      })
+          .map { i => val fr = (i + offset) % cl; (i, fr) }
+          .foreach { case (i, fr) => if (fr < offset) set(ci, i, tmp(fr)) else set(ci, i, get(ci, fr)) }
+      }
     grid
   }
 }
