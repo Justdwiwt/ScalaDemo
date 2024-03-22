@@ -1,11 +1,16 @@
 package leetCode._1900
 
 object Solution_1866 {
-  def rearrangeSticks(n: Int, k: Int): Int = {
-    val M = (1e9 + 7).toInt
-    val dp = Array.fill(n + 1, k + 1)(0L)
-    dp(0)(0) = 1L
-    (1 to n).foreach(i => (1 to (i min k)).foreach(j => dp(i)(j) = (dp(i - 1)(j - 1) + (i - 1) * dp(i - 1)(j)) % M))
-    dp.last.last.toInt
-  }
+  private val M = 1000000007
+
+  def rearrangeSticks(n: Int, k: Int): Int = (1 to n)
+    .foldLeft(IndexedSeq(1L)) {
+      case (numArrangements, n) => IndexedSeq.tabulate(n.min(k) + 1) {
+        case 0 => 0
+        case k if k == n => 1
+        case k => (numArrangements(k - 1) + (n - 1) * numArrangements(k)) % M
+      }
+    }
+    .apply(k)
+    .toInt
 }

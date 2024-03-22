@@ -7,5 +7,5 @@ object Solution_1897 {
     .groupBy(x => x)
     .mapValues(_.size)
     .values
-    .forall(x => x % words.length == 0)
+    .forall(_ % words.length == 0)
 }
