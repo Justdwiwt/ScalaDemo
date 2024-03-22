@@ -10,7 +10,7 @@ object Solution_1824 {
       else {
         val arr = Array.fill(3)(Int.MaxValue)
         (1 to 3)
-          .withFilter(a => a != obstacles(i))
+          .withFilter(_ != obstacles(i))
           .withFilter(a => pa(a - 1) != Int.MaxValue)
           .foreach(a => {
             arr(a - 1) = arr(a - 1).min(pa(a - 1))

@@ -1,14 +1,11 @@
 package leetCode._1900
 
 object Solution_1833 {
-  def maxIceCream(costs: Array[Int], coins: Int): Int = {
-    var res = 0
-    costs.sorted./:(coins)((l, i) =>
-      if (l >= i) {
-        res += 1
-        l - i
-      } else return res
-    )
-    res
-  }
+  def maxIceCream(costs: Array[Int], coins: Int): Int = costs
+    .sorted
+    .foldLeft(0, 0) { case ((total, count), cost) =>
+      if (total + cost > coins) (total, count)
+      else (total + cost, count + 1)
+    }
+    ._2
 }
