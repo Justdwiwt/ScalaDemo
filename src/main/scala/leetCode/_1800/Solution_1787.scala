@@ -26,9 +26,9 @@ object Solution_1787 {
       else {
         val na = Array.fill[Int](n)(minPre + nr)
         (0 until n).foreach(i => fr
-          .map({ case (d, c) => val j = i ^ d; ((d, c), j) })
-          .foreach({ case ((_, c), j) => na(j) = na(j).min(pa(i) + nr - c) }))
-        if (r == k - 1) na(0) else check(na, na.min, r + 1)
+          .map { case (d, c) => val j = i ^ d; ((d, c), j) }
+          .foreach { case ((_, c), j) => na(j) = na(j).min(pa(i) + nr - c) })
+        if (r == k - 1) na.head else check(na, na.min, r + 1)
       }
     }
 
