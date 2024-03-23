@@ -7,7 +7,7 @@ object Solution_1733 {
       .flatten
       .distinct
       .map(l => friendships
-        .filterNot({ case Array(a, b) => languages(a - 1).exists(lang(b - 1).contains) })
+        .filterNot { case Array(a, b) => languages(a - 1).exists(lang(b - 1).contains) }
         .flatten
         .distinct
         .filterNot(x => lang(x - 1).contains(l))

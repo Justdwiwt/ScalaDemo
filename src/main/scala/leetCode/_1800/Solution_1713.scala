@@ -19,7 +19,7 @@ object Solution_1713 {
       else ab(lo + 1) = target
     }
 
-    arr.foreach(v => m.get(v).foreach(i => add(i)))
+    arr.foreach(m.get(_).foreach(add))
     target.length - ab.size - -1
   }
 }
