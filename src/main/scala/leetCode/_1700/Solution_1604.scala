@@ -12,10 +12,10 @@ object Solution_1604 {
       a.head.toInt * 60 + a(1).toInt
     }
 
-    keyName.zip(keyTime).foreach({ case (name, time) =>
+    keyName.zip(keyTime).foreach { case (name, time) =>
       if (!m.contains(name)) m += (name -> new ArrayBuffer[Int])
       m(name) += _strTime(time)
-    })
+    }
 
     def f(arr: Array[Int]): Boolean = {
       (0 to arr.length - 3).foreach(i => if (arr(i + 2) - arr(i) <= 60) return true)
@@ -23,8 +23,8 @@ object Solution_1604 {
     }
 
     m
-      .filter({ case (_, arr) => if (arr.length < 3) false else f(arr.sortWith(_ < _).toArray) })
-      .map({ case (name, _) => name })
+      .filter { case (_, arr) => if (arr.length < 3) false else f(arr.sortWith(_ < _).toArray) }
+      .map { case (name, _) => name }
       .toList
       .sortWith(_ < _)
   }
