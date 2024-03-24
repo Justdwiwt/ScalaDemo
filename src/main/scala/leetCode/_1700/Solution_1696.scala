@@ -1,17 +1,17 @@
 package leetCode._1700
 
 object Solution_1696 {
-  def maxResult(nums: Array[Int], k: Int): Int = {
-    val list = new java.util.LinkedList[Int]
-    list.add(0)
-    val dp = Array.fill(nums.length)(0)
-    dp(0) = nums.head
-    nums.indices.drop(1).foreach(i => {
-      if (i - list.peekFirst() > k) list.removeFirst()
-      dp(i) = dp(list.peekFirst()) + nums(i)
-      while (!list.isEmpty && dp(list.peekLast()) <= dp(i)) list.removeLast()
-      list.add(i)
-    })
-    dp(nums.length - 1)
-  }
+  private case class MaxScore(i: Int, value: Int)
+
+  def maxResult(nums: Array[Int], k: Int): Int = nums
+    .indices
+    .tail
+    .foldLeft(Array(MaxScore(0, nums(0)))) { (dp, j) =>
+      val dp1 = Iterator.iterate(dp)(_.tail).dropWhile(_.head.i + k < j).next()
+      val score = dp1.head.value + nums(j)
+      val dp2 = Iterator.iterate(dp1)(_.dropRight(1)).dropWhile(_.lastOption.exists(_.value < score)).next()
+      dp2 :+ MaxScore(j, score)
+    }
+    .last
+    .value
 }

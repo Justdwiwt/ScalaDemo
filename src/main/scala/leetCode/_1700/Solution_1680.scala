@@ -1,14 +1,6 @@
 package leetCode._1700
 
 object Solution_1680 {
-  def concatenatedBinary(n: Int): Int = {
-    val M = (1e9 + 7).toInt
-    var res = 0L
-    var bit = 0
-    (1 to n).foreach(i => {
-      if ((i & (i - 1)) == 0) bit += 1
-      res = ((res << bit) + i) % M
-    })
-    res.toInt
-  }
+  def concatenatedBinary(n: Int): Int = (1 to n)
+    .foldLeft(0)((res, num) => num.toBinaryString.foldLeft(res)((res, d) => ((res << 1) + d - '0') % (1e9 + 7).toInt))
 }
