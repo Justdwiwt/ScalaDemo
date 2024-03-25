@@ -1,21 +1,37 @@
 package leetCode._1600
 
-import scala.collection.mutable
-
 object Solution_1585 {
   def isTransformable(s: String, t: String): Boolean = {
-    val diff = Array.fill(10)(mutable.ArrayBuffer[Int]())
-    s.indices.foreach(i => diff(s(i).toString.toInt).append(i))
-    val arr = Array.fill(10)(0)
-    t.indices.foreach(i => {
-      val n = t(i).toString.toInt
-      arr.update(n, arr(n) + 1)
-      if (diff(n).length < arr(n)) return false
-      if (i > 0 && t(i) < t(i - 1)) {
-        val b = t(i - 1).toString.toInt
-        if (diff(n)(arr(n) - 1) < diff(b)(arr(b) - 1)) return false
+    def get(data: Map[Int, Int])(i: Int, j: Int, k: Int, l: Int, r: Int): Int = {
+      if (j == k || l == r) Int.MaxValue
+      else if (l == j && r == k) data(i)
+      else {
+        val (m, il, ir) = ((j + k) / 2, 2 * i + 1, 2 * i + 2)
+        get(data)(il, j, m, m.min(l), m.min(r)).min(get(data)(ir, m, k, m.max(l), m.max(r)))
       }
-    })
-    true
+    }
+
+    def put(data: Map[Int, Int])(i: Int, j: Int, k: Int, t: Int, v: Int): Map[Int, Int] = {
+      if (j + 1 == k) data + (i -> v)
+      else {
+        val (m, il, ir) = ((j + k) / 2, 2 * i + 1, 2 * i + 2)
+        val newData = if (t < m) put(data)(il, j, m, t, v) else put(data)(ir, m, k, t, v)
+        newData + (i -> newData(il).min(newData(ir)))
+      }
+    }
+
+    val sWithInd = s.map(_ - '0').zipWithIndex
+    val segTree = sWithInd.foldLeft(Map[Int, Int]().withDefaultValue(Int.MaxValue)) {
+      case (tree, (x, i)) => put(tree)(0, 0, s.length, i, x)
+    }
+    val indices = sWithInd.groupBy(_._1).mapValues(_.map(_._2).toVector)
+
+    t.map(_ - '0').iterator.scanLeft(segTree, indices, true) { case ((tree, ind, _), digit) =>
+      ind.get(digit) match {
+        case Some(i +: tail) if get(tree)(0, 0, s.length, 0, i) >= digit =>
+          (put(tree)(0, 0, s.length, i, Int.MaxValue), ind + (digit -> tail), true)
+        case _ => (tree, ind, false)
+      }
+    }.forall(_._3)
   }
 }
