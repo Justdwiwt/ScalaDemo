@@ -6,18 +6,18 @@ import scala.collection.mutable.ListBuffer
 object Solution_1600 {
   class ThroneInheritance(_kingName: String) {
 
-    var kingName: String = _kingName
+    private var kingName: String = _kingName
     var m = mutable.HashMap.empty[String, List[String]]
     var st = mutable.HashSet.empty[String]
 
     m += kingName -> List.empty[String]
 
-    def birth(parentName: String, childName: String) {
+    def birth(parentName: String, childName: String): Unit = {
       m(parentName) :+= childName
       m += childName -> List.empty[String]
     }
 
-    def death(name: String) {
+    def death(name: String): Unit = {
       st += name
     }
 
@@ -27,9 +27,9 @@ object Solution_1600 {
       res.toList
     }
 
-    def dfs(res: ListBuffer[String], name: String): Unit = {
+    private def dfs(res: ListBuffer[String], name: String): Unit = {
       if (!st.contains(name)) res += name
-      m(name).foreach(s => dfs(res, s))
+      m(name).foreach(dfs(res, _))
     }
 
   }
