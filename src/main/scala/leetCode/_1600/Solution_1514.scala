@@ -17,12 +17,12 @@ object Solution_1514 {
   }
 
   @scala.annotation.tailrec
-  def f(r: Array[Double], g: Array[Seq[(Int, Double)]], s: mutable.Set[Int]): Array[Double] = {
+  private def f(r: Array[Double], g: Array[Seq[(Int, Double)]], s: mutable.Set[Int]): Array[Double] = {
     if (s.isEmpty) r
     else {
       val h = s.head
       s -= h
-      val nq = g(h).map(e => e._1 -> r(h) * e._2).filter(e => e._2 > r(e._1)).map({ e => r(e._1) = e._2; e._1 })
+      val nq = g(h).map(e => e._1 -> r(h) * e._2).filter(e => e._2 > r(e._1)).map { e => r(e._1) = e._2; e._1 }
       s ++= nq
       f(r, g, s)
     }

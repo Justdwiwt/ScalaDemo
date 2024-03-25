@@ -5,7 +5,7 @@ import scala.util.Try
 
 object Solution_1569 {
 
-  class ModularNumeric(k: BigInt) extends Numeric[BigInt] {
+  private class ModularNumeric(k: BigInt) extends Numeric[BigInt] {
     assert(k > 0)
 
     override def plus(x: BigInt, y: BigInt): BigInt = abs(x + y)
@@ -39,7 +39,7 @@ object Solution_1569 {
     def factorial(x: BigInt): BigInt = abs(NumericRange.inclusive(BigInt(2), x, BigInt(1)).product)
   }
 
-  class ModularFractional(k: BigInt) extends ModularNumeric(k) with Fractional[BigInt] {
+  private class ModularFractional(k: BigInt) extends ModularNumeric(k) with Fractional[BigInt] {
     assert(ModularFractional.isPrime(k))
 
     override def div(x: BigInt, y: BigInt): BigInt = times(x, y.modInverse(k))
@@ -47,7 +47,7 @@ object Solution_1569 {
     def choose(x: BigInt, y: BigInt): BigInt = div(div(factorial(x), factorial(y)), factorial(x - y))
   }
 
-  object ModularFractional {
+  private object ModularFractional {
     private def isPrime(x: BigInt) = NumericRange
       .inclusive(BigInt(2), x, BigInt(1))
       .takeWhile(y => y * y <= x)
