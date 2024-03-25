@@ -5,7 +5,7 @@ object Solution_1504 {
     mat.head.indices.foreach(j => mat
       .indices
       .drop(1)
-      .withFilter(i => mat(i)(j) != 0)
+      .withFilter(mat(_)(j) != 0)
       .foreach(i => mat(i)(j) += mat(i - 1)(j))
     )
     var res = 0

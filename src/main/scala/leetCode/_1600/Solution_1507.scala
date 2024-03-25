@@ -10,7 +10,7 @@ object Solution_1507 {
         if (i < 9) res += "0" + (i + 1)
         else res += (i + 1)
     })
-    val day = str(0).substring(0, str(0).length - 2)
+    val day = str.head.substring(0, str.head.length - 2)
     res + "-" + (if (day.length > 1) day else "0" + day)
   }
 }
