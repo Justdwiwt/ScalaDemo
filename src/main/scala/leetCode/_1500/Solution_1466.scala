@@ -15,12 +15,12 @@ object Solution_1466 {
 
     def dfs(node: Int): Unit = {
       vis += node -> ()
-      graph(node).foreach({ case (child, existingEdge) =>
+      graph(node).foreach { case (child, existingEdge) =>
         if (!vis.contains(child)) {
           if (existingEdge) cnt += 1
           dfs(child)
         }
-      })
+      }
     }
 
     dfs(0)
