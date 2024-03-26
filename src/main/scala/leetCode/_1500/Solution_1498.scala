@@ -26,7 +26,8 @@ object Cal {
   val M: Long = 1e9.toLong + 7
   val zero: Long = 0.toLong
 
-  def getMod(x: Long, flag: Boolean = true): Long = if (flag) x % M else x
+  def getMod(x: Long, flag: Boolean = true): Long =
+    if (flag) x % M else x
 
   def sum(seq: Seq[Int], flag: Boolean = true): Int =
     getMod(seq./:(zero)((acc, x) => acc + x.toLong), flag).toInt
@@ -45,16 +46,16 @@ object Solution_1498_2 {
     val A = Array.fill(M + 1)(0)
     val B = Array.fill(M + 1)(0)
     val base2 = Array.fill(nums.length + 1)(1.toLong)
-    (1 to nums.length).foreach({ i => base2(i) = (2 * base2(i - 1)) % Cal.M })
-    nums.foreach({ x => A(x) += 1 })
+    (1 to nums.length).foreach { i => base2(i) = (2 * base2(i - 1)) % Cal.M }
+    nums.foreach(A(_) += 1)
     (1 to M).foreach(i => B(i) = B(i - 1) + A(i))
     (1 to M)
-      .withFilter(x => A(x) > 0)
+      .withFilter(A(_) > 0)
       .withFilter(x => target - x >= x)
-      .map({ x => val tmp = M.min(target - x); (x, tmp) })
-      .map({ case (x, tmp) => val f = base2(A(x)) - 1; (x, tmp, f) })
-      .map({ case (x, tmp, f) => val g = base2(B(tmp) - B(x)); (x, tmp, f, g) })
-      .foreach({ case (_, _, f, g) => res = (res + f * g) % Cal.M })
+      .map { x => val tmp = M.min(target - x); (x, tmp) }
+      .map { case (x, tmp) => val f = base2(A(x)) - 1; (x, tmp, f) }
+      .map { case (x, tmp, f) => val g = base2(B(tmp) - B(x)); (x, tmp, f, g) }
+      .foreach { case (_, _, f, g) => res = (res + f * g) % Cal.M }
     (res % Cal.M).toInt
   }
 }

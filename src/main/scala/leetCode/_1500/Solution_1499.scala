@@ -9,14 +9,14 @@ object Solution_1499 {
     var r = 1
     var res = Int.MinValue
     while (l < points.length - 1) {
-      if (r < points.length && points(r)(0) - points(l)(0) <= k) {
-        pq.add(Array(points(r)(1) + points(r)(0), points(r)(0)))
+      if (r < points.length && points(r).head - points(l).head <= k) {
+        pq.add(Array(points(r)(1) + points(r).head, points(r).head))
         r += 1
       } else {
-        while (!pq.isEmpty && pq.peek()(1) <= points(l)(0)) pq.poll()
+        while (!pq.isEmpty && pq.peek()(1) <= points(l).head) pq.poll()
         if (!pq.isEmpty) {
           val t = pq.peek()
-          res = res.max(t(0) + points(l)(1) - points(l)(0))
+          res = res.max(t.head + points(l)(1) - points(l).head)
         }
         l += 1
         if (l == r) r += 1
@@ -29,19 +29,25 @@ object Solution_1499 {
 object Bisect {
   type AB = mutable.ArrayBuffer[Int]
 
-  def insort(ab: AB, x: Int): Unit = insort_right(ab, x)
+  def insort(ab: AB, x: Int): Unit =
+    insort_right(ab, x)
 
-  def insort_right(ab: AB, x: Int): Unit = ab.insert(bisect(ab, x), x)
+  private def insort_right(ab: AB, x: Int): Unit =
+    ab.insert(bisect(ab, x), x)
 
-  def insort_left(ab: AB, x: Int): Unit = ab.insert(bisect_left(ab, x), x)
+  def insort_left(ab: AB, x: Int): Unit =
+    ab.insert(bisect_left(ab, x), x)
 
-  def bisect(ab: AB, x: Int): Int = bisect_right(ab, x)
+  private def bisect(ab: AB, x: Int): Int =
+    bisect_right(ab, x)
 
-  def bisect_right(ab: AB, x: Int): Int = bisect_right(ab, x, 0, ab.length)
+  private def bisect_right(ab: AB, x: Int): Int =
+    bisect_right(ab, x, 0, ab.length)
 
-  def bisect_left(ab: AB, x: Int): Int = bisect_left(ab, x, 0, ab.length)
+  private def bisect_left(ab: AB, x: Int): Int =
+    bisect_left(ab, x, 0, ab.length)
 
-  def bisect_left(ab: AB, target: Int, l: Int, r: Int): Int =
+  private def bisect_left(ab: AB, target: Int, l: Int, r: Int): Int =
     if (l >= r) l else {
       val mid = l + (r - l) / 2
       if (ab(mid) < target) bisect_right(ab, target, mid + 1, r)
@@ -49,7 +55,7 @@ object Bisect {
     }
 
   @scala.annotation.tailrec
-  def bisect_right(ab: AB, target: Int, l: Int, r: Int): Int =
+  private def bisect_right(ab: AB, target: Int, l: Int, r: Int): Int =
     if (l >= r) l else {
       val mid = l + (r - l) / 2
       if (ab(mid) <= target) bisect_right(ab, target, mid + 1, r)
@@ -74,8 +80,8 @@ object Solution2 {
     var ret = -1e9.toInt
     points.indices.foreach(i => points(i) match {
       case Array(xi, yi) =>
-        while (pos < i && xi - points(pos)(0) > k) {
-          Bisect.remove(ab, points(pos)(1) - points(pos)(0))
+        while (pos < i && xi - points(pos).head > k) {
+          Bisect.remove(ab, points(pos)(1) - points(pos).head)
           pos += 1
         }
         if (ab.nonEmpty) ret = ret max (xi + yi + ab.last)

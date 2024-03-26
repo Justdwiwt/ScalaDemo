@@ -12,7 +12,7 @@ object Solution_1494 {
     })
     val all = 1 << n
     val dp = Array.fill(all)(0)
-    (0 until all).foreach(i => dp(i) = n)
+    (0 until all).foreach(dp(_) = n)
     dp(0) = 0
     (0 until all).foreach(state => {
       var next = 0
@@ -53,7 +53,7 @@ class Topology[T] {
 
   def build_graph(l: List[Edge[T]], inDegrees: mutable.HashMap[T, Int]): (mutable.HashMap[T, Int], Graph[T]) = {
     val graph = new Graph[T]()
-    l.foreach({ case Edge(x, y) => graph.add(x, y); inDegrees(y) += 1 })
+    l.foreach { case Edge(x, y) => graph.add(x, y); inDegrees(y) += 1 }
     (inDegrees, graph)
   }
 
@@ -61,17 +61,17 @@ class Topology[T] {
     val n = inDegrees.size
     var nPoints = 0
     var r = 0
-    var Q = inDegrees.keySet.withFilter(v => inDegrees(v) == 0).map(v => v).toSeq
+    var Q = inDegrees.keySet.withFilter(inDegrees(_) == 0).map(v => v).toSeq
 
-    def f(v: T): Int = graph.get(v).count(x => inDegrees(x) == 1)
+    def f(v: T): Int = graph.get(v).count(inDegrees(_) == 1)
 
     while (Q.nonEmpty) {
-      Q = Q.sortBy(x => -f(x))
+      Q = Q.sortBy(-f(_))
       var nQ = if (Q.length <= limit) Seq.empty[T] else Q.slice(limit, Q.length)
       Q = Q.slice(0, limit)
       r += 1
       nPoints += Q.length
-      Q.foreach(v => graph.get(v).foreach(x => {
+      Q.foreach(graph.get(_).foreach(x => {
         inDegrees(x) -= 1
         if (inDegrees(x) == 0) nQ = nQ :+ x
       }))
@@ -84,12 +84,11 @@ class Topology[T] {
 object Solution_1494_2 {
   def minNumberOfSemesters(n: Int, dependencies: Array[Array[Int]], k: Int): Int = {
     val tp = new Topology[Int]()
-    val seqs = dependencies.toList.map({ case Array(a, b) => Edge[Int](a, b) })
-    val inDegress = mutable.HashMap[Int, Int]()
-    (1 to n).foreach(i => inDegress.put(i, 0))
+    val seqs = dependencies.toList.map { case Array(a, b) => Edge[Int](a, b) }
+    val inDegress = mutable.HashMap.empty[Int, Int]
+    (1 to n).foreach(inDegress.put(_, 0))
     tp.build_graph(seqs, inDegress) match {
-      case (deg, g) =>
-        tp.min_topology_sort_steps(deg, g, k)
+      case (deg, g) => tp.min_topology_sort_steps(deg, g, k)
     }
   }
 }

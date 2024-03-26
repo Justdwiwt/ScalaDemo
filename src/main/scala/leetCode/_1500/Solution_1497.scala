@@ -2,14 +2,12 @@ package leetCode._1500
 
 object Solution_1497 {
   def canArrange(arr: Array[Int], k: Int): Boolean = {
-    val A = Array.fill(k)(0)
-    arr.foreach(v => {
-      var t = v % k
-      if (t < 0) t += k
-      A(t) += 1
-    })
-    if (A(0) % 2 != 0) return false
-    (1 to k / 2).foreach(i => if (!(A(i) == A(k - i))) return false)
-    true
+    lazy val m = arr
+      .toList
+      .map(n => ((n % k) + k) % k)
+      .groupBy(i => i)
+      .mapValues(_.size)
+
+    m.forall { case (k1, v1) => if (k1 == 0) (v1 % 2) == 0 else m.get(k - k1).contains(v1) }
   }
 }
