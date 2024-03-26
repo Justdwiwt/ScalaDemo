@@ -9,6 +9,6 @@ object Solution_1437 {
       case (_, i) :: (_, j) :: _ => if (j - i >= k + 1) f(l.tail) else false
     }
 
-    f(nums.zipWithIndex.filter({ case (x, _) => x == 1 }).toList)
+    f(nums.zipWithIndex.filter { case (x, _) => x == 1 }.toList)
   }
 }

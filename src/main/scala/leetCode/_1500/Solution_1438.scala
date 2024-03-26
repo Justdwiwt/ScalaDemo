@@ -1,29 +1,21 @@
 package leetCode._1500
 
+import scala.collection.immutable.SortedSet
+
 object Solution_1438 {
   def longestSubarray(nums: Array[Int], limit: Int): Int = {
-    var left = 0
-    var right = 0
-    if (nums.length < 2) return nums.length
-    var mxn = 0
-    var mnn = 0
-    var res = 0
-    while (right < nums.length) {
-      if (right == left) {
-        mxn = right
-        mnn = right
-      } else {
-        if (nums(right) >= nums(mxn)) mxn = right
-        if (nums(right) <= nums(mnn)) mnn = right
-      }
-      if (nums(mxn) - nums(mnn) <= limit) right += 1
-      else {
-        while (left < mxn && left < mnn) left += 1
-        left += 1
-        right = left
-      }
-      res = res.max(right - left)
+    @scala.annotation.tailrec
+    def f(lo: Int, hi: Int, set: Set[(Int, Int)], acc: Int): Int = {
+      lazy val ((mn, imn), tmn) = set.head -> set.tail
+      lazy val ((mx, imx), tmx) = set.last -> set.init
+      if (hi >= nums.length) acc
+      else if (set.isEmpty) f(lo, lo + 1, set + (nums(lo) -> lo), acc)
+      else if (imn < lo) f(lo, hi, tmn, acc)
+      else if (imx < lo) f(lo, hi, tmx, acc)
+      else if (mx - limit > nums(hi) || mn + limit < nums(hi)) f(lo + 1, hi, set, acc)
+      else f(lo, hi + 1, set + (nums(hi) -> hi), acc.max(hi - lo + 1))
     }
-    res
+
+    f(0, 1, SortedSet(nums.head -> 0)(Ordering[(Int, Int)].on(x => (x._1, -x._2))), 1)
   }
 }
