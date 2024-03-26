@@ -1,69 +1,47 @@
 package leetCode._1500
 
+import scala.collection.mutable
+
 object Solution_1489 {
   def findCriticalAndPseudoCriticalEdges(n: Int, edges: Array[Array[Int]]): List[List[Int]] = {
-    var arr = Array.ofDim[Int](edges.length, 4)
-    edges.indices.foreach(i => {
-      arr(i)(0) = edges(i)(0)
-      arr(i)(1) = edges(i)(1)
-      arr(i)(2) = edges(i)(2)
-      arr(i)(3) = i
-    })
-    arr = arr.sorted((o1: Array[Int], o2: Array[Int]) => o1(2) - o2(2))
-    var realArr = Array.emptyIntArray
-    var fakeArr = Array.emptyIntArray
-    val minCost = getExclude(n, arr, -1)
-    edges.indices.foreach(i => {
-      if (getExclude(n, arr, i) > minCost) realArr :+= i
-      else if (getInclude(n, arr, i) == minCost) fakeArr :+= i
-    })
-    var res = List.empty[List[Int]]
-    res :+= realArr.toList
-    res :+= fakeArr.toList
-    res
-  }
+    val sorted = edges.indices.sortBy(edges(_)(2))
 
-  def getExclude(n: Int, edges: Array[Array[Int]], edge: Int): Int = {
-    val ends = Array.fill(n)(-1)
-    var cost = 0
-    var cnt = 0
-    edges.withFilter(e => e(3) != edge).foreach(e => {
-      val end1 = getEnd(ends, e(0))
-      val end2 = getEnd(ends, e(1))
-      if (end1 != end2) {
-        ends(end1) = end2
-        cost += e(2)
-        cnt += 1
+    def minSpanTreeWeight(forcedEdgeI: Option[Int] = None)(freeEdgeIs: Seq[Int] = sorted): Option[Int] = {
+      val pq = mutable.PriorityQueue(freeEdgeIs: _*)(Ordering.by(-edges(_)(2)))
+      val st = mutable.Set((0 until n).map(Set(_)): _*)
+      var weight = 0
+
+      def join(edgeI: Int): Unit = {
+        val Array(a, b, w) = edges(edgeI)
+
+        val c0 = st.find(_.contains(a)).get
+        val c1 = st.find(_.contains(b)).get
+
+        if (c0.ne(c1)) {
+          st.remove(c0)
+          st.remove(c1)
+          st.add(c0 ++ c1)
+          weight += w
+        }
       }
-    })
-    if (cnt == n - 1) cost else Int.MaxValue
-  }
 
-  def getInclude(n: Int, edges: Array[Array[Int]], edge: Int): Int = {
-    val ends = Array.fill(n)(-1)
-    var cost = 0
-    var cnt = 0
-    edges.foreach(e => if (e(3) == edge) {
-      ends(e(0)) = e(1)
-      cost += e(2)
-      cnt += 1
-    })
-    edges.foreach(e => {
-      val end1 = getEnd(ends, e(0))
-      val end2 = getEnd(ends, e(1))
-      if (end1 != end2) {
-        ends(end1) = end2
-        cost += e(2)
-        cnt += 1
-      }
-    })
-    if (cnt == n - 1) cost else Int.MaxValue
-  }
-
-  def getEnd(ends: Array[Int], node: Int): Int =
-    if (ends(node) == -1) node
-    else {
-      ends(node) = getEnd(ends, ends(node))
-      ends(node)
+      forcedEdgeI.foreach(join)
+      while (pq.nonEmpty && st.size > 1) join(pq.dequeue())
+      if (st.size == 1) Option(weight) else Option(-1)
     }
+
+    val minWeight = minSpanTreeWeight()().get
+
+    val criticalIs = edges.indices.filter(edgeI => {
+      val t = minSpanTreeWeight()(sorted.diff(Seq(edgeI)))
+      !t.contains(minWeight)
+    })
+
+    val pseudoIs = edges.indices.filterNot(criticalIs.contains).filter(edgeI => {
+      val t = minSpanTreeWeight(Some(edgeI))(sorted.diff(Seq(edgeI)))
+      t.contains(minWeight)
+    })
+
+    List(criticalIs.toList, pseudoIs.toList)
+  }
 }

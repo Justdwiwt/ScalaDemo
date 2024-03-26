@@ -4,7 +4,7 @@ import scala.collection.mutable
 
 object Solution_1477 {
   def minSumOfLengths(arr: Array[Int], target: Int): Int = {
-    var m = new mutable.HashMap[Int, Int]()
+    val m = new mutable.HashMap[Int, Int]()
     m += 0 -> -1
     var mn = Int.MaxValue
     val diff = Array.fill(arr.length + 1)(Int.MaxValue)

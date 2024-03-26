@@ -24,7 +24,7 @@ object Solution_1488 {
         res(i) = -1
       })
 
-    dryDays.foreach(day => res(day) = 1)
+    dryDays.foreach(res(_) = 1)
     res
   }
 }
