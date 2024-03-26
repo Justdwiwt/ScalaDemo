@@ -9,20 +9,14 @@ object Solution_1457 {
   }
 
   def pseudoPalindromicPaths(root: TreeNode): Int = {
-    if (root == null) return 0
-    var res = 0
-    dfs(root, 0)
-
-    def dfs(root: TreeNode, t: Int): Unit = {
-      val n = t ^ (1 << root.value)
-      if (root.left == null && root.right == null) {
-        if (n == 0 || (n & (n - 1)) == 0) res += 1
-        return
-      }
-      if (root.left != null) dfs(root.left, n)
-      if (root.right != null) dfs(root.right, n)
+    def dfs(node: TreeNode, bitmask: Int): Int = {
+      val newBitmask = 1 << node.value ^ bitmask
+      if (node.left == null && node.right == null)
+        if ((1 to 9).count(shift => (newBitmask >> shift & 1) > 0) <= 1) 1
+        else 0
+      else Seq(Option(node.left), Option(node.right)).flatten.map(dfs(_, newBitmask)).sum
     }
 
-    res
+    dfs(root, 0)
   }
 }

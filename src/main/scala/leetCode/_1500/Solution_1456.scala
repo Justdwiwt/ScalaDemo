@@ -1,18 +1,11 @@
 package leetCode._1500
 
 object Solution_1456 {
-  private val diff = Array('a', 'e', 'i', 'o', 'u')
+  private val isVowel = Seq('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U').toSet
+  private val boolToInt = Map(false -> 0, true -> 1)
 
-  def maxVowels(s: String, k: Int): Int = {
-    var cnt = 0
-    var res = 0
-    s.indices.foreach(i => {
-      cnt += check(s(i))
-      if (i >= k) cnt -= check(s(i - k))
-      res = res.max(cnt)
-    })
-    res
-  }
-
-  def check(c: Char): Int = if (diff.contains(c)) 1 else 0
+  @scala.annotation.tailrec
+  def maxVowels(s: String, k: Int, first: Int = 0, max: Int = Int.MinValue)(implicit vowels: Int = s.take(k).count(isVowel)): Int =
+    if (first + k >= s.length) max.max(vowels)
+    else maxVowels(s, k, first + 1, max.max(vowels))(vowels - boolToInt(isVowel(s(first))) + boolToInt(isVowel(s(first + k))))
 }

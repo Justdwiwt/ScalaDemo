@@ -10,12 +10,12 @@ object Solution_1448 {
 
   def goodNodes(root: TreeNode): Int = {
 
-    def cnt(ndOpts: Option[TreeNode], max: Int): Int = ndOpts.map(nd => {
-      val curr = if (nd.value >= max) 1 else 0
-      curr +
-        cnt(Option(nd.left), max.max(nd.value)) +
-        cnt(Option(nd.right), max.max(nd.value))
-    }).getOrElse(0)
+    def cnt(ndOpts: Option[TreeNode], max: Int): Int = ndOpts
+      .map(nd => {
+        val curr = if (nd.value >= max) 1 else 0
+        curr + cnt(Option(nd.left), max.max(nd.value)) + cnt(Option(nd.right), max.max(nd.value))
+      })
+      .getOrElse(0)
 
     cnt(Option(root), root.value)
   }
