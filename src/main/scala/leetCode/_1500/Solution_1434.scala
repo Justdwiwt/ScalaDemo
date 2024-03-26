@@ -5,7 +5,7 @@ object Solution_1434 {
     val M = (1e9 + 7).toInt
     val dp = Array.ofDim[Int](41, 1 << 10)
     val has = Array.ofDim[Boolean](10, 41)
-    hats.indices.foreach(i => hats(i).foreach(j => has(i)(j) = true))
+    hats.indices.foreach(i => hats(i).foreach(has(i)(_) = true))
     dp(0)(0) = 1
     (1 to 40).foreach(i => (0 until (1 << hats.length)).foreach(j => {
       dp(i)(j) += dp(i - 1)(j)
