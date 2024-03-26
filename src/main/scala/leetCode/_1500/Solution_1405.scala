@@ -1,24 +1,15 @@
 package leetCode._1500
 
-import scala.collection.mutable
-
 object Solution_1405 {
-  def longestDiverseString(a: Int, b: Int, c: Int): String = {
-    val pq = mutable.PriorityQueue((a, 'a'), (b, 'b'), (c, 'c'))
-    var res = ""
-    (0 until (a + b + c)).foreach(i => {
-      val (cnt, ch) = pq.dequeue()
-      if (i >= 2 && ch == res(i - 1) && ch == res(i - 2)) {
-        val (nextCnt, nextCh) = pq.dequeue()
-        if (nextCnt == 0) return res
-        res += nextCh
-        pq += ((nextCnt - 1, nextCh))
-        pq += ((cnt, ch))
-      } else {
-        res += ch
-        pq += ((cnt - 1, ch))
-      }
-    })
-    res
+  private def f(a: Int, b: Int, c: Int, aa: String, bb: String, cc: String): String = {
+    if (a < b) return f(b, a, c, bb, aa, cc)
+    if (b < c) return f(a, c, b, aa, cc, bb)
+    if (b == 0) return List.fill(2.min(a))(aa).mkString
+    val tA: Int = 2.min(a)
+    val tB: Int = if (a - tA >= b) 1 else 0
+    List.fill(tA)(aa).mkString + List.fill(tB)(bb).mkString + f(a - tA, b - tB, c, aa, bb, cc)
   }
+
+  def longestDiverseString(a: Int, b: Int, c: Int): String =
+    f(a, b, c, "a", "b", "c")
 }

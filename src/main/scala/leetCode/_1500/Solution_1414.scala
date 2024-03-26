@@ -1,25 +1,18 @@
 package leetCode._1500
 
 object Solution_1414 {
-  def findMinFibonacciNumbers(k: Int): Int = {
-    val arr = Array.fill(45)(0)
-    var i = 0
-    var res = 0
-    var K = k
-    arr(1) = 1
-    i = 2
-    while (i < 45) {
-      arr(i) = arr(i - 1) + arr(i - 2)
-      i += 1
+  implicit class RichInt(i: Int) {
+    def toFib(x: Int, y: Int, acc: List[Int]): List[Int] =
+      if (x > i) acc else toFib(y, x + y, x :: acc)
+
+    def minNum(fibList: List[Int], res: Int): Int = fibList match {
+      case _ if i == 0 => res
+      case h :: tails if h > i => minNum(tails, res)
+      case h :: tails => (i - h).minNum(tails, res + 1)
+      case _ => res
     }
-    i = 44
-    while (i > 0) {
-      if (K >= arr(i)) {
-        K -= arr(i)
-        res += 1
-      }
-      i -= 1
-    }
-    res
   }
+
+  def findMinFibonacciNumbers(k: Int): Int =
+    k.minNum(k.toFib(0, 1, Nil), 0)
 }

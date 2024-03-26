@@ -6,7 +6,7 @@ object Solution_1416 {
     val dp = Array.ofDim[Long](n + 1)
     dp(n) = 1
     val arr = s.toCharArray.map(_.asDigit)
-    (n - 1 to 0 by -1).withFilter(i => arr(i) != 0).foreach(i => {
+    (n - 1 to 0 by -1).withFilter(arr(_) != 0).foreach(i => {
       var num = arr(i).toLong
       var j = i + 1
       while (1 <= num && num <= k && j < n + 1) {
