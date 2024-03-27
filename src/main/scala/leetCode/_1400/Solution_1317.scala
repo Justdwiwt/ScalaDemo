@@ -2,14 +2,10 @@ package leetCode._1400
 
 object Solution_1317 {
   def getNoZeroIntegers(n: Int): Array[Int] = {
+    def findZero(num: Int): Boolean =
+      num.toString.contains("0")
 
-    @scala.annotation.tailrec
-    def f(num: Int): Boolean = num match {
-      case 0 => true
-      case _ => if (num % 10 == 0) false else f(num / 10)
-    }
-
-    (1 until n).foreach(i => if (f(i) && f(n - i)) return Array(i, n - i))
-    Array.empty
+    val a = (1 until n).find(i => !findZero(i) && !findZero(n - i)).get
+    Array(a, n - a)
   }
 }

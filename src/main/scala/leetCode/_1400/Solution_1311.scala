@@ -9,7 +9,7 @@ object Solution_1311 {
       def reducer(a: Set[Int], b: Set[Int]): Set[Int] =
         a ++ b
 
-      lazy val next = prev.map(i => group(i) -- visited)./:(Set.empty[Int])(reducer)
+      lazy val next = prev.map(group(_) -- visited)./:(Set.empty[Int])(reducer)
       if (lvl == level) next
       else f(lvl + 1, next, visited ++ next)
     }
