@@ -2,7 +2,7 @@ package leetCode._1400
 
 object Solution_1345 {
   def minJumps(arr: Array[Int]): Int = {
-    val initVal2ind = arr.zipWithIndex.groupBy(x => x._1).mapValues(_.map(_._2).toSet).toMap.withDefaultValue(Set())
+    val initVal2ind = arr.zipWithIndex.groupBy(_._1).mapValues(_.map(_._2).toSet).withDefaultValue(Set())
 
     @scala.annotation.tailrec
     def bfs(front: Set[Int], vis: Set[Int], dis: Int, val2ind: Map[Int, Set[Int]]): Int = {
