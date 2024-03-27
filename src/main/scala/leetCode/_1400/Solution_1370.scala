@@ -2,21 +2,17 @@ package leetCode._1400
 
 object Solution_1370 {
   def sortString(s: String): String = {
-    val mn = s.min.toInt - 'a'.toInt
-    val mx = s.max.toInt - 'a'.toInt
-    val arr = Array.fill[Int]('z'.toInt - 'a'.toInt + 1)(0)
-    s.foreach(i => arr(i.toInt - 'a'.toInt) += 1)
-    var res = ""
-    while (res.length < s.length) {
-      (mn to mx).foreach(i => if (arr(i) > 0) {
-        res += (i + 'a'.toInt).toChar
-        arr(i) -= 1
-      })
-      (mn to mx).reverse.foreach(i => if (arr(i) > 0) {
-        res += (i + 'a'.toInt).toChar
-        arr(i) -= 1
-      })
-    }
-    res
+    @scala.annotation.tailrec
+    def f(str: String, res: String, isReversed: Boolean): String =
+      if (str.isEmpty) res
+      else if (isReversed) {
+        val sortedStr = str.distinct.sorted
+        f(sortedStr.foldLeft(str)((acc, i) => acc.replaceFirst(i.toString, "")), res + sortedStr, isReversed = false)
+      } else {
+        val sortedStr = str.distinct.sorted.reverse
+        f(sortedStr.foldLeft(str)((acc, i) => acc.replaceFirst(i.toString, "")), res + sortedStr, isReversed = true)
+      }
+
+    f(s, "", isReversed = true)
   }
 }
