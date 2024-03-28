@@ -2,17 +2,17 @@ package leetCode._1300
 
 object Solution_1208 {
   def equalSubstring(s: String, t: String, maxCost: Int): Int = {
-    var l = 0
-    var r = 0
-    var cost = 0
-    while (r < s.length) {
-      cost += (s(r) - t(r)).abs
-      if (cost > maxCost) {
-        cost -= (s(l) - t(l)).abs
-        l += 1
-      }
-      r += 1
+    lazy val diff = s.zip(t).map { case (a, b) => (a - b).abs }
+
+    @scala.annotation.tailrec
+    def f(lo: Int, hi: Int, budget: Int, currLen: Int, maxLen: Int): Int = {
+      lazy val (dlo, dhi) = (diff(lo), diff(hi))
+      if ((lo max hi) >= diff.size) maxLen
+      else if (dhi > maxCost) f(hi + 1, hi + 1, maxCost, 0, maxLen)
+      else if (dhi <= budget) f(lo, hi + 1, budget - dhi, currLen + 1, (currLen + 1) max maxLen)
+      else f(lo + 1, hi, budget + dlo, currLen - 1, maxLen)
     }
-    r - l
+
+    f(0, 0, maxCost, 0, 0)
   }
 }
