@@ -2,14 +2,25 @@ package leetCode._1300
 
 object Solution_1296 {
   def isPossibleDivide(nums: Array[Int], k: Int): Boolean = {
-    if (nums.isEmpty || k < 1 || nums.length % k != 0) return false
-    val m = collection.mutable.Map[Int, Int]()
-    nums.foreach(n => m += n -> (m.getOrElse(n, 0) + 1))
-    val sorted = nums.sorted
-    sorted.foreach(n => if (m(n) > 0) (n until n + k).foreach(i => {
-      if (!m.contains(i) || m(i) == 0) return false
-      m += i -> (m(i) - 1)
-    }))
-    true
+    @scala.annotation.tailrec
+    def f(map: Map[Int, Int]): Boolean = {
+      if (map.isEmpty) true
+      else {
+        val minCard = map.minBy(_._1)._1
+        val newGroup = minCard until minCard + k
+        if (newGroup.forall(map.contains)) {
+          val newMap = newGroup.foldLeft(map)((cur, i) => cur.get(i) match {
+            case Some(count) if count > 1 => cur.updated(i, count - 1)
+            case Some(_) => cur - i
+            case None => cur
+          })
+          f(newMap)
+        } else false
+      }
+    }
+
+    val m = nums.groupBy(identity).mapValues(_.length)
+
+    f(m)
   }
 }
