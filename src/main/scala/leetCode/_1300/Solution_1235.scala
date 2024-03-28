@@ -1,24 +1,16 @@
 package leetCode._1300
 
-import java.util
-
-import scala.collection.mutable
+import scala.collection.immutable.TreeMap
 
 object Solution_1235 {
-  def jobScheduling(startTime: Array[Int], endTime: Array[Int], profit: Array[Int]): Int = {
-    val dp = new util.TreeMap[Int, Int]()
-    val pq = mutable.PriorityQueue[(Int, Int, Int)]()((x, y) => y._2 - x._2)
-    var res = 0
-    startTime.indices.foreach(i => pq += ((startTime(i), endTime(i), profit(i))))
-    startTime.indices.foreach(_ => {
-      val (s, e, p) = pq.dequeue()
-      dp.put(e, p.max(dp.getOrDefault(if (dp.floorKey(e) != 0) dp.floorKey(e) else 0, 0)))
-      if (dp.floorKey(s) != 0) {
-        val v = dp.get(e).max(dp.get(dp.floorKey(s)) + p)
-        dp.put(e, v)
-      }
-      res = res.max(dp.get(e))
-    })
-    res
-  }
+  def jobScheduling(startTime: Array[Int], endTime: Array[Int], profit: Array[Int]): Int = startTime
+    .indices
+    .map(i => (startTime(i), endTime(i), profit(i)))
+    .sortBy(_._2)
+    .iterator
+    .foldLeft(TreeMap.empty[Int, Int]) { case (map, (s, e, p)) =>
+      map.updated(e, (map.to(s).lastOption.map(_._2).getOrElse(0) + p).max(map.to(e).lastOption.map(_._2).getOrElse(0)))
+    }
+    .last
+    ._2
 }

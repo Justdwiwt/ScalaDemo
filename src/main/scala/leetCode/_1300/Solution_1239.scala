@@ -2,18 +2,14 @@ package leetCode._1300
 
 object Solution_1239 {
   def maxLength(arr: List[String]): Int = {
-
-    def f(_arr: List[String], _i: Int, _m: Int): Int = {
-      if (_i == _arr.length) return 0
-      val t = _m
-      var m = _m
-      _arr(_i).foreach(c => {
-        if ((m & (1 << (c - 'a'))) > 0) return f(_arr, _i + 1, t)
-        m |= (1 << (c - 'a'))
-      })
-      (_arr(_i).length + f(_arr, _i + 1, m)).max(f(_arr, _i + 1, t))
+    def lengthTail(rest: List[String], acc: String): List[String] = rest.headOption match {
+      case None => List(acc)
+      case Some(head) => lengthTail(rest.tail, acc) ++ {
+        if ((head.length == head.toSet.size) && acc.intersect(head).isEmpty) lengthTail(rest.tail, acc + head)
+        else Nil
+      }
     }
 
-    f(arr, 0, 0)
+    lengthTail(arr, "").map(_.length).max
   }
 }
