@@ -5,34 +5,43 @@ package leetCode._1300
 //import scala.util.Try
 // 2.13
 object Solution_1263 {
-
   //  case class Matrix[+A](elems: IndexedSeq[IndexedSeq[A]]) {
   //    assert(elems.forall(_.size == numCols))
   //
-  //    def get(index: (Int, Int)): Option[A] = Some(index).filter(isDefinedAt).map(apply)
+  //    def get(index: (Int, Int)): Option[A] =
+  //      Some(index).filter(isDefinedAt).map(apply)
   //
-  //    def isDefinedAt(index: (Int, Int)): Boolean = elems.isDefinedAt(index._1) && elems(index._1).isDefinedAt(index._2)
+  //    def isDefinedAt(index: (Int, Int)): Boolean =
+  //      elems.isDefinedAt(index._1) && elems(index._1).isDefinedAt(index._2)
   //
-  //    def apply(index: (Int, Int)): A = elems(index._1)(index._2)
+  //    def apply(index: (Int, Int)): A =
+  //      elems(index._1)(index._2)
   //
-  //    def indexOf[B >: A](elem: B): Option[(Int, Int)] = indexWhere(_ == elem)
+  //    def indexOf[B >: A](elem: B): Option[(Int, Int)] =
+  //      indexWhere(_ == elem)
   //
-  //    def indexWhere(p: A => Boolean): Option[(Int, Int)] = indices.find(index => p(apply(index)))
+  //    def indexWhere(p: A => Boolean): Option[(Int, Int)] =
+  //      indices.find(index => p(apply(index)))
   //
-  //    def indices: LazyList[(Int, Int)] = LazyList.from(0 until numRows).flatMap(row => (0 until numCols).map(row -> _))
+  //    def indices: Stream[(Int, Int)] =
+  //      Stream.range(0, numRows).flatMap(row => Stream.range(0, numCols).map((row, _)))
   //
-  //    def numRows: Int = elems.size
+  //    def numRows: Int =
+  //      elems.size
   //
-  //    def numCols: Int = elems.headOption.map(_.size).getOrElse(0)
+  //    def numCols: Int =
+  //      elems.headOption.map(_.size).getOrElse(0)
   //
-  //    def map[B](f: A => B): Matrix[B] = Matrix(elems.map(_.map(f)))
+  //    def map[B](f: A => B): Matrix[B] =
+  //      Matrix(elems.map(_.map(f)))
   //  }
   //
-  //  object Matrix {
-  //    def apply[A](elems: Array[Array[A]]): Matrix[A] = Matrix(elems.map(_.toIndexedSeq).toIndexedSeq)
+  //  private object Matrix {
+  //    def apply[A](elems: Array[Array[A]]): Matrix[A] =
+  //      Matrix(elems.map(_.toIndexedSeq).toIndexedSeq)
   //  }
   //
-  //  object AStar {
+  //  private object AStar {
   //    def search[C, S <: State[C, S]](start: State[C, S])(implicit numeric: Numeric[C]): Option[Path[C, S]] = {
   //      import numeric.{mkNumericOps, mkOrderingOps, zero}
   //
@@ -42,31 +51,27 @@ object Solution_1263 {
   //      val cameFrom = mutable.Map[State[C, S], State[C, S]]()
   //
   //      @tailrec
-  //      def reconstructPath(state: State[C, S],
-  //                          steps: Seq[(State[C, S], C)] = Seq()): Path[C, S] = cameFrom.get(state) match {
+  //      def reconstructPath(state: State[C, S], steps: Seq[(State[C, S], C)] = Seq()): Path[C, S] = cameFrom.get(state) match {
   //        case Some(parent) => reconstructPath(parent, (state, gScore(state) - gScore(parent)) +: steps)
   //        case _ => Path(state, steps: _*)
   //      }
   //
   //      @tailrec
   //      def iterate: Option[Path[C, S]] = openSet.dequeueOption match {
-  //        case Some(state -> _) if state.isGoal =>
-  //          Some(reconstructPath(state))
+  //        case Some(state -> _) if state.isGoal => Some(reconstructPath(state))
   //
-  //        case Some(state -> _) =>
-  //          state
-  //            .neighbors
-  //            .map { case (neighbor, cost) => (neighbor, gScore(state) + cost) }
-  //            .filter { case (neighbor, tentativeGScore) => gScore.get(neighbor).forall(_ > tentativeGScore) }
-  //            .foreach { case (neighbor, tentativeGScore) =>
-  //              openSet.enqueue(neighbor -> (tentativeGScore + neighbor.heuristic))
-  //              gScore(neighbor) = tentativeGScore
-  //              cameFrom(neighbor) = state
-  //            }
+  //        case Some(state -> _) => state
+  //          .neighbors
+  //          .map { case (neighbor, cost) => (neighbor, gScore(state) + cost) }
+  //          .filter { case (neighbor, tentativeGScore) => gScore.get(neighbor).forall(_ > tentativeGScore) }
+  //          .foreach { case (neighbor, tentativeGScore) =>
+  //            openSet.enqueue(neighbor -> (tentativeGScore + neighbor.heuristic))
+  //            gScore(neighbor) = tentativeGScore
+  //            cameFrom(neighbor) = state
+  //          }
   //          iterate
   //
-  //        case _ =>
-  //          None
+  //        case _ => None
   //      }
   //
   //      iterate
@@ -86,7 +91,8 @@ object Solution_1263 {
   //    }
   //
   //    case class Path[+C, +S <: State[C, S]](start: State[C, S], steps: (State[C, S], C)*)(implicit numeric: Numeric[C]) {
-  //      def cost: C = steps.map(_._2).sum
+  //      def cost: C =
+  //        steps.map(_._2).sum
   //    }
   //
   //  }
@@ -105,51 +111,52 @@ object Solution_1263 {
   //                           override val target: (Int, Int)) extends State with AStar.State[Int, PlayerState] {
   //      override def neighbors: Iterable[(PlayerState, Int)] = Directions
   //        .map(player + _)
-  //        .collect {
-  //          case index if index != box && grid.get(index).contains(Square.Floor) => PlayerState(index, box, target) -> 1
-  //        }
+  //        .collect { case index if index != box && grid.get(index).contains(Square.Floor) => PlayerState(index, box, target) -> 1 }
   //
-  //      override def isGoal: Boolean = player == target
+  //      override def isGoal: Boolean =
+  //        player == target
   //
-  //      override def heuristic: Int = player.manhattan(target)
+  //      override def heuristic: Int =
+  //        player.manhattan(target)
   //    }
   //
   //    case class BoxState(override val player: (Int, Int),
   //                        override val box: (Int, Int),
   //                        override val target: (Int, Int)) extends State with AStar.State[Int, BoxState] {
-  //      override def neighbors: Iterable[(BoxState, Int)] = Directions.collect {
-  //        case delta if grid.get(box + delta).contains(Square.Floor) &&
-  //          grid.get(box - delta).contains(Square.Floor) &&
-  //          AStar.search(PlayerState(player, box, box - delta)).isDefined => BoxState(box - delta, box + delta, target) -> 1
-  //      }
+  //      override def neighbors: Iterable[(BoxState, Int)] = Directions
+  //        .collect { case delta if grid.get(box + delta).contains(Square.Floor)
+  //          && grid.get(box - delta).contains(Square.Floor)
+  //          && AStar.search(PlayerState(player, box, box - delta)).isDefined =>
+  //          BoxState(box - delta, box + delta, target) -> 1
+  //        }
   //
-  //      override def isGoal: Boolean = box == target
+  //      override def isGoal: Boolean =
+  //        box == target
   //
-  //      override def heuristic: Int = box.manhattan(target)
+  //      override def heuristic: Int =
+  //        box.manhattan(target)
   //    }
   //
   //  }
   //
   //  object Storekeeper {
   //
-  //    val StartSymbol = 'S'
-  //    val FloorSymbol = '.'
-  //    val WallSymbol = '#'
-  //    val BoxSymbol = 'B'
-  //    val TargetSymbol = 'T'
+  //    private val StartSymbol = 'S'
+  //    private val FloorSymbol = '.'
+  //    private val WallSymbol = '#'
+  //    private val BoxSymbol = 'B'
+  //    private val TargetSymbol = 'T'
   //
   //    private val Directions = Set(-1 -> 0, 0 -> -1, 0 -> 1, 1 -> 0)
   //
   //    def apply(array: Array[Array[Char]]): Storekeeper = {
   //      val matrix = Matrix(array)
-  //      val grid = matrix.map({
+  //      val grid = matrix.map {
   //        case WallSymbol => Square.Wall
   //        case StartSymbol | FloorSymbol | BoxSymbol | TargetSymbol => Square.Floor
-  //      })
-  //      Storekeeper(grid,
-  //        matrix.indexOf(StartSymbol).get,
-  //        matrix.indexOf(BoxSymbol).get,
-  //        matrix.indexOf(TargetSymbol).get)
+  //      }
+  //
+  //      Storekeeper(grid, matrix.indexOf(StartSymbol).get, matrix.indexOf(BoxSymbol).get, matrix.indexOf(TargetSymbol).get)
   //    }
   //
   //    trait State {
