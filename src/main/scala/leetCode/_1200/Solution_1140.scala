@@ -1,12 +1,21 @@
 package leetCode._1200
 
+import scala.collection.mutable
+
 object Solution_1140 {
   def stoneGameII(piles: Array[Int]): Int = {
-    val p = piles
-    val dp = Array.fill(piles.length + 1, piles.length + 1)(0)
-    (piles.length - 2 to 0 by -1).foreach(i => p(i) += p(i + 1))
-    piles.indices.foreach(i => dp(i)(piles.length) = p(i))
-    piles.indices.reverse.foreach(i => piles.indices.drop(1).reverse.foreach(m => (1 to 2 * m).foreach(x => if (i + x <= piles.length) dp(i)(m) = dp(i)(m).max(p(i) - dp(i + x)(m.max(x))))))
-    dp.head(1)
+    val sum = piles.scanRight(0)(_ + _).dropRight(1)
+
+    val map = mutable.Map.empty[(Int, Int), Int]
+
+    def dfs(i: Int, m: Int): Int = {
+      if (!map.contains((i, m))) {
+        map((i, m)) = if (i + 2 * m >= sum.length) sum(i)
+        else (1 to 2 * m).map(j => sum(i) - dfs(i + j, j.max(m))).max
+      }
+      map((i, m))
+    }
+
+    dfs(0, 1)
   }
 }
