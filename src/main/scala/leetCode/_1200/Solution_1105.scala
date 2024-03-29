@@ -9,7 +9,7 @@ object Solution_1105 {
       dp(i) = dp(i - 1) + height
       (1 until i)
         .reverse
-        .withFilter(j => width + books.map(n => n.head).slice(j - 1, i - 1).sum <= shelf_width)
+        .withFilter(j => width + books.map(_.head).slice(j - 1, i - 1).sum <= shelf_width)
         .foreach(j => {
           height = height.max(books(j - 1)(1))
           dp(i) = dp(i).min(dp(j - 1) + height)

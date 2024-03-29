@@ -1,7 +1,7 @@
 package leetCode._1200
 
 object Solution_1106 {
-  def parseBoolExpr(expression: String): Boolean = ((true, Seq.empty[Char], -1) /: expression) {
+  def parseBoolExpr(expression: String): Boolean = expression./:(true, Seq.empty[Char], -1) {
     case ((_, st, -1), op@('!' | '&' | '|')) => (true, op +: st, -1)
     case ((_, st, -1), c@('t' | 'f')) => (c == 't', st, -1)
     case ((false, st@'&' +: _, -1), ',') => (false, st, 0)

@@ -1,24 +1,15 @@
 package leetCode._1200
 
-import scala.util.control.Breaks._
-
 object Solution_1103 {
   def distributeCandies(candies: Int, num_people: Int): Array[Int] = {
-    val res = Array.fill(num_people)(0)
-    var cnt = 0
-    var c = candies
-    while (c > 0) {
-      breakable {
-        (0 until num_people).foreach(i => {
-          var t = num_people * cnt + i + 1
-          if (c <= t) t = c
-          res(i) += t
-          c -= t
-          if (c <= 0) break
-        })
+    @scala.annotation.tailrec
+    def f(candiesLeft: Int, num: Int, res: Array[Int], cnt: Int): Array[Int] =
+      if (candiesLeft <= 0) res
+      else {
+        val updated = res.updated(num % num_people, res(num % num_people) + Math.min(candiesLeft, num + 1))
+        f(candiesLeft - Math.min(candiesLeft, num + 1), num + 1, updated, cnt)
       }
-      cnt += 1
-    }
-    res
+
+    f(candies, 0, Array.fill(num_people)(0), 0)
   }
 }
