@@ -4,40 +4,30 @@ import scala.collection.mutable
 
 object Solution_1162 {
   def maxDistance(grid: Array[Array[Int]]): Int = {
-    val q = new mutable.Queue[Point]()
-    grid.indices.foreach(i => grid(0).indices.foreach(j => if (grid(i)(j) == 1) q.enqueue(new Point(i, j, 0))))
-    if (q.isEmpty || q.length == grid.length * grid(0).length) return -1
-    var p: Point = null
-    while (q.nonEmpty) {
-      p = q.front
-      q.dequeue()
-      val x = p.x
-      val y = p.y
-      val step = p.step
-      if (x + 1 < grid.length && grid(x + 1)(y) == 0) {
-        grid(x + 1)(y) = 1
-        q.enqueue(new Point(x + 1, y, step + 1))
-      }
-      if (x - 1 >= 0 && grid(x - 1)(y) == 0) {
-        grid(x - 1)(y) = 1
-        q.enqueue(new Point(x - 1, y, step + 1))
-      }
-      if (y + 1 < grid(0).length && grid(x)(y + 1) == 0) {
-        grid(x)(y + 1) = 1
-        q.enqueue(new Point(x, y + 1, step + 1))
-      }
-      if (y - 1 >= 0 && grid(x)(y - 1) == 0) {
-        grid(x)(y - 1) = 1
-        q.enqueue(new Point(x, y - 1, step + 1))
-      }
-    }
-    p.step
-  }
 
-  class Point(a: Int, b: Int, c: Int) {
-    var x: Int = a
-    var y: Int = b
-    var step: Int = c
-  }
+    def isValidWaterCell(pos: (Int, Int)): Boolean =
+      pos._1 >= 0 && pos._1 < grid.length && pos._2 >= 0 && pos._2 < grid.length && grid(pos._1)(pos._2) == 0
 
+    def isByWater(pos: (Int, Int)): Boolean =
+      Array((pos._1 + 1, pos._2), (pos._1 - 1, pos._2), (pos._1, pos._2 + 1), (pos._1, pos._2 - 1))
+        .exists(isValidWaterCell)
+
+    val landCellsByWater = mutable.ArrayBuffer.empty[(Int, Int)]
+
+    grid.indices.foreach(row => grid.indices.foreach(col =>
+      if (grid(row)(col) == 1 && isByWater((row, col)))
+        landCellsByWater += ((row, col))))
+
+    @scala.annotation.tailrec
+    def findFurthestWater(currCells: mutable.HashSet[(Int, Int)], seen: mutable.HashSet[(Int, Int)], steps: Int): Int =
+      if (currCells.nonEmpty) {
+        val nextFurtherWaterCells = currCells.flatMap(pos =>
+          Array((pos._1 + 1, pos._2), (pos._1 - 1, pos._2), (pos._1, pos._2 + 1), (pos._1, pos._2 - 1))
+            .filter(cell => isValidWaterCell(cell) && !seen.contains(cell)))
+        seen ++= nextFurtherWaterCells
+        findFurthestWater(nextFurtherWaterCells, seen, steps + 1)
+      } else steps - 1
+
+    findFurthestWater(mutable.HashSet() ++ landCellsByWater, mutable.HashSet() ++ landCellsByWater, 0)
+  }
 }

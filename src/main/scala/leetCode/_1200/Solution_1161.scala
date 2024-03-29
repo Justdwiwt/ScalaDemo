@@ -6,7 +6,7 @@ object Solution_1161 {
   def maxLevelSum(root: TreeNode): Int = {
     require(root != null)
     Stream
-      .iterate(Seq(root))(level => level.flatMap(node => Seq(Option(node.left), Option(node.right)).flatten))
+      .iterate(Seq(root))(_.flatMap(node => Seq(Option(node.left), Option(node.right)).flatten))
       .takeWhile(_.nonEmpty)
       .map(_.map(_.value).sum)
       .zipWithIndex

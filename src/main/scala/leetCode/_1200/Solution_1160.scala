@@ -1,19 +1,11 @@
 package leetCode._1200
 
-import scala.collection.mutable
-
 object Solution_1160 {
   def countCharacters(words: Array[String], chars: String): Int = {
-    val chCnt = mutable.HashMap.empty[Char, Int]
-    chars.foreach(ch => chCnt += ch -> (chCnt.getOrElse(ch, 0) + 1))
-    var res = 0
-    words.foreach(word => {
-      val wordCnt = mutable.HashMap.empty[Char, Int]
-      word.foreach(ch => wordCnt += ch -> (wordCnt.getOrElse(ch, 0) + 1))
-      var flag = true
-      wordCnt.foreach({ case (ch, count) => if (!chCnt.contains(ch) || chCnt(ch) < count) flag = false })
-      if (flag) res += word.length
-    })
-    res
+    def f(str: String, freq: Map[Char, Int]): Boolean = str
+      .foldLeft(freq)((f, c) => f.updated(c, f.getOrElse(c, 0) - 1))
+      .forall(_._2 >= 0)
+
+    words.filter(f(_, chars.groupBy(identity).mapValues(_.length))).map(_.length).sum
   }
 }
