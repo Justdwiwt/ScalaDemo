@@ -1,34 +1,32 @@
 package leetCode._1200
 
+import scala.collection.mutable
+
 object Solution_1187 {
   def makeArrayIncreasing(arr1: Array[Int], arr2: Array[Int]): Int = {
-    val res = -1
-    if (arr1 == null || arr2 == null || arr1.length == 0 || arr2.length == 0) return res
-    val dp = Array.fill(arr1.length + 1, arr1.length + 1)(Int.MaxValue)
-    dp(0)(0) = -1
-    val array2 = arr2.sorted
-    (1 to arr1.length).foreach(i => {
-      val index = i - 1
-      (0 to i).foreach(j => {
-        if (arr1(index) > dp(j)(i - 1)) dp(j)(i) = arr1(index)
-        if (j > 0) {
-          val tmp = upperBound(array2, 0, array2.length - 1, dp(j - 1)(i - 1))
-          dp(j)(i) = dp(j)(i).min(tmp)
-        }
-        if (i == arr1.length && dp(j)(i) != Int.MaxValue) return j
-      })
-    })
-    -1
-  }
+    if (arr1.length == 1) return 0
+    val ts = mutable.TreeSet[Int](arr2: _*)
+    val m = mutable.HashMap.empty[String, Int]
 
-  def upperBound(array: Array[Int], l: Int, r: Int, key: Int): Int = {
-    var left = l
-    var right = r
-    while (left <= right) {
-      val mid = (left + right) / 2
-      if (array(mid) <= key) left = mid + 1 else right = mid - 1
+    def f(idx: Int, pre: Int): Int = {
+      if (idx == arr1.length) return 0
+      val key = idx.toString + "#" + pre
+      if (m.contains(key)) return m(key)
+      val cur = arr1(idx)
+      var res = 2000
+      if (cur > pre) {
+        res = f(idx + 1, cur)
+        val higher = ts.to(pre + 1).headOption.getOrElse(-1)
+        if (higher != -1 && higher < cur) res = res.min(1 + f(idx + 1, higher))
+      } else {
+        val higher = ts.to(pre + 1).headOption.getOrElse(-1)
+        if (higher != -1) res = f(idx + 1, higher) + 1
+      }
+      m += (key -> res)
+      res
     }
-    if (left >= array.length || array(left) <= key) return Int.MaxValue
-    array(left)
+
+    val res = f(0, -1)
+    if (res >= 2000) -1 else res
   }
 }

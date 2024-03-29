@@ -2,20 +2,25 @@ package leetCode._1200
 
 object Solution_1191 {
   def kConcatenationMaxSum(arr: Array[Int], k: Int): Int = {
-    val M = 1000000007.toLong
-    var first = 0L
-    var second = 0L
-    var mxSum = 0L
-    var sum = 0L
-    (0 until 3).foreach(i => {
-      arr.foreach(num => {
-        sum = 0L.max(sum + num % M)
-        mxSum = mxSum.max(sum)
-      })
-      if (i == 0) first = mxSum
-      else if (i == 1) second = mxSum
+    val M = 1e9.toInt + 7
+    var res = 0
+    var minPrefix = 0
+    var sum = 0
+    arr.foreach(i => {
+      sum += i
+      res = res.max(sum - minPrefix)
+      minPrefix = minPrefix.min(sum)
     })
-    val diff = mxSum - second
-    (second + ((diff * (k - 2)) % M)).toInt
+    if (k > 1) {
+      val t = sum.toLong
+      arr.foreach(i => {
+        sum += i
+        res = res.max(sum - minPrefix)
+        minPrefix = minPrefix.min(sum)
+      })
+      res %= M
+      if (t > 0) res = res.max(((t * (k - 2) + res) % M).toInt)
+    }
+    res
   }
 }
