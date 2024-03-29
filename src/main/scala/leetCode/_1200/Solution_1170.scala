@@ -1,9 +1,9 @@
 package leetCode._1200
 
 object Solution_1170 {
-  def f(w: String): Int = {
+  private def f(w: String): Int = {
     val arr = w.toArray
-    arr.count(x => x == arr.min)
+    arr.count(_ == arr.min)
   }
 
   def numSmallerByFrequency(queries: Array[String], words: Array[String]): Array[Int] = {

@@ -9,8 +9,10 @@ object Solution_1177 {
       else t(i)(j) = t(i - 1)(j)
     }))
 
-    def f(l: Int, r: Int, k: Int): Boolean = t(r + 1).zip(t(l)).count({ case (x, y) => (y - x) % 2 != 0 }) / 2 <= k
+    def f(l: Int, r: Int, k: Int): Boolean = t(r + 1)
+      .zip(t(l))
+      .count { case (x, y) => (y - x) % 2 != 0 } / 2 <= k
 
-    queries.map({ case Array(l, r, k) => if (k >= 26) true else f(l, r, k) })
+    queries.map { case Array(l, r, k) => if (k >= 26) true else f(l, r, k) }
   }
 }

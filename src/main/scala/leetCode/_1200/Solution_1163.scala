@@ -1,30 +1,18 @@
 package leetCode._1200
 
 object Solution_1163 {
-  def lastSubstring(s: String): String = {
-    var mxV = s.head - 'a'
-    var mxIdx = 0
-    s.indices.drop(1).foreach(i => {
-      val c = s(i)
-      if (c - 'a' > mxV) {
-        mxV = c - 'a'
-        mxIdx = i
-      } else if (c - 'a' == mxV) {
-        val idx = getMxIdx(mxIdx, i, s)
-        if (idx == -1) return s.substring(mxIdx)
-        mxIdx = idx
+  def lastSubstring(s: String): String = s.substring(s.indices.reverse.foldLeft(s.length - 1)((mx, cur) => {
+    if (s.charAt(cur) > s.charAt(mx)) cur
+    else if (s.charAt(cur) == s.charAt(mx)) {
+      var i = cur + 1
+      var j = mx + 1
+      while (i < mx && j < s.length && s.charAt(i) == s.charAt(j)) {
+        i += 1
+        j += 1
       }
-    })
-    s.substring(mxIdx)
-  }
-
-  def getMxIdx(cur: Int, idx: Int, s: String): Int = {
-    var i = 1
-    while (idx + i < s.length) {
-      if (s(cur + i) > s(idx + i)) return cur
-      else if (s(cur + i) < s(idx + i)) return idx
-      else i += 1
+      if (i == mx || j == s.length || s.charAt(i) > s.charAt(j)) cur
+      else mx
     }
-    -1
-  }
+    else mx
+  }))
 }

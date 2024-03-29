@@ -1,42 +1,21 @@
 package leetCode._1200
 
-import leetCode.ListNode
-
-import scala.collection.mutable
-
 object Solution_1171 {
+  class ListNode(_x: Int = 0, _next: ListNode = null) {
+    val next: ListNode = _next
+    val x: Int = _x
+  }
+
   def removeZeroSumSublists(head: ListNode): ListNode = {
-    val s = mutable.Set[Int]()
-    s += 0
-    val res = new ListNode(-1)
-    res.next = head
-
-    val st = mutable.Stack[ListNode]()
-    var runner = head
-    var sum = 0
-
-    while (runner != null) {
-
-      val currVal = runner.x
-      val curr = runner
-      sum += currVal
-
-      if (s.add(sum)) st.push(curr)
-      else {
-        val next = curr.next
-        val tmpSum = sum
-        sum -= currVal
-
-        while (st.nonEmpty && tmpSum != sum) {
-          s.remove(sum)
-          sum -= st.pop().x
-        }
-
-        if (st.nonEmpty) st.top.next = next
-        else res.next = next
-      }
-      runner = runner.next
+    @scala.annotation.tailrec
+    def f(node: ListNode, sums: Set[Int] = Set(0), acc: List[(Int, Int)] = List(0 -> 0)): List[(Int, Int)] = {
+      lazy val xSum: Int = node.x + acc.headOption.map(_._2).getOrElse(0)
+      lazy val (d: List[(Int, Int)], t: List[(Int, Int)]) = acc.span(_._2 != xSum)
+      if (node == null) acc
+      else if (sums.contains(xSum)) f(node.next, sums -- d.map(_._2), t)
+      else f(node.next, sums + xSum, (node.x -> xSum) +: acc)
     }
-    res.next
+
+    f(head).map(_._1).foldLeft(null: ListNode) { case (node, i) => new ListNode(i, node) }.next
   }
 }
