@@ -1,15 +1,9 @@
 package leetCode._1100
 
 object Solution_1010 {
-  def numPairsDivisibleBy60(time: Array[Int]): Int = {
-    var res = 0
-    val arr = Array.fill(60)(0)
-    time.foreach(i => {
-      val idx = i % 60
-      if (idx != 0) res += arr(60 - idx)
-      else res += arr(idx)
-      arr(idx) += 1
-    })
-    res
-  }
+  def numPairsDivisibleBy60(time: Array[Int]): Int = time.foldLeft(new Array[Int](60), 0)((b, a) => {
+    val t = b._2 + b._1((60 - a % 60) % 60)
+    b._1(a % 60) = b._1(a % 60) + 1
+    (b._1, t)
+  })._2
 }

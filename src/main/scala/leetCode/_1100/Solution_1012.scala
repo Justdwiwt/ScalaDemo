@@ -10,11 +10,11 @@ object Solution_1012 {
       else if (i == str.head - '0') res += g(1, str.length, 1, str, 1 << i, arr)
     })
     var n = 0
-    str.indices.drop(1).reverse.withFilter(k => k > 0).foreach(k => n += f(9, k) + (k - 1) * f(9, k - 1))
+    str.indices.drop(1).reverse.withFilter(_ > 0).foreach(k => n += f(9, k) + (k - 1) * f(9, k - 1))
     N - res - n
   }
 
-  def f(n: Int, m: Int): Int = {
+  private def f(n: Int, m: Int): Int = {
     if (m > n) return 0
     var res = 1
     var i = n
@@ -25,7 +25,7 @@ object Solution_1012 {
     res
   }
 
-  def g(idx: Int, len: Int, rb: Int, str: String, state: Int, arr: Array[Array[Array[Int]]]): Int = {
+  private def g(idx: Int, len: Int, rb: Int, str: String, state: Int, arr: Array[Array[Array[Int]]]): Int = {
     if (idx >= len) return 1
     if (arr(idx)(state)(rb) > 0) return arr(idx)(state)(rb)
     val upper = if (rb == 1) str(idx) - '0' else 9
