@@ -1,23 +1,31 @@
 package leetCode._1100
 
-import scala.collection.mutable
-
 object Solution_1074 {
   def numSubmatrixSumTarget(matrix: Array[Array[Int]], target: Int): Int = {
-    if (matrix.length == 1 && matrix(0).length == 1) return if (matrix(0)(0) == target) 1 else 0
-    var res = 0
-    val arr = Array.ofDim[Int](matrix.length, matrix(0).length + 1)
-    matrix.indices.foreach(i => (1 to matrix(0).length).foreach(j => arr(i)(j) = arr(i)(j - 1) + matrix(i)(j - 1)))
-    (1 to matrix(0).length).foreach(i => (i to matrix(0).length).foreach(j => {
-      var sum = 0
-      val m = mutable.Map[Int, Int]()
-      m += 0 -> 1
-      matrix.indices.foreach(k => {
-        sum += arr(k)(j) - arr(k)(i - 1)
-        res += m.getOrElse(sum - target, 0)
-        m += sum -> (m.getOrElse(sum, 0) + 1)
-      })
-    }))
-    res
+    val numRows = matrix.length
+    val numCols = matrix.headOption.map(_.length).getOrElse(0)
+    val rowCumSums = matrix.map(_.scan(0)(_ + _))
+
+    val colCumSums = (0 until numCols).map(j => matrix.indices.scanLeft(0) { case (cumSum, i) => cumSum + matrix(i)(j) })
+
+    (1 to numRows)
+      .iterator
+      .flatMap(height => (1 to numCols).iterator.map(height -> _))
+      .flatMap { case (height, width) => (0 until numRows - height)
+        .iterator
+        .scanLeft(rowCumSums.iterator.take(height).map(_(width)).sum) {
+          case (slidingSum, i) => slidingSum + rowCumSums(i + height)(width) - rowCumSums(i)(width)
+        }
+        .zipWithIndex
+        .flatMap { case (sum, i) =>
+          (0 until numCols - width)
+            .iterator
+            .scanLeft(sum) { case (slidingSum, j) => slidingSum +
+              (colCumSums(j + width)(i + height) - colCumSums(j + width)(i)) -
+              (colCumSums(j)(i + height) - colCumSums(j)(i))
+            }
+        }
+      }
+      .count(_ == target)
   }
 }

@@ -1,11 +1,13 @@
 package leetCode._1100
 
+import scala.collection.mutable
+
 object Solution_1054 {
   def rearrangeBarcodes(A: Array[Int]): Array[Int] = {
     def f(arr: Array[Int]): List[(Int, Int)] = {
-      val m = scala.collection.mutable.HashMap[Int, Int]()
-      arr.foreach({ x => m.put(x, m.getOrElse(x, 0) + 1) })
-      m.toList.map({ case (x, y) => (x, y) }).sortBy(-_._2)
+      val m = mutable.HashMap.empty[Int, Int]
+      arr.foreach(x => m.put(x, m.getOrElse(x, 0) + 1))
+      m.toList.map { case (x, y) => (x, y) }.sortBy(-_._2)
     }
 
     var l = f(A)
