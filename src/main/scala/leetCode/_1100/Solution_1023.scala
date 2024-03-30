@@ -11,6 +11,6 @@ object Solution_1023 {
         (rq, rr)
       }
     }
-    fp.isEmpty && fq.forall(c => c.isLower)
+    fp.isEmpty && fq.forall(_.isLower)
   }).toList
 }

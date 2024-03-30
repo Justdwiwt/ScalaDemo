@@ -1,21 +1,20 @@
 package leetCode._1100
 
 object Solution_1024 {
-  def videoStitching(clips: Array[Array[Int]], T: Int): Int = {
-    var res = 0
-    var e = 0
-    while (e < T) {
-      val t = e
-      e = func(e, clips)
-      if (t == e) return -1
-      res += 1
-    }
-    res
-  }
+  def videoStitching(clips: Array[Array[Int]], time: Int): Int = {
+    lazy val sorted = clips.sortWith { case (a, b) =>
+      a.head < b.head || (a.head == b.head && a.last > b.last)
+    }.toIndexedSeq
 
-  def func(s: Int, clips: Array[Array[Int]]): Int = {
-    var mx = 0
-    clips.foreach(v => if (v(0) <= s && v(1) >= s) mx = mx.max(v(1)))
-    mx
+    @scala.annotation.tailrec
+    def f(seq: Seq[Array[Int]], last: Array[Int], count: Int): Int = {
+      lazy val (take, drop) = seq.span(_.head <= last.last)
+      if (last.last >= time) count
+      else if (seq.isEmpty || take.isEmpty) -1
+      else f(drop, take.maxBy(_.last), count + 1)
+    }
+
+    if (sorted.head.head > 0) -1
+    else f(sorted.tail, sorted.head, 1)
   }
 }
