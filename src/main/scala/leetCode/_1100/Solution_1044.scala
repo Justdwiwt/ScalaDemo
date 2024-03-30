@@ -1,46 +1,44 @@
 package leetCode._1100
 
-import scala.collection.mutable
+import scala.collection.Searching.search
 
 object Solution_1044 {
-  def longestDupSubstring(str: String): String = {
-    val hash, power = Array.ofDim[Long](str.length)
-    val base = 29L
-    val mod = 1000000007L
-    hash(0) = str.head
-    power(0) = base
-    str.indices.drop(1).foreach(i => {
-      hash(i) = ((hash(i - 1) * base) + str.charAt(i)) % mod
-      power(i) = (base * power(i - 1)) % mod
-    })
+  def longestDupSubstring(s: String): String = {
+    val (b, p) = (1L << 17, 8417508174513L)
 
-    def h(start: Int, end: Int): Long =
-      (hash(end) - (if (start - 1 >= 0) hash(start - 1) else 0) * power(end - start) % mod + mod) % mod
+    def modP(x: Long): Long =
+      ((x % p) + p) % p
 
-    def f(wid: Int): Int = {
-      val map = mutable.Map.empty[Long, mutable.Set[Int]]
-      var t = h(0, wid - 1)
-      map += t -> mutable.Set.empty[Int]
-      map(t) += 0
-      (1 to str.length - wid).foreach(i => {
-        t = h(i, i + wid - 1)
-        if (!map.contains(t)) map += t -> mutable.Set.empty[Int]
-        else map(t).foreach(s => if (str.substring(i, i + wid).equals(str.substring(s, s + wid))) return i)
-        map(t) += i
-      })
-      -1
+    def check(len: Int): Option[String] = {
+      if (len == 0) Some("")
+      else {
+        val h0 = s.take(len).foldLeft(0L)((x, y) => modP(x * b + y))
+        val fac = (1 until len).foldLeft(b)((x, _) => modP(x * b))
+
+        val i = (0 until s.length - len)
+          .iterator
+          .scanLeft((h0, Set[Long]())) { case ((h, m), j) =>
+            val h1 = modP(modP(h * b) - modP(fac * s(j)) + s(j + len))
+            (h1, m + h)
+          }
+          .indexWhere { case (h, m) => m.contains(h) }
+
+        if (i != -1) Some(s.slice(i, i + len))
+        else None
+      }
     }
 
-    var lowLen = 1
-    var highLen = str.length - 1
-    while (lowLen <= highLen) {
-      val midLen = (lowLen + highLen) >> 1
-      val tmp = f(midLen)
-      if (tmp == -1) highLen = midLen - 1
-      else lowLen = midLen + 1
+    val help = new IndexedSeq[Int] {
+      override def apply(i: Int): Int = (check(i), check(i + 1)) match {
+        case (Some(_), Some(_)) => -1
+        case (Some(_), None) => 0
+        case _ => 1
+      }
+
+      override def length: Int = s.length
     }
-    if (highLen == 0) return ""
-    val res = f(highLen)
-    if (res == -1) "" else str.substring(res, res + highLen)
+
+    //    check(help.search(0).insertionPoint).get
+    ""
   }
 }

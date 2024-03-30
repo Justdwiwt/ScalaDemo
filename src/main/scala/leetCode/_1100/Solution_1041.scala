@@ -2,22 +2,16 @@ package leetCode._1100
 
 object Solution_1041 {
   def isRobotBounded(instructions: String): Boolean = {
-    val p = Array(0, 1, 0, -1)
-    val q = Array(1, 0, -1, 0)
-    var cur = ""
-    var x = 0
-    var y = 0
-    var t = 0
-    (0 until 4).foreach(_ => cur += instructions)
-    cur.foreach({
-      case 'G' =>
-        x += p(t)
-        y += q(t)
-      case 'L' =>
-        t = (t + 3) % 4
-      case _ =>
-        t = (t + 1) % 4
-    })
-    x == 0 && y == 0
+    val dir = Array(0 -> 1, 1 -> 0, 0 -> -1, -1 -> 0)
+    val (id, a, b) = instructions.foldLeft((0, 0, 0)) {
+      case ((dId, x, y), ins) => ins match {
+        case 'L' => ((dId + 3) % 4, x, y)
+        case 'R' => ((dId + 1) % 4, x, y)
+        case _ =>
+          val (i, j) = dir(dId)
+          (dId, x + i, y + j)
+      }
+    }
+    (a == 0 && b == 0) || id != 0
   }
 }
