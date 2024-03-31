@@ -7,5 +7,6 @@ object Solution_915 {
     .zipWithIndex
     .tail
     .filter(x => x._1._1 <= x._1._2)
-    .head._2
+    .head
+    ._2
 }
