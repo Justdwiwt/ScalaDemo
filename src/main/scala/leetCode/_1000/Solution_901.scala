@@ -1,19 +1,16 @@
 package leetCode._1000
 
-import scala.collection.mutable
-
 object Solution_901 {
-
-  case class Span(price: Int, days: Int)
-
   class StockSpanner() {
-    private val st = new mutable.Stack[Span]()
+    var stack = List.empty[(Int, Int)]
+    var day = 0
 
     def next(price: Int): Int = {
-      var days = 1
-      while (st.nonEmpty && (st.top.price <= price)) days += st.pop().days
-      st.push(Span(price, days))
-      days
+      day += 1
+      while (stack.nonEmpty && stack.head._1 <= price) stack = stack.tail
+      val res = if (stack.nonEmpty) day - stack.head._2 else day
+      stack ::= price -> day
+      res
     }
   }
 

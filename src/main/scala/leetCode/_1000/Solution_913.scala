@@ -1,27 +1,27 @@
 package leetCode._1000
 
 object Solution_913 {
-  sealed trait Player {
+  private sealed trait Player {
     def start: Int
   }
 
-  case object Cat extends Player {
+  private case object Cat extends Player {
     override def start: Int = 2
   }
 
-  case object Mouse extends Player {
+  private case object Mouse extends Player {
     override def start: Int = 1
   }
 
-  sealed trait Result {
+  private sealed trait Result {
     def toInt: Int
   }
 
-  case object Draw extends Result {
+  private case object Draw extends Result {
     override def toInt: Int = 0
   }
 
-  final case class Win(player: Player) extends Result {
+  private final case class Win(player: Player) extends Result {
     override def toInt: Int = player match {
       case Cat => 2
       case Mouse => 1
@@ -34,7 +34,7 @@ object Solution_913 {
     def get: A = elem
   }
 
-  object Lazy {
+  private object Lazy {
     def apply[A](f: => A) = new Lazy(f)
   }
 

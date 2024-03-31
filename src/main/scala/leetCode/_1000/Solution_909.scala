@@ -1,31 +1,28 @@
 package leetCode._1000
 
-import scala.collection.mutable
-
 object Solution_909 {
   def snakesAndLadders(board: Array[Array[Int]]): Int = {
-    val flatBoard = board
-      .reverse
+    lazy val b = 1 +: board
+      .reverseIterator
       .zipWithIndex
-      .flatMap({ case (a, i) => if (i % 2 == 1) a.reverse else a })
-    val pq = mutable.PriorityQueue[(Int, Int)]()(Ordering.by(-_._2))
-    pq += ((0, 0))
-    val visited = mutable.BitSet()
-    val dest = board.length * board.length - 1
-    while (pq.nonEmpty) {
-      val t = pq.dequeue()
-      visited += t._1
-      if (t._1 == dest) return t._2
-      pq ++= (1 to 6)
-        .map(_ + t._1)
-        .collect({
-          case x if x <= dest =>
-            val lkp = flatBoard(x)
-            if (lkp != -1) lkp - 1 else x
-        })
-        .collect({ case x if !visited.contains(x) => (x, t._2 + 1) })
-        .toSet
+      .flatMap { case (a, i) => if (i % 2 != 0) a.toList.reverse else a.toList }
+      .toVector
+
+    lazy val n2 = board.length * board.length
+
+    @scala.annotation.tailrec
+    def f(q: collection.immutable.Queue[(Int, Int)], visited: Set[Int]): Int = {
+      lazy val ((x: Int, step: Int), q1: collection.immutable.Queue[(Int, Int)]) = q.dequeue
+      lazy val newSquares: List[(Int, Int)] = (1 to 6.min(n2 - x))
+        .map(a => (if (b(x + a) > 0) b(x + a) else x + a) -> (step + 1))
+        .filterNot { case (y, _) => (y > n2) || visited.contains(y) }
+        .toList
+
+      if (q.isEmpty) -1
+      else if (x == n2) step
+      else f(q1 ++ newSquares, visited ++ newSquares.map(_._1))
     }
-    -1
+
+    f(collection.immutable.Queue((1, 0)), Set(1))
   }
 }
