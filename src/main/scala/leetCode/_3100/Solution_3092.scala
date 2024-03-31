@@ -1,21 +1,17 @@
 package leetCode._3100
 
-import scala.collection.mutable
+import scala.collection.immutable.TreeSet
 
 object Solution_3092 {
-  def mostFrequentIDs(a: Array[Int], b: Array[Int]): Array[Long] = {
-    val pq = mutable.PriorityQueue[Array[Long]]()(Ordering.by(_(1)))
-    val n = a.length
-    val f = Array.fill(a.max + 1)(0L)
-    val res = Array.fill(n)(0L)
-    a.indices.foreach(i => {
-      val x = a(i)
-      val occ = b(i).toLong
-      f(x) += occ
-      pq += Array(x.toLong, f(x))
-      while (pq.nonEmpty && pq.head(1) != f(pq.head.head.toInt)) pq.dequeue
-      res(i) = if (pq.isEmpty) 0 else pq.head(1)
-    })
-    res
-  }
+  def mostFrequentIDs(nums: Array[Int], freq: Array[Int]): Array[Long] = nums
+    .zip(freq)
+    .foldLeft((Map.empty[Int, Long], TreeSet.empty[(Long, Int)], List.empty[Long])) {
+      case ((map, set, acc), (n, f)) =>
+        lazy val f0: Long = map.getOrElse(n, 0L)
+        lazy val set1 = (if (f0 == 0L) set else set - (f0 -> n)) + (f0 + f -> n)
+        (map + (n -> (f0 + f)), set1, set1.last._1 +: acc)
+    }
+    ._3
+    .reverse
+    .toArray
 }
