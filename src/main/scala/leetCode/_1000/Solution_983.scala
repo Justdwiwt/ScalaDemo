@@ -1,21 +1,23 @@
 package leetCode._1000
 
+import scala.collection.mutable
+
 object Solution_983 {
   def mincostTickets(days: Array[Int], costs: Array[Int]): Int = {
-    val diff = costs match {
-      case Array(one, seven, thirty) => Map(1 -> one, 7 -> seven, 30 -> thirty)
-      case _ => throw new Exception
-    }
-    days.indices.:\(IndexedSeq[Int]()) {
-      case (i, dp) =>
-        val mn = diff.map({ case (numDays, cost) =>
-          val remaining = days.indexWhere(_ >= days(i) + numDays) match {
-            case -1 => 0
-            case j => dp(days.length - j - 1)
-          }
-          cost + remaining
-        }).min
-        dp :+ mn
-    }.last
+    val m = mutable.Map.empty[Seq[Int], Int]
+
+    def f(rem: Seq[Int]): Int =
+      if (rem.isEmpty) 0
+      else if (m.contains(rem)) m(rem)
+      else {
+        val rc = List(1, 7, 30)
+          .zipWithIndex
+          .map { case (ds, idx) => costs(idx) + f(rem.dropWhile(_ < rem.head + ds)) }
+          .min
+        m += (rem -> rc)
+        rc
+      }
+
+    f(days.toList)
   }
 }

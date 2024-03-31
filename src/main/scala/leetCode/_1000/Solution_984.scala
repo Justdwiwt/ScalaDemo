@@ -2,32 +2,15 @@ package leetCode._1000
 
 object Solution_984 {
   def strWithout3a3b(A: Int, B: Int): String = {
-    var res = ""
-    var a = A
-    var b = B
-    while (a > 0 || b > 0) {
-      if (a == 0) {
-        res += 'b'
-        b -= 1
-      }
-      else if (b == 0) {
-        res += 'a'
-        a -= 1
-      }
-      else if (a > b) {
-        res += "aab"
-        a -= 2
-        b -= 1
-      } else if (a < b) {
-        res += "bba"
-        a -= 1
-        b -= 2
-      } else if (a == b) {
-        res += "ab"
-        a -= 1
-        b -= 1
-      }
+    @scala.annotation.tailrec
+    def f(a: Int, b: Int, prefix: String): String = {
+      if (a == 0) prefix + "b" * b
+      else if (b == 0) prefix + "a" * a
+      else if (a > b) f(a - 2, b - 1, prefix + "aab")
+      else if (a < b) f(a - 1, b - 2, prefix + "bba")
+      else f(a - 1, b - 1, prefix + "ab")
     }
-    res
+
+    f(A, B, "")
   }
 }
