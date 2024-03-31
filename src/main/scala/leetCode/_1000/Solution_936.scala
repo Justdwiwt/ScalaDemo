@@ -2,34 +2,25 @@ package leetCode._1000
 
 object Solution_936 {
   def movesToStamp(stamp: String, target: String): Array[Int] = {
-    val ch = 'X'
-    var s = target
-    val f = target.map(_ => ch)
-    val rep = stamp.map(_ => ch)
-    var cnt = 0
-    var res = Array.emptyIntArray
-    val mx = s.length - stamp.length
-    while (true) {
-      var flag = false
-      (0 to mx).foreach(idx => {
-        val sub = s.substring(idx, idx + stamp.length)
-        if (check(stamp, sub, ch)) {
-          flag = true
-          s = s.substring(0, idx) + rep + s.substring(idx + stamp.length)
-          res :+= idx
-        }
+    def canRemoveStamp(target: Map[Int, Char], start: Int): Boolean =
+      stamp.indices.foldLeft(false)((hasMatchingLetter, i) => {
+        if (target(start + i) == '?') hasMatchingLetter
+        else if (target(start + i) == stamp(i)) true
+        else return false
       })
-      cnt += 1
-      if (cnt == 10 * target.length || !flag)
-        if (s == f) return res.reverse
-        else return Array.emptyIntArray
-    }
-    Array.emptyIntArray
-  }
 
-  def check(s1: String, s2: String, ch: Char): Boolean = {
-    if (s2 == s1.map(_ => ch)) return false
-    s1.indices.withFilter(x => s2(x) != s1(x) && s2(x) != ch).foreach(_ => return false)
-    true
+    @scala.annotation.tailrec
+    def movesToStamp(target: Map[Int, Char], stampings: List[Int]): List[Int] = {
+      val (newTarget, removedStamp, newStampings) = (0 to target.size - stamp.length)
+        .foldLeft(target, false, stampings) { case ((target, removedStamp, stampings), start) =>
+          if (!canRemoveStamp(target, start)) (target, removedStamp, stampings)
+          else (target ++ (start until start + stamp.length).map(_ -> '?'), true, start +: stampings)
+        }
+      if (removedStamp) movesToStamp(newTarget, newStampings)
+      else if (newTarget.values.forall(_ == '?')) newStampings
+      else List.empty
+    }
+
+    movesToStamp(target.indices.zip(target).toMap, stampings = List.empty).toArray
   }
 }

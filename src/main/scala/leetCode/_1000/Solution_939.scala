@@ -11,7 +11,7 @@ object Solution_939 {
       m(point.head) += point(1)
     })
 
-    val xLines = m.filter({ case (_, value) => value.size > 1 }).toList
+    val xLines = m.filter { case (_, value) => value.size > 1 }.toList
 
     var res = Int.MaxValue
 
