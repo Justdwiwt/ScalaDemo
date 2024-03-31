@@ -1,59 +1,97 @@
 package leetCode._1000
 
-import scala.collection.mutable
-import scala.collection.mutable.ListBuffer
-
 object Solution_966 {
-  def spellchecker(wordlist: Array[String], queries: Array[String]): Array[String] = {
-    val m = mutable.Map[String, ListBuffer[String]]()
-    val strToIdx = mutable.Map[String, Int]()
+  case class Trie(idx: Option[Int], child: Map[Char, Trie])
 
-    var mn = Integer.MAX_VALUE
-    var mx = Integer.MIN_VALUE
-    wordlist.indices.foreach(i => {
-      val w = wordlist(i)
-      if (!strToIdx.contains(w)) strToIdx += w -> i
-      val _w = w.toLowerCase
-      if (!m.contains(_w)) m += _w -> new ListBuffer[String]()
-      m(_w) += w
-      mn = mn.min(w.length)
-      mx = mx.max(w.length)
-    })
+  private def insert(string: List[Char], index: Int, trie: Trie): Trie = string match {
+    case Nil =>
+      trie.idx match {
+        case None => Trie(Some(index), trie.child)
+        case s@Some(j) => if (j < index) Trie(s, trie.child) else Trie(Some(index), trie.child)
+      }
+    case x :: xs =>
+      val sub = trie.child.getOrElse(x, Trie(None, Map()))
+      Trie(trie.idx, trie.child + (x -> insert(xs, index, sub)))
+  }
 
-    val s = Set('a', 'e', 'i', 'o', 'u')
+  sealed abstract class SearchState
 
-    def f(query: String): String = {
-      if (queries.equals("") | queries.length == 0) return query
-      if (strToIdx.contains(query)) return query
-      val len = query.length
-      if (len < mn || len > mx) return ""
-      val _q = query.toLowerCase
-      if (m.contains(_q)) return m(_q).head
+  private case object PerfectMatch extends SearchState
 
-      val isVisited = mutable.Set[String]()
-      val q = mutable.Queue[(String, Int)]()
+  private case object Capitalization extends SearchState
 
-      q += ((_q, 0))
-      var idx = -1
-      var res = ""
-      while (q.nonEmpty) {
-        val cur = q.dequeue()
-        if (!isVisited.contains(cur._1)) {
-          if (m.contains(cur._1))
-            if (idx == -1 || strToIdx(m(cur._1).head) < idx) {
-              idx = strToIdx(m(cur._1).head)
-              res = m(cur._1).head
-            }
-          isVisited += cur._1
-          (cur._2 until cur._1.length)
-            .withFilter(i => s.contains(cur._1.charAt(i)))
-            .foreach(i => s.withFilter(c => c != cur._1.charAt(i))
-              .foreach(c => q += ((cur._1.substring(0, i) + c + cur._1.substring(i + 1), i + 1))))
+  private case object VowelError extends SearchState
+
+  implicit object SearchStateOrdering extends Ordering[SearchState] {
+    def compare(a: SearchState, b: SearchState): Int = (a, b) match {
+      case (PerfectMatch, PerfectMatch) => 0
+      case (PerfectMatch, _) => -1
+      case (Capitalization, PerfectMatch) => 1
+      case (Capitalization, Capitalization) => 0
+      case (Capitalization, _) => -1
+      case (VowelError, VowelError) => 0
+      case (VowelError, _) => 1
+    }
+  }
+
+  sealed abstract class SearchResult
+
+  private final case class Found(state: SearchState, idx: Int) extends SearchResult
+
+  private case object NotFound extends SearchResult
+
+  implicit def searchResultOrdering(implicit ss: Ordering[SearchState]): Ordering[SearchResult] = (a: SearchResult, b: SearchResult) => (a, b) match {
+    case (NotFound, NotFound) => 0
+    case (Found(s1, i1), Found(s2, i2)) => ss.compare(s1, s2) match {
+      case x if x != 0 => x
+      case _ => i1 - i2
+    }
+    case (NotFound, _) => -1
+    case (Found(_, _), _) => 1
+  }
+
+  private val vowelSet = Set('a', 'e', 'i', 'o', 'u')
+  private val vowelList = List('a', 'e', 'i', 'o', 'u', 'A', 'E', 'I', 'O', 'U')
+
+  private def candidate(ch: Char): List[(Char, SearchState)] =
+    capitalize(ch) ++ vowelError(ch) ++ List((ch, PerfectMatch))
+
+  private def capitalize(ch: Char): List[(Char, SearchState)] =
+    if (ch.isLower) List((ch.toUpper, Capitalization))
+    else List((ch.toLower, Capitalization))
+
+  private def vowelError(ch: Char): List[(Char, SearchState)] =
+    if (vowelSet(ch.toLower)) vowelList
+      .map { v => val pair = (v, VowelError); (v, pair) }
+      .withFilter { case (v, _) => v != ch }
+      .map { case (_, pair) => pair }
+    else Nil
+
+  private def search(string: List[Char], s: SearchState, trie: Trie, currentSolution: List[SearchResult])(implicit o: Ordering[SearchState]): List[SearchResult] = string match {
+    case Nil => trie.idx match {
+      case None => currentSolution
+      case Some(i) => Found(s, i) :: currentSolution
+    }
+    case x :: xs =>
+      val candidates = candidate(x)
+      candidates.foldLeft(currentSolution) {
+        case (acc, (ch, st)) => trie.child.get(ch) match {
+          case None => acc
+          case Some(t) => search(xs, if (o.compare(st, s) > 0) st else s, t, acc)
         }
       }
-      res
-    }
+  }
 
-    queries.map(f)
+  def spellchecker(wordlist: Array[String], queries: Array[String]): Array[String] = {
+    val words = wordlist.zipWithIndex
+    val trie = words.foldLeft(Trie(None, Map())) { case (acc, (s, i)) => insert(s.toList, i, acc) }
+
+    queries.map(query => {
+      val answers = search(query.toList, PerfectMatch, trie, Nil).sorted
+      answers.headOption.getOrElse(NotFound) match {
+        case NotFound => ""
+        case Found(_, i) => wordlist(i)
+      }
+    })
   }
 }

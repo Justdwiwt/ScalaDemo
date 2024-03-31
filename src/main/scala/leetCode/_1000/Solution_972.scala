@@ -12,10 +12,11 @@ object Solution_972 {
     }
   }
 
-  object Fraction {
+  private object Fraction {
     private val Rational = """(\d+)(?:\.(\d*)(?:\((\d+)\))?)?""".r
 
-    def apply[A](numerator: A)(implicit integral: Integral[A]): Fraction[A] = Fraction(numerator, integral.one)
+    def apply[A](numerator: A)(implicit integral: Integral[A]): Fraction[A] =
+      Fraction(numerator, integral.one)
 
     def apply[A](numerator: A, denominator: A)(implicit integral: Integral[A]): Fraction[A] =
       new Fraction(numerator, denominator).simplify
@@ -39,5 +40,6 @@ object Solution_972 {
     }
   }
 
-  def isRationalEqual(s: String, t: String): Boolean = Fraction(s) == Fraction(t)
+  def isRationalEqual(s: String, t: String): Boolean =
+    Fraction(s) == Fraction(t)
 }
