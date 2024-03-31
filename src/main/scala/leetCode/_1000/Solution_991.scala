@@ -1,19 +1,14 @@
 package leetCode._1000
 
 object Solution_991 {
-  def brokenCalc(X: Int, Y: Int): Int = {
-    var res = 0
-    val x = X
-    var y = Y
-    while (y > x)
-      if ((y & 1) == 0) {
-        res += 1
-        y >>= 1
-      } else {
-        res += 2
-        y = (y + 1) >> 1
-      }
-    res += x - y
-    res
+  def brokenCalc(startValue: Int, target: Int): Int = {
+    @scala.annotation.tailrec
+    def dfs(x: Int, y: Int, cnt: Int): Int =
+      if (x > y) x - y + cnt
+      else if (x == y) cnt
+      else if (y % 2 == 0) dfs(x, y / 2, cnt + 1)
+      else dfs(x, y + 1, cnt + 1)
+
+    dfs(startValue, target, 0)
   }
 }
