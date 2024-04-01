@@ -2,14 +2,9 @@ package leetCode._900
 
 object Solution_868 {
   def binaryGap(n: Int): Int = {
-    var cnt = 0
-    var res = 0
-    n.toBinaryString.foreach(ch =>
-      if (ch == '1') {
-        res = res.max(cnt)
-        cnt = 1
-      } else cnt += 1
-    )
-    res
+    val binary = n.toBinaryString
+    val ones = binary.indices.filter(binary(_) == '1')
+    if (ones.size < 2) 0
+    else ones.sliding(2).map(m => m(1) - m.head).max
   }
 }

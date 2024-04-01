@@ -4,17 +4,13 @@ import scala.collection.mutable
 
 object Solution_873 {
   def lenLongestFibSubseq(A: Array[Int]): Int = {
-    var res = 0
-    val m = new mutable.HashMap[Int, Int]()
-    val dp = Array.ofDim[Int](A.length, A.length)
-    A.indices.foreach(i => {
-      m(A(i)) = i
-      (0 until i).foreach(j => {
-        val tmp = if (m.contains(A(i) - A(j))) m(A(i) - A(j)) else -1
-        dp(j)(i) = if (A(i) - A(j) < A(j) && tmp >= 0) dp(tmp)(j) + 1 else 2
-        res = res.max(dp(j)(i))
-      })
-    })
-    if (res > 2) res else 0
+    val m = mutable.Map.empty[(Int, Int), Int].withDefaultValue(2)
+    val st = A.toSet
+
+    A.indices.drop(2).foreach(j => (1 until j)
+      .withFilter(i => A(j) - A(i) < A(i) && st.contains(A(j) - A(i)))
+      .foreach(i => m.update((A(i), A(j)), m((A(j) - A(i), A(i))) + 1)))
+
+    m.values.reduceOption(_.max(_)).getOrElse(0)
   }
 }
