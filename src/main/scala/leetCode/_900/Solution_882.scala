@@ -3,16 +3,16 @@ package leetCode._900
 import scala.collection.mutable
 
 object Solution_882 {
-  case class Node(node: Int, dist: Int)
+  private case class Node(node: Int, dist: Int)
 
   def reachableNodes(edges: Array[Array[Int]], maxMoves: Int, n: Int): Int = {
     val graph = mutable.HashMap.empty[Int, mutable.HashMap[Int, Int]]
     edges
-      .withFilter({ case Array(_, _, _) => true; case _ => false })
-      .foreach({ case Array(u, v, w) =>
+      .withFilter { case Array(_, _, _) => true; case _ => false }
+      .foreach { case Array(u, v, w) =>
         graph.getOrElseUpdate(u, mutable.HashMap[Int, Int]()) += v -> w
         graph.getOrElseUpdate(v, mutable.HashMap[Int, Int]()) += u -> w
-      })
+      }
     val pq = mutable.PriorityQueue.empty[Node](Ordering.by(_.dist)).reverse
     pq += Node(0, 0)
     val distMap = mutable.HashMap[Int, Int](0 -> 0)

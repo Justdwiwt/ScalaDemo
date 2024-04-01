@@ -4,12 +4,11 @@ import leetCode.ListNode
 
 object Solution_876 {
   def middleNode(head: ListNode): ListNode = {
-    var fast = head
-    var slow = head
-    while (fast != null && fast.next != null) {
-      slow = slow.next
-      fast = fast.next.next
-    }
-    slow
+    @scala.annotation.tailrec
+    def f(slow: ListNode, fast: ListNode): ListNode =
+      if (fast != null && fast.next != null) f(slow.next, fast.next.next)
+      else slow
+
+    f(head, head)
   }
 }
