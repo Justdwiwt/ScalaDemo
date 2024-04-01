@@ -33,7 +33,7 @@ object Solution_803 {
       visited.foreach(points => {
         if (!points.exists(_.x == 0)) {
           acc += points.length
-          points.foreach({ case Point(a, b) => grid(a)(b) = 0 })
+          points.foreach { case Point(a, b) => grid(a)(b) = 0 }
         }
       })
       acc
