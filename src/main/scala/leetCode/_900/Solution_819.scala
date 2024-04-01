@@ -7,5 +7,7 @@ object Solution_819 {
     .split("\\s+")
     .filterNot(banned.contains(_))
     .groupBy(identity)
-    .mapValues(_.length).maxBy(_._2)._1
+    .mapValues(_.length)
+    .maxBy(_._2)
+    ._1
 }

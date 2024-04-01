@@ -1,16 +1,20 @@
 package leetCode._900
 
+import scala.collection.mutable
+
 object Solution_813 {
-  def largestSumOfAverages(A: Array[Int], K: Int): Double = {
-    val dp = Array.ofDim[Double](A.length + 1, K + 1)
-    val sum = Array.fill(A.length + 1)(0.0)
-    (1 to A.length).foreach(i => {
-      sum(i) = sum(i - 1) + A(i - 1)
-      dp(i)(1) = sum(i) / i
+  def largestSumOfAverages(nums: Array[Int], k: Int): Double = {
+    val m = mutable.Map.empty[(Int, Int, Int), Double]
+
+    def avg(start: Int, end: Int): Double =
+      nums.slice(start, end).sum.toDouble / (end - start)
+
+    def dfs(pre: Int, cur: Int, budget: Int): Double = m.getOrElseUpdate((pre, cur, budget), {
+      if (cur == nums.length) 0
+      else if (budget == 1) avg(cur, nums.length)
+      else (avg(pre, cur + 1) + dfs(cur + 1, cur + 1, budget - 1)).max(dfs(pre, cur + 1, budget))
     })
-    (1 to A.length).foreach(i => (2 to K).foreach(k => (0 until i).foreach(j => {
-      dp(i)(k) = dp(i)(k).max(dp(j)(k - 1) + (sum(i) - sum(j)) / (i - j))
-    })))
-    dp(A.length)(K)
+
+    dfs(pre = 0, cur = 0, budget = k)
   }
 }

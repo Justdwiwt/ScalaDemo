@@ -3,16 +3,16 @@ package leetCode._900
 import scala.collection.mutable
 
 object Solution_815 {
-  def getBusStops(routes: Array[Array[Int]]): mutable.Map[Int, mutable.Set[Int]] = {
+  private def getBusStops(routes: Array[Array[Int]]): mutable.Map[Int, mutable.Set[Int]] = {
     val busStops = mutable.Map.empty[Int, mutable.Set[Int]]
     routes.indices.foreach(i => {
       val route = routes(i)
-      route.foreach(stop => busStops.getOrElseUpdate(stop, mutable.Set.empty[Int]).add(i))
+      route.foreach(busStops.getOrElseUpdate(_, mutable.Set.empty[Int]).add(i))
     })
     busStops
   }
 
-  def getBusGraph(busStops: mutable.Map[Int, mutable.Set[Int]]): mutable.Map[Int, mutable.Set[Int]] = {
+  private def getBusGraph(busStops: mutable.Map[Int, mutable.Set[Int]]): mutable.Map[Int, mutable.Set[Int]] = {
     val busGraph = mutable.Map.empty[Int, mutable.Set[Int]]
     busStops
       .values
@@ -24,7 +24,7 @@ object Solution_815 {
     busGraph
   }
 
-  def bfs(busGraph: mutable.Map[Int, mutable.Set[Int]], start: mutable.Set[Int], end: mutable.Set[Int]): Int =
+  private def bfs(busGraph: mutable.Map[Int, mutable.Set[Int]], start: mutable.Set[Int], end: mutable.Set[Int]): Int =
     if (end.isEmpty) -1
     else {
       var num = 0
@@ -33,14 +33,14 @@ object Solution_815 {
       val visited = mutable.Set.empty[Int]
       while (!reached && current.nonEmpty) {
         num += 1
-        current.foreach(visited += _)
+        current.foreach(visited.+=)
         current.foreach(reached |= end.contains(_))
         if (!reached) {
           val next = mutable.Set.empty[Int]
           current
-            .foreach(bus => busGraph.getOrElse(bus, mutable.Set.empty[Int])
-              .withFilter(nextBus => !visited.contains(nextBus))
-              .foreach(nextBus => next.add(nextBus)))
+            .foreach(busGraph.getOrElse(_, mutable.Set.empty[Int])
+              .withFilter(!visited.contains(_))
+              .foreach(next.add))
           current = next.toArray
         }
       }
