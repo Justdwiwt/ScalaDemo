@@ -8,6 +8,6 @@ object Solution_830 {
         else List(i2 + 1, i2 + 1) +: r
       case _ => List(List(0, 0))
     }
-    .collect({ case l@List(i1, i2) if i2 - i1 > 1 => l })
+    .collect { case l@List(i1, i2) if i2 - i1 > 1 => l }
     .reverse
 }
