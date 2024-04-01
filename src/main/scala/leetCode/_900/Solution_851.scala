@@ -3,7 +3,7 @@ package leetCode._900
 object Solution_851 {
   def loudAndRich(richer: Array[Array[Int]], quiet: Array[Int]): Array[Int] = {
     val arr = Array.ofDim[Boolean](quiet.length, quiet.length)
-    richer.indices.foreach(i => arr(richer(i)(0))(richer(i)(1)) = true)
+    richer.indices.foreach(i => arr(richer(i).head)(richer(i)(1)) = true)
     val res = (-quiet.length to -1).toArray
 
     def dfs(node: Int): Int = {
@@ -17,6 +17,6 @@ object Solution_851 {
       res(node)
     }
 
-    quiet.indices.map(i => dfs(i)).toArray
+    quiet.indices.map(dfs).toArray
   }
 }

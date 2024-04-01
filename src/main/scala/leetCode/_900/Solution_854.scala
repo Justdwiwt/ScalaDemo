@@ -1,45 +1,38 @@
 package leetCode._900
 
-import scala.collection.mutable.ArrayBuffer
-import scala.util.control.Breaks._
+import scala.collection.mutable
 
 object Solution_854 {
-  def kSimilarity(A: String, B: String): Int = {
-    val a = new StringBuilder
-    val b = new StringBuilder
-    var res = a.length - 1
-    a.append(A)
-    b.append(B)
-    a.indices.foreach(i => {
-      breakable {
-        if (a(i) == b(i)) break
-      }
-      var matches = new ArrayBuffer[Int]()
-      ((i + 1) until a.length).foreach(j => {
-        breakable {
-          if (a(j) == b(j) || a(j) != b(i)) break
+  def kSimilarity(s1: String, tar: String): Int = {
+    val q = mutable.Queue[String](s1)
+    var cnt = 0
+    var res = 0
+    var found = false
+    while (q.nonEmpty && !found) {
+      val size = q.size
+      (0 until size).foreach(_ => {
+        val s = q.dequeue()
+        if (s == tar) found = true
+        else {
+          var idx = 0
+          while (s(idx) == tar(idx)) idx += 1
+          var j = idx
+          while (j < s.length && !found) {
+            if (s(j) == tar(idx) && tar(j) != s(j)) {
+              val sb = new StringBuilder(s)
+              sb(idx) = s(j)
+              sb(j) = s(idx)
+              if (sb.toString == tar) {
+                found = true
+                res = cnt + 1
+              } else q.enqueue(sb.toString)
+            }
+            j += 1
+          }
         }
-        matches += j
-        breakable {
-          if (a(i) != b(j)) break
-        }
-        val t = a(i)
-        a(i) = a(j)
-        a(j) = t
-
-        return 1 + kSimilarity(a.substring(i + 1), b.substring(i + 1))
       })
-      matches.foreach(j => {
-        val t = a(i)
-        a(i) = a(j)
-        a(j) = t
-        res = res.min(1 + kSimilarity(a.substring(i + 1), b.substring(i + 1)))
-        val v = a(i)
-        a(i) = a(j)
-        a(j) = v
-      })
-      return res
-    })
-    0
+      cnt += 1
+    }
+    res
   }
 }

@@ -1,24 +1,17 @@
 package leetCode._900
 
-import scala.collection.mutable
-
 object Solution_846 {
-  def isNStraightHand(hand: Array[Int], W: Int): Boolean = {
-    if (hand.length % W != 0) return false
-    val tm = new mutable.TreeMap[Int, Int]()
-    hand.foreach(i => tm.put(i, tm.getOrElse(i, 0) + 1))
-    var cur = 0
-    while (tm.nonEmpty) {
-      cur = tm.firstKey
-      (cur until cur + W).foreach(i => {
-        if (!tm.contains(i)) return false
-        else {
-          val t = tm(i)
-          if (t == 1) tm.remove(i)
-          else tm.put(i, t - 1)
-        }
-      })
+  def isNStraightHand(hand: Array[Int], groupSize: Int): Boolean = {
+    @scala.annotation.tailrec
+    def f(map: Map[Int, Int]): Boolean = {
+      lazy val mn = map.minBy(_._1)._1
+      lazy val ind = mn until mn + groupSize
+      lazy val newMap = ind
+        .foldLeft(map) { case (_map, i) => _map.updated(i, _map(i) - 1) }
+        .filter { case (_, count) => count > 0 }
+      map.isEmpty || (ind.forall(map.contains) && f(newMap))
     }
-    true
+
+    f(hand.groupBy(identity).mapValues(_.length))
   }
 }
