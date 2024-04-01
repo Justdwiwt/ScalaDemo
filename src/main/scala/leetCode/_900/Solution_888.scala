@@ -2,9 +2,8 @@ package leetCode._900
 
 object Solution_888 {
   def fairCandySwap(A: Array[Int], B: Array[Int]): Array[Int] = {
-    val delta = A.sum - B.sum
-    val st = B.toSet
-    A.foreach(x => if (st.contains(x - delta / 2)) return Array(x, x - delta / 2))
-    Array.empty
+    val diff = (B.sum - A.sum) / 2
+    val bobSet = B.toSet
+    A.find(a => bobSet.contains(a + diff)).map(m => Array(m, m + diff)).getOrElse(Array.empty)
   }
 }
