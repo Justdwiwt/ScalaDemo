@@ -1,32 +1,11 @@
 package leetCode._900
 
 object Solution_838 {
-  def pushDominoes(dominoes: String): String = {
-    val res = ("L" + dominoes + "R").toCharArray
-    val len = res.length
-    var idx = 1
-    while (idx < len) {
-      if (res(idx) == '.') {
-        var j = idx
-        while (res(j + 1) == '.') j += 1
-        if (res(idx - 1) == 'R' && res(j + 1) == 'R')
-          (idx to j).foreach(k => res(k) = 'R')
-        else if (res(idx - 1) == 'L' && res(j + 1) == 'L')
-          (idx to j).foreach(k => res(k) = 'L')
-        else if (res(idx - 1) == 'R' && res(j + 1) == 'L') {
-          var a = idx
-          var b = j
-          while (a < b) {
-            res(a) = 'R'
-            res(b) = 'L'
-            a += 1
-            b -= 1
-          }
-        }
-        idx = j
-      }
-      idx += 1
-    }
-    res.mkString.substring(1, len - 1)
-  }
+  def pushDominoes(dominoes: String): String = Iterator(
+    "^\\.+(?=L)" -> ("L" * (_: Int)),
+    "(?<=L)\\.+(?=L)" -> ("L" * (_: Int)),
+    "(?<=R)\\.+$" -> ("R" * (_: Int)),
+    "(?<=R)\\.+(?=R)" -> ("R" * (_: Int)),
+    "(?<=R)\\.+(?=L)" -> ((n: Int) => ("R" * (n / 2)) + ("." * (n % 2)) + ("L" * (n / 2))))
+    .foldLeft(dominoes) { case (dominoes, (regex, f)) => regex.r.replaceAllIn(dominoes, m => f(m.matched.length)) }
 }

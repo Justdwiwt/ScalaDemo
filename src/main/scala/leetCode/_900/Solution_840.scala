@@ -1,27 +1,26 @@
 package leetCode._900
 
-object Solution_840 {
-  def numMagicSquaresInside(grid: Array[Array[Int]]): Int = {
-    def f(acc: Int, pos: (Int, Int)): Int = {
-      val p = (0 to 2).flatMap(x => (0 to 2).map(y => grid(pos._1 + x)(pos._2 + y))).toList
-      val q = p.distinct.sorted
-      if (q == (1 to 9).toList) {
-        val d = p.head + p(4) + p(8)
-        val t = p(2) + p(4) + p(6) == d &&
-          p.head + p(1) + p(2) == d &&
-          p(3) + p(4) + p(5) == d &&
-          p(6) + p(7) + p(8) == d &&
-          p.head + p(3) + p(6) == d &&
-          p(1) + p(4) + p(7) == d &&
-          p(2) + p(5) + p(8) == d
-        if (t) acc + 1 else acc
-      } else acc
-    }
+import scala.collection.immutable.BitSet
 
-    if (grid.length < 3 || grid(0).length < 3) 0
-    else {
-      val idx = (0 until grid.length - 2).flatMap(x => List(x).zipAll(0 until grid(0).length - 2, x, x)).toList
-      idx./:(0)(f)
-    }
+object Solution_840 {
+  private val OneToNine = BitSet(1 to 9: _*)
+
+  def numMagicSquaresInside(grid: Array[Array[Int]]): Int = {
+    val m = grid.length
+    val n = grid.headOption.map(_.length).getOrElse(0)
+
+    Iterator
+      .range(0, m - 2)
+      .flatMap(row => Iterator.tabulate(n - 2)(row -> _))
+      .count {
+        case (row, col) => BitSet(row until row + 3: _*)
+          .flatMap(i => (col until col + 3).map(grid(i)(_))) == OneToNine && {
+          val sum = Iterator.range(0, 3).map(k => grid(row + k)(col + 2 - k)).sum
+          Iterator(Iterator.range(0, 3).map(k => grid(row + k)(col + k)).sum)
+            .++(Iterator.range(row, row + 3).map(i => Iterator.range(col, col + 3).map(grid(i)(_)).sum))
+            .++(Iterator.range(col, col + 3).map(j => Iterator.range(row, row + 3).map(grid(_)(j)).sum))
+            .forall(_ == sum)
+        }
+      }
   }
 }

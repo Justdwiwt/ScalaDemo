@@ -1,39 +1,21 @@
 package leetCode._900
 
+import leetCode.UnionFind
+
 object Solution_839 {
-
-  class Union(n: Int) {
-    var cnt: Int = n
-    var parent: Array[Int] = (0 until n).toArray
-
-    def union(x: Int, y: Int): Unit = {
-      if (find(x) != find(y)) cnt -= 1
-      parent(find(x)) = find(y)
-    }
-
-    def find(x: Int): Int = {
-      if (parent(x) != x) parent(x) = find(parent(x))
-      parent(x)
-    }
-  }
-
   def numSimilarGroups(A: Array[String]): Int = {
-    def isSimilar(a: String, b: String): Boolean = {
-      var cnt = 0
-      var idx = 0
-      while (idx < a.length) {
-        if (a(idx) != b(idx)) {
-          cnt += 1
-          if (cnt > 2) return false
-        }
-        idx += 1
-      }
-      true
+    def isSimilar(s1: String, s2: String): Boolean = {
+      val cnt = s1.zip(s2).count { case (c1, c2) => c1 != c2 }
+      Seq(2, 0).contains(cnt)
     }
 
-    val un = new Union(A.length)
-    A.indices.foreach(i => (i + 1 until A.length).withFilter(j => un.find(i) != un.find(j)).foreach(j => if (isSimilar(A(i), A(j))) un.union(i, j)))
-    un.cnt
-  }
+    val uf = new UnionFind[String]
 
+    A
+      .indices
+      .dropRight(1)
+      .flatMap(i => (i + 1 until A.length).withFilter(j => isSimilar(A(i), A(j))).map(x => uf.union(A(i), A(x))))
+
+    A.map(uf.find).distinct.length
+  }
 }

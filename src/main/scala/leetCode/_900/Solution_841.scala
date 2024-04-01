@@ -9,7 +9,7 @@ object Solution_841 {
     while (q.nonEmpty) {
       val room = q.dequeue()
       visited(room) = true
-      rooms(room).withFilter(k => !visited(k)).foreach(k => q += k)
+      rooms(room).withFilter(!visited(_)).foreach(q.+=)
     }
     rooms.indices.forall(visited)
   }
