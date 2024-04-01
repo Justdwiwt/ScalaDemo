@@ -1,29 +1,23 @@
 package leetCode._900
 
-import scala.collection.mutable
-
 object Solution_831 {
-  def maskPII(S: String): String = {
-    val at = S.indexOf('@')
-    if (at > 0) {
-      val f = S.take(at)
-      val sb = new mutable.StringBuilder
-      sb += f.head
-      sb ++= "*****"
-      sb += f.last
-      sb ++= S.drop(at)
-      sb.toString.toLowerCase
-    } else {
-      val n = S.filter(_.isDigit)
-      val sb = new mutable.StringBuilder
-      if (n.length > 10) {
-        sb += '+'
-        sb ++= "*" * (n.length - 10)
-        sb += '-'
-      }
-      sb ++= "***-***-"
-      sb ++= n.takeRight(4)
-      sb.toString
+  def maskPII(s: String): String =
+    if (s.contains('@')) maskEmail(s)
+    else maskPhone(s)
+
+  private def maskPhone(s: String): String = {
+    val p = s.filter(_.isDigit)
+    val last = p.takeRight(4)
+    p.length match {
+      case 10 => "***-***-" + last
+      case 11 => "+*-***-***-" + last
+      case 12 => "+**-***-***-" + last
+      case _ => "+***-***-***-" + last
     }
+  }
+
+  private def maskEmail(s: String): String = {
+    val Array(name, domain) = s.toLowerCase().split('@')
+    s"${name(0)}*****${name.last}@$domain"
   }
 }

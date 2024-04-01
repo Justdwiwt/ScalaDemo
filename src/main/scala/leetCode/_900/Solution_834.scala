@@ -15,16 +15,15 @@ object Solution_834 {
   }
 
   @scala.annotation.tailrec
-  def scanTree(q: Seq[Int], edges: Array[Seq[Int]], levels: Seq[Seq[Int]], parents: Array[Int]): (Seq[Seq[Int]], Array[Int]) = q match {
+  private def scanTree(q: Seq[Int], edges: Array[Seq[Int]], levels: Seq[Seq[Int]], parents: Array[Int]): (Seq[Seq[Int]], Array[Int]) = q match {
     case Seq() => (levels, parents)
-    case _ =>
-      scanTree(q.flatMap({ p => edges(p).filter(parents(p) !=).map({ c => parents(c) = p; c; }) }), edges, levels :+ q, parents)
+    case _ => scanTree(q.flatMap(p => edges(p).filter(parents(p) !=).map { c => parents(c) = p; c; }), edges, levels :+ q, parents)
   }
 
   @scala.annotation.tailrec
-  def getSubtrees(levels: Seq[Seq[Int]], parents: Array[Int], res: Array[(Int, Int)]): Array[(Int, Int)] = levels match {
+  private def getSubtrees(levels: Seq[Seq[Int]], parents: Array[Int], res: Array[(Int, Int)]): Array[(Int, Int)] = levels match {
     case Seq(_) =>
-      res(0) = (res(0)._1 + 1, res(0)._2)
+      res(0) = (res.head._1 + 1, res.head._2)
       res
     case init :+ last =>
       last.foreach(c => {
@@ -36,8 +35,8 @@ object Solution_834 {
   }
 
   @scala.annotation.tailrec
-  def getSums(q: Seq[Int], edges: Array[Seq[Int]], subtrees: Array[(Int, Int)], res: Array[Int]): Array[Int] = q match {
+  private def getSums(q: Seq[Int], edges: Array[Seq[Int]], subtrees: Array[(Int, Int)], res: Array[Int]): Array[Int] = q match {
     case Seq() => res
-    case _ => getSums(q.flatMap({ p => edges(p).filter(res(_) == 0).map({ c => res(c) = res(p) + res.length - subtrees(c)._1 * 2; c; }) }), edges, subtrees, res)
+    case _ => getSums(q.flatMap(p => edges(p).filter(res(_) == 0).map { c => res(c) = res(p) + res.length - subtrees(c)._1 * 2; c; }), edges, subtrees, res)
   }
 }
