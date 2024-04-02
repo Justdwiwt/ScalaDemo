@@ -5,7 +5,7 @@ object Solution_730 {
     val M = 1e9.toInt + 7
     val dp = Array.ofDim[Int](S.length, S.length)
     S.indices.foreach(i => dp(i)(i) = 1)
-    (1 until S.length).foreach(i => {
+    S.indices.drop(1).foreach(i => {
       (0 until S.length - i).foreach(j => {
         val k = j + i
         if (S(j) == S(k)) {
@@ -21,6 +21,6 @@ object Solution_730 {
         dp(j)(k) = if (dp(j)(k) < 0) dp(j)(k) + M else dp(j)(k) % M
       })
     })
-    dp(0)(S.length - 1)
+    dp.head(S.length - 1)
   }
 }

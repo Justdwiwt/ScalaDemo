@@ -7,8 +7,8 @@ object Solution_733 {
     image
   }
 
-  def dfs(image: Array[Array[Int]], i: Int, j: Int, color: Int, newColor: Int): Unit = {
-    if (i < 0 || i >= image.length || j < 0 || j >= image(0).length || image(i)(j) != color) return
+  private def dfs(image: Array[Array[Int]], i: Int, j: Int, color: Int, newColor: Int): Unit = {
+    if (i < 0 || i >= image.length || j < 0 || j >= image.head.length || image(i)(j) != color) return
     image(i)(j) = newColor
     dfs(image, i + 1, j, color, newColor)
     dfs(image, i, j + 1, color, newColor)
