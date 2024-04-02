@@ -2,8 +2,11 @@ package leetCode._800
 
 object Solution_754 {
   def reachNumber(target: Int): Int = {
-    val n = math.ceil((math.sqrt(1 + 8.0 * math.abs(target)) - 1) / 2).toInt
-    val d = n * (n + 1) / 2 - target
-    n + (d % 2) * (n % 2 + 1)
+    f(0, target.abs, 1)
   }
+
+  @scala.annotation.tailrec
+  private def f(sum: Int, target: Int, step: Int): Int =
+    if (sum >= target && (sum - target) % 2 == 0) step - 1
+    else f(sum + step, target, step + 1)
 }

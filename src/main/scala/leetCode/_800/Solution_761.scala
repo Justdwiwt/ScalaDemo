@@ -1,23 +1,17 @@
 package leetCode._800
 
-import java.util
-import java.util.Collections
-
 object Solution_761 {
   def makeLargestSpecial(S: String): String = {
-    val sb = new StringBuilder
-    val list = new util.ArrayList[String]()
-    var start = 0
-    var cnt = 0
-    S.indices.foreach(i => {
-      if (S.charAt(i) == '1') cnt += 1 else cnt += -1
+    var cnt, i = 0
+    val res = collection.mutable.ListBuffer[String]()
+    S.indices.foreach(j => {
+      if (S(j) == '1') cnt += 1
+      else cnt -= 1
       if (cnt == 0) {
-        list.add("1" + makeLargestSpecial(S.substring(start + 1, i)) + "0")
-        start = i + 1
+        res += "1" + makeLargestSpecial(S.substring(i + 1, j)) + "0"
+        i = j + 1
       }
     })
-    Collections.sort(list)
-    (list.size() - 1 to 0 by -1).foreach(i => sb.append(list.get(i)))
-    sb.toString
+    res.sorted.reverse.mkString
   }
 }
