@@ -7,7 +7,7 @@ object Solution_703 {
     private val k = _k
     private val pq = new java.util.PriorityQueue[Int](k)
 
-    _nums.foreach(i => add(i))
+    _nums.foreach(add)
 
     def add(`val`: Int): Int = {
       if (pq.size < k) pq.offer(`val`)

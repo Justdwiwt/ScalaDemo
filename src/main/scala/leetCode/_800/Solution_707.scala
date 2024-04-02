@@ -13,7 +13,7 @@ object Solution_707 {
     def get(index: Int): Int = {
       if (index < 0 || index >= size) return -1
       var cur: ListNode = head
-      Range(0, index + 1, 1).foreach(i => cur = cur.next)
+      Range(0, index + 1, 1).foreach(_ => cur = cur.next)
       cur.value
     }
 
@@ -31,7 +31,7 @@ object Solution_707 {
       index = 0.max(index)
       size += 1
       var pred: ListNode = head
-      Range(0, index, 1).foreach(i => pred = pred.next)
+      Range(0, index, 1).foreach(_ => pred = pred.next)
       val toAdd: ListNode = new ListNode(`val`)
       toAdd.next = pred.next
       pred.next = toAdd
