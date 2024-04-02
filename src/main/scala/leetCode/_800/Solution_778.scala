@@ -1,30 +1,34 @@
 package leetCode._800
 
-import scala.collection.mutable
-
 object Solution_778 {
   def swimInWater(grid: Array[Array[Int]]): Int = {
-    val N = grid.length
-    val diff = Array((-1, 0), (1, 0), (0, -1), (0, 1))
-    val pq = new mutable.PriorityQueue[(Int, Int, Int)]()((x: (Int, Int, Int), y: (Int, Int, Int)) => y._3 - x._3)
-    pq += ((0, 0, grid(0)(0)))
-    val s = new mutable.HashSet[(Int, Int)]
-    while (pq.nonEmpty) {
-      val (x, y, weight) = pq.dequeue()
-      if (x == N - 1 && y == N - 1) return weight
-      if (!s.contains((x, y))) {
-        s += ((x, y))
-        diff.foreach({ case (sx, sy) =>
-          val p0 = x + sx
-          val p1 = y + sy
-          val boarder = p0 < 0 || p0 >= N || p1 < 0 || p1 >= N
-          if (!boarder && !s.contains((p0, p1))) {
-            val t = 0.max(grid(p0)(p1) - weight.max(grid(x)(y)))
-            pq += ((p0, p1, weight + t))
+    val m = grid.length
+    val n = grid.headOption.map(_.length).getOrElse(0)
+
+    @scala.annotation.tailrec
+    def comp(time: Int)(newlyReachable: Set[(Int, Int)], reachable: Set[(Int, Int)] = Set()): Set[(Int, Int)] = {
+      val squares = newlyReachable.flatMap {
+        case (row, col) if grid(row)(col) <= time =>
+          Iterable((row + 1, col), (row - 1, col), (row, col + 1), (row, col - 1)).filter { case (i, j) =>
+            grid.isDefinedAt(i) && grid(i).isDefinedAt(j) && grid(i)(j) <= time && !reachable.contains(i, j) && !newlyReachable.contains(i, j)
           }
-        })
+        case _ => None
       }
+
+      if (squares.isEmpty) reachable | newlyReachable
+      else comp(time)(squares, reachable | newlyReachable)
     }
-    throw new RuntimeException("can not be here")
+
+    def next(time: Int, reachable: Set[(Int, Int)]): (Int, Set[(Int, Int)]) = {
+      val next = (time + 1, comp(time + 1)(reachable))
+      next
+    }
+
+    Stream
+      .from(0)
+      .map(time => next(time - 1, Set((0, 0))))
+      .find(_._2.contains(m - 1, n - 1))
+      .map(_._1)
+      .get
   }
 }

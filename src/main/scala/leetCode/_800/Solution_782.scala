@@ -2,26 +2,20 @@ package leetCode._800
 
 object Solution_782 {
   def movesToChessboard(board: Array[Array[Int]]): Int = {
-    var rowSum = 0
-    var colSum = 0
-    var rowDiff = 0
-    var colDiff = 0
-    board.indices.foreach(i => board.indices.foreach(j => if ((board(0)(0) ^ board(i)(0) ^ board(0)(j) ^ board(i)(j)) > 0) return -1))
-    board.indices.foreach(i => {
-      rowSum += board(0)(i)
-      colSum += board(i)(0)
-      rowDiff += (if (board(i)(0) == i % 2) 1 else 0)
-      colDiff += (if (board(0)(i) == i % 2) 1 else 0)
-    })
-    if (board.length / 2 > rowSum || rowSum > (board.length + 1) / 2) return -1
-    if (board.length / 2 > colSum || colSum > (board.length + 1) / 2) return -1
-    if (board.length % 2 > 0) {
-      if (rowDiff % 2 > 0) rowDiff = board.length - rowDiff
-      if (colDiff % 2 > 0) colDiff = board.length - colDiff
-    } else {
-      rowDiff = (board.length - rowDiff).min(rowDiff)
-      colDiff = (board.length - colDiff).min(colDiff)
+    def half(x: Int): Boolean =
+      x == board.length / 2 || x == (board.length + 1) / 2
+
+    val vec = board.map(_.toVector)
+
+    vec.toSet.toList match {
+      case p1 :: p2 :: Nil if p1.zip(p2).forall(t => t._1 != t._2) && half(vec.count(_ == p1)) && half(p1.count(_ == 0)) =>
+        val d = Seq(0, 1).maxBy(x => p1.count(_ == x))
+        val p = Seq(p1, p2).maxBy(x => vec.count(_ == x))
+        val col = p1.zipWithIndex.count { case (x, i) => (i % 2 == 0) ^ (x == d) }
+        val row = vec.zipWithIndex.count { case (row, i) => (i % 2 == 0) ^ (row == p) }
+        val res = Seq(col, row).map(x => if (board.length % 2 != 0) x else x.min(board.length - x)).sum / 2
+        res
+      case _ => -1
     }
-    (rowDiff + colDiff) / 2
   }
 }
