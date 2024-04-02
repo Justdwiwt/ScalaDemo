@@ -2,7 +2,7 @@ package leetCode._800
 
 object Solution_722 {
   @scala.annotation.tailrec
-  def processLine(line: List[Char], processed: List[Char], res: List[(List[Char], Boolean)], hasBlock: Boolean = false, toAppend: Boolean = false): (List[(List[Char], Boolean)], Boolean) =
+  private def processLine(line: List[Char], processed: List[Char], res: List[(List[Char], Boolean)], hasBlock: Boolean = false, toAppend: Boolean = false): (List[(List[Char], Boolean)], Boolean) =
     if (hasBlock) line match {
       case '*' :: '/' :: tail => processLine(tail, processed, res, toAppend = true)
       case _ :: tail => processLine(tail, processed, res, hasBlock = true, toAppend)
@@ -15,7 +15,7 @@ object Solution_722 {
     }
 
   @scala.annotation.tailrec
-  def processLines(lines: List[(List[Char], Boolean)], processedLines: List[List[Char]] = Nil, prefix: List[Char] = Nil): List[List[Char]] = lines match {
+  private def processLines(lines: List[(List[Char], Boolean)], processedLines: List[List[Char]] = Nil, prefix: List[Char] = Nil): List[List[Char]] = lines match {
     case l :: tail => l match {
       case (s, true) => processLines(tail, processedLines, prefix ++ s)
       case (s, false) => processLines(tail, (prefix ++ s) :: processedLines)
@@ -23,14 +23,14 @@ object Solution_722 {
     case Nil => processedLines
   }
 
-  def reverseList[T](list: List[T]): List[T] = list match {
+  private def reverseList[T](list: List[T]): List[T] = list match {
     case x :: xs => reverseList(xs) :+ x
     case Nil => Nil
   }
 
   def removeComments(source: Array[String]): List[String] = {
     val sourceList = source.toList
-    val lines = sourceList./:((List[(List[Char], Boolean)](), false))((prev, line) => {
+    val lines = sourceList.foldLeft((List[(List[Char], Boolean)](), false))((prev, line) => {
       val (pre, hasBlock) = prev
       pre match {
         case List() => processLine(line.toList, Nil, pre, hasBlock)
