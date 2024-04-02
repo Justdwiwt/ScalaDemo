@@ -11,6 +11,6 @@ object Solution_792 {
       m -= c
       t.foreach(x => if (x.nonEmpty) m(x.head) = x.tail :: m.getOrElse(x.head, Nil))
     })
-    words.length - m.map({ case (_, str) => if (str.isEmpty) 1 else str.size }).sum
+    words.length - m.map { case (_, str) => if (str.isEmpty) 1 else str.size }.sum
   }
 }

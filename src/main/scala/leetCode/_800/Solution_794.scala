@@ -2,26 +2,29 @@ package leetCode._800
 
 object Solution_794 {
   def validTicTacToe(board: Array[String]): Boolean = {
-    var t = 0
-    val r = Array.fill(3)(0)
-    val c = Array.fill(3)(0)
-    var d1 = 0
-    var d2 = 0
-    (0 until 3).foreach(i => (0 until 3).foreach(j => {
-      val n = board(i)(j) match {
-        case 'X' => 1
-        case 'O' => -1
-        case _ => 0
-      }
-      t += n
-      r(i) += n
-      c(j) += n
-      if (i == j) d1 += n
-      if (i + j == 2) d2 += n
-    }))
-    val z = r ++ c ++ Array(d1, d2)
-    if (z.contains(3) && t != 1) return false
-    if (z.contains(-3) && t != 0) return false
-    t == 0 || t == 1
+    if (board.flatten.mkString.count(_ == 'X') != board.flatten.mkString.count(_ == 'O') &&
+      board.flatten.mkString.count(_ == 'X') != (board.flatten.mkString.count(_ == 'O') + 1)) return false
+
+    val xwin = if (board.contains("XXX")
+      || board.map(_.charAt(0)).mkString == "XXX"
+      || board.map(_.charAt(1)).mkString == "XXX"
+      || board.map(_.charAt(2)).mkString == "XXX"
+      || (board(0).charAt(0) == 'X' && board(1).charAt(1) == 'X' && board(2).charAt(2) == 'X')
+      || (board(0).charAt(2) == 'X' && board(1).charAt(1) == 'X' && board(2).charAt(0) == 'X')
+    ) true else false
+    val owin = if (board.contains("OOO")
+      || board.map(_.charAt(0)).mkString == "OOO"
+      || board.map(_.charAt(1)).mkString == "OOO"
+      || board.map(_.charAt(2)).mkString == "OOO"
+      || (board(0).charAt(0) == 'O' && board(1).charAt(1) == 'O' && board(2).charAt(2) == 'O')
+      || (board(0).charAt(2) == 'O' && board(1).charAt(1) == 'O' && board(2).charAt(0) == 'O')
+    ) true else false
+    if (xwin && owin) return false
+    if (xwin && board.flatten.mkString.count(_ == 'X') == (board.flatten.mkString.count(_ == 'O') + 1)) return true
+    if (owin && board.flatten.mkString.count(_ == 'X') == board.flatten.mkString.count(_ == 'O')) return true
+
+    if (!xwin && !owin && (board.flatten.mkString.count(_ == 'X') == board.flatten.mkString.count(_ == 'O')
+      || board.flatten.mkString.count(_ == 'X') == board.flatten.mkString.count(_ == 'O') + 1)) return true
+    false
   }
 }
