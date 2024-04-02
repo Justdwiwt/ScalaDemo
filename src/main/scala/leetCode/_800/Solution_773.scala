@@ -51,7 +51,7 @@ object Solution_773 {
         }
       }
 
-    val idx = board.indices.flatMap(i => board(i).indices.withFilter(j => board(i)(j) == 0).map(j => (i, j))).head
+    val idx = board.indices.flatMap(i => board(i).indices.withFilter(board(i)(_) == 0).map((i, _))).head
     sliding(board, idx, 0)
   }
 }
