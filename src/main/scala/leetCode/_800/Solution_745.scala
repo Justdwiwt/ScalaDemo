@@ -9,7 +9,8 @@ object Solution_745 {
       var wordIdx: Int = -1
     }
 
-    def buildTrie(charList: List[Char], curNode: TrieNode, wordIndex: Int): TrieNode = charList match {
+    @scala.annotation.tailrec
+    private def buildTrie(charList: List[Char], curNode: TrieNode, wordIndex: Int): TrieNode = charList match {
       case Nil =>
         curNode.wordIdx = wordIndex
         curNode
@@ -19,7 +20,7 @@ object Solution_745 {
         buildTrie(tail, curNode.children(c), wordIndex)
     }
 
-    def shiftList(charList: List[Char], i: Int): List[Char] =
+    private def shiftList(charList: List[Char], i: Int): List[Char] =
       charList.drop(charList.length - i) ++ List('#') ++ charList
 
     lazy val root: TrieNode = {

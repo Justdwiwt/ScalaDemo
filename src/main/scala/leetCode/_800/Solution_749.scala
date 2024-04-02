@@ -38,15 +38,15 @@ object Solution_749 {
     }
 
     var walls = 0
-    containedViruses.foreach(v => walls += v.wallsNeeded)
+    containedViruses.foreach(walls += _.wallsNeeded)
 
     walls
   }
 
-  def inValidCell(i: Int, j: Int, grid: Array[Array[Int]]): Boolean =
+  private def inValidCell(i: Int, j: Int, grid: Array[Array[Int]]): Boolean =
     i < 0 || j < 0 || i >= grid.length || j >= grid.head.length || grid(i)(j) == 8
 
-  def findViruses(grid: Array[Array[Int]], vir: ArrayBuffer[Virus]): Unit = {
+  private def findViruses(grid: Array[Array[Int]], vir: ArrayBuffer[Virus]): Unit = {
     val visited = Array.fill(grid.length, grid.head.length)(false)
     grid.indices.foreach(i => grid.head.indices.foreach(j => if (!visited(i)(j) && grid(i)(j) == 1) {
       val newVir = new Virus(i, j)
@@ -55,7 +55,7 @@ object Solution_749 {
     }))
   }
 
-  def markVirusCells(grid: Array[Array[Int]], i: Int, j: Int, visited: Array[Array[Boolean]]): Unit = {
+  private def markVirusCells(grid: Array[Array[Int]], i: Int, j: Int, visited: Array[Array[Boolean]]): Unit = {
     if (inValidCell(i, j, grid) || visited(i)(j) || grid(i)(j) == 0) return
     visited(i)(j) = true
     markVirusCells(grid, i + 1, j, visited)
@@ -64,7 +64,7 @@ object Solution_749 {
     markVirusCells(grid, i, j - 1, visited)
   }
 
-  def growViruses(grid: Array[Array[Int]], vir: ArrayBuffer[Virus]): Int = {
+  private def growViruses(grid: Array[Array[Int]], vir: ArrayBuffer[Virus]): Int = {
     var unContainedVirusCells = 0
     vir.foreach(v => {
       v.cellsCanInfect.foreach(c => grid(c.row)(c.col) = 1)
@@ -79,7 +79,7 @@ object Solution_749 {
     unContainedVirusCells
   }
 
-  def visitVirus(grid: Array[Array[Int]], i: Int, j: Int, v: Virus, visited: Array[Array[Boolean]]): Unit = {
+  private def visitVirus(grid: Array[Array[Int]], i: Int, j: Int, v: Virus, visited: Array[Array[Boolean]]): Unit = {
     if (inValidCell(i, j, grid)) return
     if (!visited(i)(j)) {
       visited(i)(j) = true
@@ -95,7 +95,7 @@ object Solution_749 {
     if (grid(i)(j) == 0) v.wallsNeeded += 1
   }
 
-  def removeBiggestVirus(vir: ArrayBuffer[Virus], grid: Array[Array[Int]]): Virus = {
+  private def removeBiggestVirus(vir: ArrayBuffer[Virus], grid: Array[Array[Int]]): Virus = {
     var biggestVirusIndex = 0
     var biggestVirusSize = 0
     vir.indices.foreach(i => {
@@ -110,12 +110,12 @@ object Solution_749 {
     vir.remove(biggestVirusIndex)
   }
 
-  def containVirus(grid: Array[Array[Int]], v: Virus): Unit = {
+  private def containVirus(grid: Array[Array[Int]], v: Virus): Unit = {
     containVirusHelper(grid, v.row, v.col)
     v.contained = true
   }
 
-  def containVirusHelper(grid: Array[Array[Int]], i: Int, j: Int): Unit = {
+  private def containVirusHelper(grid: Array[Array[Int]], i: Int, j: Int): Unit = {
     if (inValidCell(i, j, grid)) return
     if (grid(i)(j) == 1) {
       grid(i)(j) = 8
@@ -126,7 +126,7 @@ object Solution_749 {
     }
   }
 
-  def removeJoinedViruses(grid: Array[Array[Int]], vir: ArrayBuffer[Virus]): Unit = {
+  private def removeJoinedViruses(grid: Array[Array[Int]], vir: ArrayBuffer[Virus]): Unit = {
     val i: Iterator[Virus] = vir.iterator
     while (i.hasNext) {
       val v = i.next()
