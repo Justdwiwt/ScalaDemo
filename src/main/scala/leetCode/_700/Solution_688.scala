@@ -8,7 +8,7 @@ object Solution_688 {
     def apply(): T = V
   }
 
-  object Lazy {
+  private object Lazy {
     def apply[T](expr: => T) = new Lazy(expr)
   }
 
@@ -28,7 +28,7 @@ object Solution_688 {
     }
 
     lazy val arr = Array.tabulate[Lazy[Double]](N, N, K)(g)
-    (0 until N).flatMap(x => (0 until N).map(y => g(x, y, K)())).sum
+    (0 until N).flatMap(x => (0 until N).map(g(x, _, K)())).sum
   }
 
 }

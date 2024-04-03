@@ -1,56 +1,40 @@
 package leetCode._700
 
+import scala.collection.mutable
+
 object Solution_685 {
-
-  class UF(n: Int) {
-    val (sz, par) = (new Array[Int](n), new Array[Int](n))
-    var ops: Int = n
-    (0 until n).foreach(i => {
-      par(i) = i
-      sz(i) = 1
-    })
-
-    def find(x: Int): Int = {
-      if (par(x) == x) x
-      else {
-        par(x) = find(par(x))
-        par(x)
-      }
-    }
-
-    def getCnt: Int = ops
-
-    def union(x: Int, y: Int): Unit = {
-      val px = find(x)
-      val py = find(y)
-      if (px != py) par(py) = px
-      ops = ops - 1
-    }
-  }
-
   def findRedundantDirectedConnection(edges: Array[Array[Int]]): Array[Int] = {
-    var cnt = -1
-    val arr = new Array[Int](edges.length)
-    edges.indices.foreach(i => {
-      val v = edges(i)(1) - 1
-      arr(v) = arr(v) + 1
-      if (arr(v) == 2) cnt = v
-    })
-    var res = new Array[Int](2)
-    if (cnt == -1) return findRedundantConnection(edges, -1)
-    edges.indices.foreach(i => if (edges(i)(1) == cnt + 1) if (findRedundantConnection(edges, i) == null) res = edges(i))
-    res
+    val (graph, parents, child) =
+      edges.foldLeft(Array.fill(edges.length)(Option.empty[Int]), Seq.empty[Int], Option.empty[Int]) {
+        case ((array, doubles, ch), edge) =>
+          val (newParents, newChild) = array(edge.last - 1).map(v => (Seq(v, edge.head), Option(edge.last))).getOrElse((doubles, ch))
+          array(edge.last - 1) = Some(edge.head)
+          (array, newParents, newChild)
+      }
+
+    (parents, child) match {
+      case (Seq(a1, a2), Some(c)) =>
+        graph(c - 1) = Some(a1)
+        if (!isChildOf(a1, c, graph)) Array(a2, c)
+        else Array(a1, c)
+      case _ =>
+        val loop = getLoop(graph)
+        val l = (loop :+ loop.head).sliding(2).map(e => e.head -> e.last).toSet
+        val idx = edges.lastIndexWhere(e => l.contains((e.last, e.head)))
+        edges(idx)
+    }
   }
 
-  def findRedundantConnection(edges: Array[Array[Int]], skip: Int): Array[Int] = {
-    val uf = new UF(edges.length)
-    edges.indices.withFilter(i => i != skip).foreach(i => {
-      val x = uf.find(edges(i)(0) - 1)
-      val y = uf.find(edges(i)(1) - 1)
-      if (x == y) return edges(i)
-      else uf.union(x, y)
-    })
-    null
-  }
+  @scala.annotation.tailrec
+  private def isChildOf(c: Int, p: Int, gr: Array[Option[Int]]): Boolean =
+    if (c == p) true
+    else gr(c - 1) match {
+      case Some(m) => isChildOf(m, p, gr)
+      case _ => false
+    }
 
+  @scala.annotation.tailrec
+  private def getLoop(gr: Array[Option[Int]], res: mutable.LinkedHashSet[Int] = new mutable.LinkedHashSet[Int], node: Int = 1): Seq[Int] =
+    if (res.contains(node)) res.dropWhile(node.!=).toSeq
+    else getLoop(gr, res += node, gr(node - 1).get)
 }

@@ -1,24 +1,17 @@
 package leetCode._700
 
+import leetCode.UnionFind
+
 object Solution_684 {
   def findRedundantConnection(edges: Array[Array[Int]]): Array[Int] = {
-    val parent = Array.fill(edges.length + 1)(0)
-    (1 to edges.length).foreach(i => parent(i) = i)
-    edges.foreach(v => if (!union(v(0), v(1), parent)) return v)
-    Array.fill(2)(0)
-  }
-
-  def union(a: Int, b: Int, parent: Array[Int]): Boolean = {
-    if (find(a, parent) != find(b, parent)) {
-      parent(find(a, parent)) = find(b, parent)
-      return true
-    }
-    false
-  }
-
-  def find(a: Int, parent: Array[Int]): Int = {
-    var t = a
-    while (t != parent(t)) t = parent(t)
-    t
+    val uf = new UnionFind[Int]
+    edges.find { case Array(from, to) =>
+      val (p1, p2) = (uf.find(from), uf.find(to))
+      if (p1 == p2) true
+      else {
+        uf.union(p1, p2)
+        false
+      }
+    }.get
   }
 }

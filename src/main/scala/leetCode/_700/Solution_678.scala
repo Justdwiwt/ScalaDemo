@@ -2,20 +2,16 @@ package leetCode._700
 
 object Solution_678 {
   def checkValidString(s: String): Boolean = {
-    var p = 0
-    var q = 0
-    s.foreach({
-      case '(' =>
-        p += 1
-        q += 1
-      case ')' =>
-        p = 0.max(p - 1)
-        q -= 1
-        if (q < 0) return false
-      case _ =>
-        p = (p - 1).max(0)
-        q += 1
-    })
-    p <= 0
+    @scala.annotation.tailrec
+    def f(s: List[Char], balanceMin: Int, balanceMax: Int): Boolean =
+      if (balanceMax < 0) false
+      else s match {
+        case Nil => balanceMin == 0
+        case '(' :: tail => f(tail, balanceMin + 1, balanceMax + 1)
+        case ')' :: tail => f(tail, 0.max(balanceMin - 1), balanceMax - 1)
+        case _ :: tail => f(tail, 0.max(balanceMin - 1), balanceMax + 1)
+      }
+
+    f(s.toList, 0, 0)
   }
 }
