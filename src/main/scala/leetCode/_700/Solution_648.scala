@@ -6,7 +6,7 @@ object Solution_648 {
     .map(str => dict
       .toArray
       .sortBy(_.length)
-      .dropWhile(word => !str.startsWith(word))
+      .dropWhile(!str.startsWith(_))
       .headOption match {
       case None => str
       case Some(v) => v
