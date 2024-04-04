@@ -5,7 +5,7 @@ import scala.collection.mutable
 object Solution_582 {
   def killProcess(pid: List[Int], ppid: List[Int], kill: Int): List[Int] = {
     var res = List.empty[Int]
-    var m = mutable.HashMap.empty[Int, List[Int]]
+    val m = mutable.HashMap.empty[Int, List[Int]]
     ppid.indices.foreach(i => {
       val id = ppid(i)
       var p = m.getOrElse(id, List.empty[Int])
@@ -18,7 +18,7 @@ object Solution_582 {
       var p = q.head
       q = q.tail
       res ::= p
-      m.getOrElse(p, List.empty[Int]).foreach(c => q ::= c)
+      m.getOrElse(p, List.empty[Int]).foreach(q ::= _)
     }
     res
   }
