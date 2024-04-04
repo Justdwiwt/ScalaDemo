@@ -1,46 +1,34 @@
 package leetCode._3100
 
+import scala.collection.mutable
+
 object Solution_3003 {
-  var seg = 1
-  var mask = 0
-  var size = 0
+  // fixme: when test case 270+: stackoverflow
+  def maxPartitionsAfterOperations(s: String, k: Int): Int = {
+    val memo = mutable.HashMap.empty[Long, Int]
 
-  def maxPartitionsAfterOperations(S: String, k: Int): Int = {
-    if (k == 26) return 1
-    val s = S.toCharArray
-    val n = s.length
-    val sufSeg = Array.fill(n + 1)(0)
-    val sufMask = Array.fill(n + 1)(0)
-    (n - 1 to 0 by -1).foreach(i => {
-      f(s(i), k)
-      sufSeg(i) = seg
-      sufMask(i) = mask
-    })
-    var res = seg
-    seg = 1
-    mask = 0
-    size = 0
-    (0 until n).foreach(i => {
-      var t = seg + sufSeg(i + 1)
-      val unionSize = Integer.bitCount(mask | sufMask(i + 1))
-      if (unionSize < k) t -= 1
-      else if (unionSize < 26 && size == k && Integer.bitCount(sufMask(i + 1)) == k) t += 1
-      res = res.max(t)
-      f(s(i), k)
-    })
-    res
-  }
+    def dfs(i: Int, mask: Int, changed: Int, s: Array[Char], k: Int): Int = {
+      if (i == s.length) return 1
+      val argsMask: Long = (i.toLong << 32) | (mask.toLong << 1) | changed
+      if (memo.contains(argsMask)) return memo(argsMask)
+      var res: Int = 0
+      val bit: Int = 1 << (s(i) - 'a')
+      val newMask: Int = mask | bit
+      if (Integer.bitCount(newMask) > k) res = dfs(i + 1, bit, changed, s, k) + 1
+      else res = dfs(i + 1, newMask, changed, s, k)
 
-  private def f(c: Char, k: Int): Unit = {
-    var bit = 1 << (c - 'a')
-    if ((mask & bit) != 0) {
-      return
+      if (changed == 0) {
+        (0 until 26).foreach(j => {
+          val newMask: Int = mask | (1 << j)
+          if (Integer.bitCount(newMask) > k) res = res.max(dfs(i + 1, 1 << j, 1, s, k) + 1)
+          else res = res.max(dfs(i + 1, newMask, 1, s, k))
+        })
+      }
+
+      memo.put(argsMask, res)
+      res
     }
-    size += 1
-    if (size > k) {
-      seg += 1
-      mask = bit
-      size = 1
-    } else mask |= bit
+
+    dfs(0, 0, 0, s.toCharArray, k)
   }
 }

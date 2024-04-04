@@ -1,51 +1,39 @@
 package leetCode._900
 
 object Solution_803 {
-
-  case class Point(x: Int, y: Int) {
-    def +(p: Point): Point = Point(x + p.x, y + p.y)
-  }
-
-  private def diff: List[Point] =
-    List(Point(-1, 0), Point(1, 0), Point(0, 1), Point(0, -1))
+  private val TOP: Int = 2
+  private val BRICK: Int = 1
+  private val DIRS: Array[Array[Int]] = Array(Array(1, 0), Array(-1, 0), Array(0, 1), Array(0, -1))
 
   def hitBricks(grid: Array[Array[Int]], hits: Array[Array[Int]]): Array[Int] = {
-    var res = List.empty[Int]
+    val res = Array.fill(hits.length)(0)
 
-    def inBound(p: Point): Boolean =
-      grid.indices.contains(p.x) && grid(p.x).indices.contains(p.y)
-
-    @scala.annotation.tailrec
-    def dfs(l: List[Point], path: List[Point] = Nil): List[Point] = l match {
-      case Nil => path
-      case h :: t =>
-        if (!inBound(h) || grid(h.x)(h.y) == 0) dfs(t, path)
-        else dfs(diff.map(_ + h).filterNot(path.contains) ++ t, h :: path)
+    def dfs(i: Int, j: Int, grid: Array[Array[Int]]): Int = {
+      if (i < 0 || i >= grid.length || j < 0 || j >= grid.head.length || grid(i)(j) != BRICK) 0
+      else {
+        grid(i)(j) = 2
+        dfs(i + 1, j, grid) + dfs(i - 1, j, grid) + dfs(i, j + 1, grid) + dfs(i, j - 1, grid) + 1
+      }
     }
 
-    def f(l: Array[Point]): Int = {
-      val visited = Array.fill(4)(List.empty[Point])
-      (0 to 3)
-        .map { i => val p = l(i); (i, p) }
-        .withFilter { case (_, p) => inBound(p) }
-        .foreach { case (i, p) => if (!visited.slice(0, i).exists(_.contains(p))) visited(i) = dfs(List(p)).distinct }
-      var acc = 0
-      visited.foreach(points => {
-        if (!points.exists(_.x == 0)) {
-          acc += points.length
-          points.foreach { case Point(a, b) => grid(a)(b) = 0 }
-        }
+    def isConnected(i: Int, j: Int, grid: Array[Array[Int]]): Boolean =
+      if (i == 0) true
+      else DIRS.exists(d => {
+        val x = i + d.head
+        val y = j + d(1)
+        x >= 0 && x < grid.length && y >= 0 && y < grid(0).length && grid(x)(y) == TOP
       })
-      acc
-    }
 
-    hits.foreach { case Array(x, y) =>
-      grid(x)(y) = 0
-      val l = diff.map(_ + Point(x, y))
-      res ::= f(l.toArray)
-    }
+    hits.foreach(hit => grid(hit.head)(hit(1)) -= 1)
 
-    res.reverse.toArray
+    grid.head.indices.foreach(dfs(0, _, grid))
+
+    hits.indices.reverse.foreach(i => {
+      val x = hits(i).head
+      val y = hits(i)(1)
+      grid(x)(y) += 1
+      if (grid(x)(y) == BRICK && isConnected(x, y, grid)) res(i) = dfs(x, y, grid) - 1
+    })
+    res
   }
-
 }
