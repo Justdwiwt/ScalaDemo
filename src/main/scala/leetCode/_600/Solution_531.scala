@@ -4,8 +4,8 @@ import scala.collection.mutable
 
 object Solution_531 {
   def findLonelyPixel(picture: Array[Array[Char]]): Int = {
-    var row = mutable.HashMap.empty[Int, Int]
-    var col = mutable.HashMap.empty[Int, Int]
+    val row = mutable.HashMap.empty[Int, Int]
+    val col = mutable.HashMap.empty[Int, Int]
     picture.indices.foreach(i => picture.head.indices.foreach(j => if (picture(i)(j) == 'B') {
       row += i -> (row.getOrElse(i, 0) + 1)
       col += j -> (col.getOrElse(j, 0) + 1)

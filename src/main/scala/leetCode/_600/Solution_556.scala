@@ -2,23 +2,18 @@ package leetCode._600
 
 object Solution_556 {
   def nextGreaterElement(n: Int): Int = {
-    val arr = n.toString.map(_.asDigit).toArray
-    if (arr.length < 2) return -1
-    var idx = arr.length - 2
-    while (idx >= 0) {
-      if (arr(idx) < arr(idx + 1)) {
-        var firstLessThanRightIdx = arr.indexWhere(dig => dig <= arr(idx), idx + 2)
-        if (firstLessThanRightIdx < 0) firstLessThanRightIdx = arr.length
-        val smallestBiggerIdx = firstLessThanRightIdx - 1
-        val smallestBigger = arr(smallestBiggerIdx)
-        arr(smallestBiggerIdx) = arr(idx)
-        arr(idx) = smallestBigger
-        val nextLargerVal = (arr.slice(0, idx + 1) ++ arr.slice(idx + 1, arr.length).sorted).mkString.toLong
-        if (nextLargerVal > Int.MaxValue) return -1
-        else return nextLargerVal.toInt
-      }
-      idx -= 1
-    }
-    -1
+    val l = n.toString.length
+    val arr = new Array[Int](l)
+    n.toString.zipWithIndex.foreach { case (c, index) => arr(index) = c.toString.toInt }
+    var index1 = Int.MaxValue
+    (l - 1 until 0 by -1)
+      .withFilter(_ => index1 == Int.MaxValue)
+      .foreach(i => if (arr(i - 1) < arr(i)) index1 = i - 1)
+    if (index1 == Int.MaxValue) return -1
+    val arr1 = arr.take(index1)
+    val (nextMinValue, nextMinIndex) = arr.zipWithIndex.drop(index1 + 1).filter { case (value, _) => value > arr(index1) }.minBy(_._1)
+    arr(nextMinIndex) = arr(index1)
+    val arr2 = arr.drop(index1 + 1).sorted
+    scala.util.Try((arr1 ++ Array(nextMinValue) ++ arr2).mkString("").toInt).getOrElse(-1)
   }
 }
