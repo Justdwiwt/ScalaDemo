@@ -2,15 +2,13 @@ package leetCode._600
 
 object Solution_517 {
   def findMinMoves(machines: Array[Int]): Int = {
-    val sum = machines.sum
-    if (sum % machines.length != 0) return -1
-    val target = sum / machines.length
-    var res = 0
-    var balance = 0
-    machines.indices.foreach(i => {
-      balance += machines(i) - target
-      res = res.max((machines(i) - target).max(balance.abs))
-    })
-    res
+    val total = machines.sum
+    if (total % machines.length != 0) -1
+    else {
+      val avg = total / machines.length
+      machines.foldLeft((0, 0)) { case ((cnt, max), load) =>
+        (cnt + load - avg, (load - avg).max(max.max(cnt.abs)))
+      }._2
+    }
   }
 }

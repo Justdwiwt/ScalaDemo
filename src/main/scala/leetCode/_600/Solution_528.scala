@@ -10,7 +10,7 @@ object Solution_528 {
 
     def pickIndex(): Int = {
       val t = Random.nextInt(arr.last)
-      arr.indexWhere(p => t < p)
+      arr.indexWhere(t < _)
     }
   }
 

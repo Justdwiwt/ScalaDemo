@@ -2,9 +2,9 @@ package leetCode._600
 
 object Solution_525 {
 
-  case class State(sum: Int, m: Map[Int, Int])
+  private case class State(sum: Int, m: Map[Int, Int])
 
-  def step(i: (Int, Int))(s: State): (State, Option[Int]) = {
+  private def step(i: (Int, Int))(s: State): (State, Option[Int]) = {
     val newSum = if (i._1 == 1) s.sum + 1 else s.sum - 1
     s.m.get(newSum) match {
       case None => (State(newSum, s.m + (newSum -> i._2)), None)
@@ -12,12 +12,13 @@ object Solution_525 {
     }
   }
 
-  case class MyState[A](runS: State => (State, A))
+  private case class MyState[A](runS: State => (State, A))
 
-  def next(i: (Int, Int)): MyState[Option[Int]] = MyState(s => step(i)(s))
+  private def next(i: (Int, Int)): MyState[Option[Int]] =
+    MyState(step(i)(_))
 
-  def traverse(l: List[(Int, Int)]): MyState[List[Option[Int]]] = l match {
-    case Nil => MyState(s => (s, Nil))
+  private def traverse(l: List[(Int, Int)]): MyState[List[Option[Int]]] = l match {
+    case Nil => MyState((_, Nil))
     case x :: xs => MyState(s => {
       val (s1, o1) = next(x).runS(s)
       val (s2, os) = traverse(xs).runS(s1)

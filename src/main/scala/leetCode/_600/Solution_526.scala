@@ -1,17 +1,16 @@
 package leetCode._600
 
+import scala.collection.immutable.BitSet
+
 object Solution_526 {
-  def countArrangement(N: Int): Int = {
-    val res = Array.fill(1 << N)(0)
-    res(0) = 1
-    (0 until (1 << N)).foreach(i => {
-      var idx = 1
-      (0 until N).foreach(j => if (((i >> j) & 1) > 0) idx += 1)
-      (1 to N).foreach(k =>
-        if (!(((i >> (k - 1)) & 1) > 0) && (k % idx == 0 || idx % k == 0))
-          res(i | (1 << (k - 1))) += res(i)
-      )
-    })
-    res((1 << N) - 1)
+  def countArrangement(n: Int): Int = {
+    def f(set: Set[Int], i: Int): Int =
+      if (i > n) 1
+      else set
+        .iterator
+        .collect { case j if i % j == 0 || j % i == 0 => f(set - j, i + 1) }
+        .sum
+
+    f(BitSet(1 to n: _*), 1)
   }
 }
