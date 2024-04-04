@@ -1,25 +1,18 @@
 package leetCode._600
 
-import scala.collection.mutable
-
 object Solution_502 {
-  def findMaximizedCapital(k: Int, W: Int, Profits: Array[Int], Capital: Array[Int]): Int = {
-    val arr = Profits.zip(Capital).sortWith(_._2 < _._2)
-    val pq = mutable.PriorityQueue.empty[Int]
-    var res = W
-    var idx = 0
-    var cnt = 0
-    var flag = true
-    while (flag && cnt < k) {
-      while (idx < arr.length && arr(idx)._2 <= res) {
-        pq += arr(idx)._1
-        idx += 1
+  def findMaximizedCapital(k: Int, w: Int, profits: Array[Int], capital: Array[Int]): Int = {
+    val pq = collection.mutable.PriorityQueue.empty[Int]
+
+    @scala.annotation.tailrec
+    def f(nonReady: Seq[(Int, Int)], rem: Int, cap: Int): Int =
+      if (rem <= 0) cap else {
+        lazy val (t, d) = nonReady.span(_._1 <= cap)
+        pq ++= t.iterator.map(_._2)
+        if (pq.isEmpty) cap
+        else f(d, rem - 1, pq.dequeue + cap)
       }
-      if (pq.nonEmpty) {
-        res += pq.dequeue()
-        cnt += 1
-      } else flag = false
-    }
-    res
+
+    f(capital.zip(profits).toList.sorted, k, w)
   }
 }
