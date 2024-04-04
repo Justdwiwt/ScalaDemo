@@ -1,37 +1,43 @@
 package leetCode._600
 
 object Solution_592 {
-  def fractionAddition(expression: String): String = {
-    val p = "([+-]?[0-9]+)/([0-9]+)".r
-    var r = new F(0, 1)
-    p.findAllMatchIn(expression).foreach({ case p(a, b) => r = F.add(r, new F(a.toLong, b.toLong)) })
-    r.toString()
-  }
-}
+  private val Pattern = """([+\-])*(\d+)/(\d+)""".r
 
-class F(val num: Long, val den: Long) {
-  override def toString: String = num.toString + "/" + den
-}
+  def fractionAddition(expression: String): String = Pattern
+    .findAllMatchIn(expression)
+    .map(m => Fraction(Option(m.group(1))
+      .getOrElse("")
+      .iterator.map { case '+' => 1 case _ => -1 }
+      .product * m.group(2)
+      .toInt, m
+      .group(3)
+      .toInt))
+    .fold(Fraction(0))(_ + _)
+    .toString
 
-object F {
-  def add(a: F, b: F): F = {
-    val g = gcd(a.den, b.den)
-    val den0 = a.den / g * b.den
-    val num0 = b.den / g * a.num + a.den / g * b.num
-    val g0 = gcd(num0, den0)
-    new F(num0 / g0, den0 / g0)
-  }
-
-  def gcd(a: Long, b: Long): Long = {
-    if (a == 0) return b
-    if (a < 0) return gcd(-a, b)
-    var x = a
-    var y = b
-    while (y != 0) {
-      val r = x % y
-      x = y
-      y = r
+  private final case class Fraction private(numerator: Int, denominator: Int) {
+    def +(that: Fraction): Fraction = (this, that) match {
+      case (Fraction(n1, d1), Fraction(n2, d2)) =>
+        val lcm = Fraction.computeLcm(d1, d2)
+        Fraction(n1 * lcm / d1 + n2 * lcm / d2, lcm)
     }
-    x
+
+    override def toString: String = numerator.toString + "/" + denominator
+  }
+
+  private object Fraction {
+    def apply(numerator: Int) = new Fraction(numerator, 1)
+
+    def apply(numerator: Int, denominator: Int): Fraction = {
+      val gcd = computeGcd(numerator, denominator)
+      new Fraction(numerator / gcd, denominator / gcd)
+    }
+
+    @scala.annotation.tailrec
+    private def computeGcd(x: Int, y: Int): Int =
+      if (y == 0) x.abs else computeGcd(y, x % y)
+
+    private def computeLcm(x: Int, y: Int) =
+      (x * y / computeGcd(x, y)).abs
   }
 }

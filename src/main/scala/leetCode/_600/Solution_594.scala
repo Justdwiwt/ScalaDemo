@@ -2,9 +2,15 @@ package leetCode._600
 
 object Solution_594 {
   def findLHS(nums: Array[Int]): Int = {
-    var res = 0
-    val m = nums.groupBy(i => i).mapValues(_.length)
-    m.foreach(x => if (m.isDefinedAt(x._1 + 1) && x._2 + m(x._1 + 1) > res) res = x._2 + m(x._1 + 1))
-    res
+    case class Counter(i: Int, count: Int)
+    case class Calculator(prevValue: Counter, max: Int)
+    nums.sorted.foldLeft(List[Counter]())((counters, value) => (counters, value) match {
+      case (Nil, value) => Counter(value, 1) :: Nil
+      case (Counter(v, cnt) :: list, value) if v == value => Counter(v, cnt + 1) :: list
+      case (list, value) => Counter(value, 1) :: list
+    }).foldLeft(Calculator(Counter(Int.MinValue, 0), 0))((calc, value) => {
+      val sum = if (calc.prevValue.i - 1 == value.i) calc.prevValue.count + value.count else 0
+      Calculator(value, sum.max(calc.max))
+    }).max
   }
 }
