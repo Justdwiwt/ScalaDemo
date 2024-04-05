@@ -1,17 +1,20 @@
 package leetCode._500
 
+import scala.collection.mutable
+
 object Solution_403 {
-  def canCross(stones: Array[Int]): Boolean = {
-    val m = stones.zipWithIndex.toMap
-    val arr = Array.fill[Set[Int]](stones.length)(Set.empty)
-    arr(0) = arr(0) + 0
-    stones.indices.foreach(i => {
-      val steps = arr(i).flatMap(x => List(-1, 0, 1).map(_ + x).filter(_ != 0))
-      steps.foreach(step => {
-        val pos = m.getOrElse(stones(i) + step, -1)
-        if (pos >= 0) arr(pos) = arr(pos) + step
-      })
-    })
-    arr.last.nonEmpty
+  def canCross(stones: Array[Int]): Boolean = stones match {
+    case Array(_) => true
+    case Array(stone1, stone2, _*) if stone1 + 1 == stone2 =>
+      val dp = mutable.Map[(Int, Int), Boolean]().withDefault(_._1 == stones.last)
+      (stones.length - 2 to 1 by -1).foreach(i => (i + 1 until stones.length).foreach(j => {
+        val distance = stones(j) - stones(i)
+        (1.max(distance - 1) to (distance + 1).min(f(stones(i)).toInt)).foreach(dp(stones(i), _) |= dp(stones(j), distance))
+      }))
+      dp(stone2, 1)
+    case _ => false
   }
+
+  private def f(x: Int) =
+    math.sqrt(2 * x + 0.25) - 0.5
 }
