@@ -5,9 +5,9 @@ import scala.collection.immutable
 object Solution_488 {
   val colors: Map[Char, Int] = "RYBGW".zipWithIndex.toMap
 
-  case class Balls(color: Int, qnt: Int = 1, separable: Boolean = false)
+  private case class Balls(color: Int, qnt: Int = 1, separable: Boolean = false)
 
-  case class State(board: Seq[Balls], hand: Array[Int])
+  private case class State(board: Seq[Balls], hand: Array[Int])
 
   def findMinStep(board: String, hand: String): Int = {
     val h = Array.ofDim[Int](5)
@@ -21,7 +21,7 @@ object Solution_488 {
   }
 
   @scala.annotation.tailrec
-  def helper(q: Seq[State], res: Int): Int = {
+  private def helper(q: Seq[State], res: Int): Int = {
     if (q.exists(_.board.isEmpty)) res
     else if (q.isEmpty) -1
     else {
@@ -30,7 +30,7 @@ object Solution_488 {
     }
   }
 
-  def getStatesWithSeparatedPair(state: State, i: Int): immutable.Seq[State] = {
+  private def getStatesWithSeparatedPair(state: State, i: Int): immutable.Seq[State] = {
     val balls = state.board(i)
     if (balls.qnt > 1 && balls.separable)
       state.hand.indices.flatMap(c => {
@@ -41,7 +41,7 @@ object Solution_488 {
     else Nil
   }
 
-  def getStateWithInsertedBall(state: State, i: Int): Seq[State] = {
+  private def getStateWithInsertedBall(state: State, i: Int): Seq[State] = {
     val balls = state.board(i)
     if (state.hand(balls.color) > 0)
       Seq(State(inserted((state.board.take(i) :+ Balls(balls.color, balls.qnt + 1)) ++ state.board.drop(i + 1), i), getNewHand(state.hand, balls.color)))
@@ -49,7 +49,7 @@ object Solution_488 {
   }
 
   @scala.annotation.tailrec
-  def inserted(board: Seq[Balls], p: Int): Seq[Balls] = board(p) match {
+  private def inserted(board: Seq[Balls], p: Int): Seq[Balls] = board(p) match {
     case Balls(_, q, _) if q > 2 =>
       val init = board.take(p)
       val tail = board.drop(p + 1)
@@ -60,9 +60,6 @@ object Solution_488 {
     case _ => board
   }
 
-  def getNewHand(hand: Array[Int], c: Int): Array[Int] = {
-    val res = hand
-    res(c) -= 1
-    res
-  }
+  private def getNewHand(hand: Array[Int], c: Int): Array[Int] =
+    hand.updated(c, hand(c) - 1)
 }

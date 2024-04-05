@@ -2,15 +2,13 @@ package leetCode._500
 
 object Solution_475 {
   def findRadius(houses: Array[Int], heaters: Array[Int]): Int = {
-    var j = 0
-    var res = 0
-    val house = houses.sorted
-    val heater = heaters.sorted
-    house.indices.foreach(i => {
-      val cur = house(i)
-      while (j < (heater.length - 1) && math.abs(heater(j + 1) - cur) <= math.abs(heater(j) - cur)) j += 1
-      res = res.max(math.abs(heater(j) - cur))
-    })
-    res
+    val sorted = heaters.sorted
+
+    @scala.annotation.tailrec
+    def f(h: Int, i: Int): Int =
+      if (i < sorted.length - 1 && (sorted(i + 1) - h).abs <= (sorted(i) - h).abs) f(h, i + 1)
+      else sorted(i)
+
+    houses.sorted.foldLeft(0)((res, h) => res.max((f(h, 0) - h).abs))
   }
 }
