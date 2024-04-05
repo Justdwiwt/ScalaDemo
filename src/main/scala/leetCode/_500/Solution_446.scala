@@ -1,20 +1,18 @@
 package leetCode._500
 
-import scala.collection.mutable
-
 object Solution_446 {
   def numberOfArithmeticSlices(nums: Array[Int]): Int = {
-    var res = 0
-    val arr = Array.fill(nums.length)(mutable.HashMap.empty[Long, Int])
-    nums.indices.foreach(i => {
-      val m = mutable.HashMap.empty[Long, Int]
-      (0 until i).foreach(j => {
-        val diff = nums(i).toLong - nums(j)
-        m += diff -> (m.getOrElse(diff, 0) + arr(j).getOrElse(diff, 0) + 1)
-        res += arr(j).getOrElse(diff, 0)
-      })
-      arr(i) = m
-    })
-    res
+    @scala.annotation.tailrec
+    def f(i: Int, j: Int, map: Map[(Int, Long), Int], acc: Int): Int = {
+      lazy val diff = nums(i).toLong - nums(j)
+      lazy val iCnt = map.getOrElse((i, diff), 0)
+      lazy val jCnt = map.getOrElse((j, diff), 0)
+      lazy val newMap = map.updated((i, diff), iCnt + 1 + jCnt)
+      if (i >= nums.length) acc
+      else if (j >= i) f(i + 1, 0, map, acc)
+      else f(i, j + 1, newMap, acc + jCnt)
+    }
+
+    f(1, 0, Map(), 0)
   }
 }

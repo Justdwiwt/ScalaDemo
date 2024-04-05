@@ -12,17 +12,20 @@ object Solution_457 {
       nextIdx
     }
 
-    nums.zipWithIndex.foreach({ case (num, i) =>
+    nums.zipWithIndex.foreach { case (num, i) =>
       val isForward = num >= 0
       var slow = i
       var fast = i
-      do {
+      slow = f(isForward, slow)
+      fast = f(isForward, fast)
+      if (fast != -1) fast = f(isForward, fast)
+      while (slow != -1 && fast != -1 && slow != fast) {
         slow = f(isForward, slow)
         fast = f(isForward, fast)
         if (fast != -1) fast = f(isForward, fast)
-      } while (slow != -1 && fast != -1 && slow != fast)
+      }
       if (slow != -1 && slow == fast) return true
-    })
+    }
     false
   }
 }

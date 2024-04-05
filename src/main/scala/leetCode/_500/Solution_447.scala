@@ -1,22 +1,22 @@
 package leetCode._500
 
-import scala.collection.mutable
-
 object Solution_447 {
   def numberOfBoomerangs(points: Array[Array[Int]]): Int = {
-    var res = 0
+    var cnt = 0
     points.indices.foreach(i => {
-      var record = new mutable.HashMap[Int, Int]()
-      points.indices.foreach(j => {
-        if (j != i)
-          record += distance(points(i), points(j)) -> (record.getOrElse(distance(points(i), points(j)), 0) + 1)
-      })
-      record.values.foreach(v => if (v >= 2) res += v * (v - 1))
+      val distances = scala.collection.mutable.Map.empty[Int, Int]
+      points
+        .indices
+        .withFilter(_ != i)
+        .foreach(j => {
+          val dist = distance(points(i), points(j))
+          distances(dist) = distances.getOrElse(dist, 0) + 1
+        })
+      distances.foreach(freq => cnt += freq._2 * (freq._2 - 1))
     })
-    res
+    cnt
   }
 
-  def distance(x: Array[Int], y: Array[Int]): Int = {
-    (x(0) - y(0)) * (x(0) - y(0)) + (x(1) - y(1)) * (x(1) - y(1))
-  }
+  private def distance(x: Array[Int], y: Array[Int]): Int =
+    (x.head - y.head) * (x.head - y.head) + (x(1) - y(1)) * (x(1) - y(1))
 }
