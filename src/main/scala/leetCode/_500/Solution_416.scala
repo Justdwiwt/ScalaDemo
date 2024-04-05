@@ -2,12 +2,17 @@ package leetCode._500
 
 object Solution_416 {
   def canPartition(nums: Array[Int]): Boolean = {
-    val s = nums.sum
-    if ((s & 1) == 1) return false
-    val m = s / 2 + 1
-    val dp = Array.fill[Boolean](m)(false)
-    dp(0) = true
-    nums.foreach(num => (1 until m).reverse.foreach(i => if (num <= i) dp(i) = dp(i) || dp(i - num)))
-    dp(m - 1)
+    val sum = nums.sum
+    if (sum % 2 != 0) false
+    else {
+      val sum2 = sum / 2
+      val dp = Array.fill(sum2 + 1)(false)
+      dp(0) = true
+      nums
+        .indices
+        .map { i => val num = nums(i); (i, num) }
+        .foreach { case (_, num) => (sum2 to num by -1).foreach(j => if (dp(j - num)) dp(j) = true) }
+      dp(sum2)
+    }
   }
 }

@@ -2,11 +2,22 @@ package leetCode._500
 
 object Solution_410 {
   def splitArray(nums: Array[Int], m: Int): Int = {
-    val sums = Array.fill(nums.length + 1)(0)
-    val dp = Array.fill(m + 1, nums.length + 1)(Int.MaxValue)
-    dp(0)(0) = 0
-    (1 to nums.length).foreach(i => sums(i) = sums(i - 1) + nums(i - 1))
-    (1 to m).foreach(i => (1 to nums.length).foreach(j => (i - 1 until j).foreach(k => dp(i)(j) = dp(i)(j).min(dp(i - 1)(k).max(sums(j) - sums(k))))))
-    dp(m)(nums.length)
+    def canSplit(sumLimit: Int): Boolean = nums
+      .foldLeft((1, 0)) { case ((subarrayCount, currentSum), n) =>
+        if (currentSum + n <= sumLimit) (subarrayCount, currentSum + n)
+        else (subarrayCount + 1, n)
+      }
+      ._1 <= m
+
+    @scala.annotation.tailrec
+    def binarySearch(l: Int, r: Int): Int =
+      if (l >= r) l
+      else {
+        val mid = (l + r) >>> 1
+        if (canSplit(mid)) binarySearch(l, r = mid)
+        else binarySearch(l = mid + 1, r)
+      }
+
+    binarySearch(l = nums.max, r = nums.sum)
   }
 }
