@@ -1,19 +1,13 @@
 package leetCode._500
 
 object Solution_467 {
-  def findSubstringInWraproundString(p: String): Int = {
-    var res = 0
-    var len = 0
-    val cnt = Array.fill(26)(0)
-    p.indices.foreach(i => {
-      val cur = p(i) - 'a'
-      if (i > 0 && p(i - 1) != (cur + 26 - 1) % 26 + 'a') len = 0
-      len += 1
-      if (len > cnt(cur)) {
-        res += len - cnt(cur)
-        cnt(cur) = len
-      }
-    })
-    res
-  }
+  def findSubstringInWraproundString(p: String): Int = p.indices.foldLeft(Seq.fill(26)(0), 0) {
+    case ((mx, cur), i) =>
+      val idx = p(i) - 'a'
+      val pre = p(Math.floorMod(i - 1, p.length)) - 'a'
+      val isConsecutive = Math.floorMod(idx - pre, 26) == 1
+      val newCur = if (isConsecutive) cur + 1 else 1
+      val newMx = mx.updated(idx, newCur.max(mx(idx)))
+      (newMx, newCur)
+  }._1.sum
 }

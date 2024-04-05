@@ -1,61 +1,36 @@
 package leetCode._500
 
 import scala.collection.mutable
-import scala.math.Ordering._
 
 object Solution_472 {
-  class TrieNode {
-    var isWord: Boolean = false
-    val child = mutable.HashMap.empty[Char, TrieNode]
+  private var nodeId = 0
 
-    override def toString: String = {
-      isWord.toString + " " + child.toString
-    }
-  }
-
-  object LenghtOrdering extends StringOrdering {
-    override def compare(x: String, y: String): Int = {
-      x.length.compare(y.length)
-    }
-  }
-
-  private var root: TrieNode = _
-
-  def add(word: String): Unit = {
-    var tmp = root
-    word.foreach(ch => {
-      if (!tmp.child.contains(ch)) {
-        val newNode = new TrieNode
-        tmp.child(ch) = newNode
-      }
-      tmp = tmp.child(ch)
-    })
-    tmp.isWord = true
-  }
-
-  def doesExists(word: String, root: TrieNode, index: Int): Boolean = {
-    var temp = root
-    (index until word.length).foreach(i => {
-      val ch = word(i)
-      if (!temp.child.contains(ch)) return false
-      if (temp.child(ch).isWord) {
-        if (i == word.length - 1) return true
-        if (doesExists(word, root, i + 1)) return true
-      }
-      temp = temp.child(ch)
-    })
-    false
+  case class TrieNode(var isWord: Boolean = false, children: mutable.Map[Char, TrieNode] = mutable.Map.empty) {
+    val id: Int = nodeId
+    nodeId += 1
   }
 
   def findAllConcatenatedWordsInADict(words: Array[String]): List[String] = {
-    root = new TrieNode
-    val sortedWords = words.sorted(LenghtOrdering)
-    val res = mutable.ListBuffer.empty[String]
-    sortedWords.foreach(word => {
-      if (doesExists(word, root, 0)) res.append(word)
-      else add(word)
+    val root = TrieNode()
+    words.foreach(word => {
+      var node = root
+      word.foreach(char => node = node.children.getOrElseUpdate(char, TrieNode()))
+      node.isWord = true
     })
-    res.toList
 
+    val cache = mutable.Map.empty[(String, Int, Int), Int]
+
+    def isConcatenation(word: String, i: Int, node: TrieNode = root): Int = cache.getOrElseUpdate((word, i, node.id), {
+      var restarting = if (node.id == root.id || !node.isWord) 0 else isConcatenation(word, i, root)
+      val continuing =
+        if (i == word.length - 1)
+          if (node.children.get(word(i)).exists(_.isWord)) 1
+          else 0
+        else node.children.get(word(i)).map(isConcatenation(word, i + 1, _)).getOrElse(0)
+      if (restarting > 0 && node.isWord) restarting += 1
+      restarting.max(continuing)
+    })
+
+    words.toList.filter(isConcatenation(_, 0) > 1)
   }
 }
