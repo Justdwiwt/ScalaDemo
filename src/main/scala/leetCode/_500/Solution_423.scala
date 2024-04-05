@@ -21,59 +21,59 @@ object Solution_423 {
 
   private val NINE = Array(0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0)
 
-  trait Extractor {
+  private trait Extractor {
     def coding: Array[Int]
 
-    def minus(chars: Array[Int], times: Int): Unit = {
+    private def minus(chars: Array[Int], times: Int): Unit =
       (0 until times).foreach(_ => (0 until 26).foreach(i => chars(i) -= coding(i)))
-    }
 
-    def tagExtract(chars: Array[Int], loc: Int, which: Int): String = if (chars(loc) > 0) {
-      val tmp = chars(loc)
-      minus(chars, chars(loc))
-      Array.tabulate(tmp)(_ => s"$which").mkString("")
-    } else ""
+    def tagExtract(chars: Array[Int], loc: Int, which: Int): String =
+      if (chars(loc) > 0) {
+        val tmp = chars(loc)
+        minus(chars, chars(loc))
+        Array.tabulate(tmp)(_ => which.toString).mkString("")
+      } else ""
 
     def extract(chars: Array[Int]): String
   }
 
-  case class ZeroExtractor(coding: Array[Int] = ZERO) extends Extractor {
+  private case class ZeroExtractor(coding: Array[Int] = ZERO) extends Extractor {
     override def extract(chars: Array[Int]): String = tagExtract(chars, 25, 0)
   }
 
-  case class TwoExtractor(coding: Array[Int] = TWO) extends Extractor {
+  private case class TwoExtractor(coding: Array[Int] = TWO) extends Extractor {
     override def extract(chars: Array[Int]): String = tagExtract(chars, 22, 2)
   }
 
-  case class FourExtractor(coding: Array[Int] = FOUR) extends Extractor {
+  private case class FourExtractor(coding: Array[Int] = FOUR) extends Extractor {
     override def extract(chars: Array[Int]): String = tagExtract(chars, 20, 4)
   }
 
-  case class FiveExtractor(coding: Array[Int] = FIVE) extends Extractor {
+  private case class FiveExtractor(coding: Array[Int] = FIVE) extends Extractor {
     override def extract(chars: Array[Int]): String = tagExtract(chars, 5, 5)
   }
 
-  case class SixExtractor(coding: Array[Int] = SIX) extends Extractor {
+  private case class SixExtractor(coding: Array[Int] = SIX) extends Extractor {
     override def extract(chars: Array[Int]): String = tagExtract(chars, 23, 6)
   }
 
-  case class SevenExtractor(coding: Array[Int] = SEVEN) extends Extractor {
+  private case class SevenExtractor(coding: Array[Int] = SEVEN) extends Extractor {
     override def extract(chars: Array[Int]): String = tagExtract(chars, 21, 7)
   }
 
-  case class EightExtractor(coding: Array[Int] = EIGHT) extends Extractor {
+  private case class EightExtractor(coding: Array[Int] = EIGHT) extends Extractor {
     override def extract(chars: Array[Int]): String = tagExtract(chars, 6, 8)
   }
 
-  case class OneExtractor(coding: Array[Int] = ONE) extends Extractor {
+  private case class OneExtractor(coding: Array[Int] = ONE) extends Extractor {
     override def extract(chars: Array[Int]): String = tagExtract(chars, 14, 1)
   }
 
-  case class ThreeExtractor(coding: Array[Int] = THREE) extends Extractor {
+  private case class ThreeExtractor(coding: Array[Int] = THREE) extends Extractor {
     override def extract(chars: Array[Int]): String = tagExtract(chars, 17, 3)
   }
 
-  case class NineExtractor(coding: Array[Int] = NINE) extends Extractor {
+  private case class NineExtractor(coding: Array[Int] = NINE) extends Extractor {
     override def extract(chars: Array[Int]): String = tagExtract(chars, 8, 9)
   }
 

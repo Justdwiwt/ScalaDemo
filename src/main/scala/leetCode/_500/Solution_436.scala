@@ -14,6 +14,6 @@ object Solution_436 {
       }
 
     val tuple = intervals.zipWithIndex.sortWith((a, b) => a._1.head < b._1.head)
-    intervals.map(interval => f(tuple, interval, 0, tuple.length))
+    intervals.map(f(tuple, _, 0, tuple.length))
   }
 }
