@@ -1,12 +1,15 @@
 package leetCode._400
 
+import scala.collection.immutable.BitSet
+
 object Solution_318 {
   def maxProduct(words: Array[String]): Int = {
-    val nums = words.map(str => if (str == "") 0 else str.map(c => 1 << (c - 'a')).reduce(_ | _))
-    var maxLen = 0
-    nums.indices.foreach(i => (i + 1 until nums.length).foreach(j =>
-      if ((nums(i) & nums(j)) == 0 && words(i).length * words(j).length > maxLen)
-        maxLen = words(i).length * words(j).length))
-    maxLen
+    val bitSets = words.map(_.iterator.map(_ - 'a').foldLeft(BitSet.empty)((bs, char) => bs + char))
+    Iterator
+      .range(0, words.length)
+      .flatMap(i => Iterator.range(i + 1, words.length).map(i -> _))
+      .collect { case (i, j) if (bitSets(i) & bitSets(j)).isEmpty => words(i).length * words(j).length }
+      .reduceOption(_.max(_))
+      .getOrElse(0)
   }
 }

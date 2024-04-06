@@ -2,21 +2,17 @@ package leetCode._400
 
 object Solution_316 {
   def removeDuplicateLetters(s: String): String = {
-    if (s.length == 1) return s
-    val arr = Array.fill(26)(26)
-    s.zipWithIndex.foreach({ case (c, i) => arr(c - 'a') = i })
-    val seen = Array.fill(26)(false)
-    var st = List.empty[Char]
-    s.zipWithIndex.foreach({ case (c, i) =>
-      if (!seen(c - 'a')) {
-        while (st.nonEmpty && st.head > c && arr(st.head - 'a') > i) {
-          seen(st.head - 'a') = false
-          st = st.tail
-        }
-        seen(c - 'a') = true
-        st = c +: st
-      }
-    })
-    st.reverse.mkString
+    val map = s.iterator.zipWithIndex.toMap
+
+    @scala.annotation.tailrec
+    def f(i: Int, used: Set[Char], stack: List[Char]): String = {
+      lazy val ch: Char = s(i)
+      if (i >= s.length) stack.reverse.mkString
+      else if (used.contains(ch)) f(i + 1, used, stack)
+      else if (stack.headOption.exists(h => h > ch && map(h) > i)) f(i, used - stack.head, stack.tail)
+      else f(i + 1, used + ch, ch +: stack)
+    }
+
+    f(0, Set(), Nil)
   }
 }

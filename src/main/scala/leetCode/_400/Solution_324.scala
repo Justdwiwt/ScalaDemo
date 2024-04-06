@@ -1,17 +1,12 @@
 package leetCode._400
 
 object Solution_324 {
-  def wiggleSort(nums: Array[Int]): Unit = {
-    var tmp = nums
-    var k = (nums.length + 1) / 2
-    var j = nums.length
-    tmp = tmp.sorted
-    nums.indices.foreach(i => nums(i) = if ((i & 1) > 0) {
-      j -= 1
-      tmp(j)
-    } else {
-      k -= 1
-      tmp(k)
-    })
-  }
+  def wiggleSort(nums: Array[Int]): Unit = nums
+    .sorted
+    .zipWithIndex
+    .foreach(t => nums(f(nums.length, t._2)) = t._1)
+
+  private def f(len: Int, index: Int): Int =
+    if (index > (len - 1) / 2) (len - 1 - index) * 2 + 1
+    else ((len - 1) / 2 - index) * 2
 }
