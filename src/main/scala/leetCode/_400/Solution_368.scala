@@ -8,11 +8,9 @@ object Solution_368 {
     val dp = Array.fill(n)(List.empty[Int])
     (0 until n).foreach(i => {
       dp(i) = A(i) :: Nil
-      (0 until i).withFilter(j =>
-        A(i) % A(j) == 0).foreach(j =>
-        if (dp(j).length + 1 > dp(i).length)
-          dp(i) = A(i) :: dp(j))
+      (0 until i).withFilter(A(i) % A(_) == 0).foreach(j =>
+        if (dp(j).length + 1 > dp(i).length) dp(i) = A(i) :: dp(j))
     })
-    dp.minBy(x => -x.length).reverse
+    dp.minBy(-_.length).reverse
   }
 }

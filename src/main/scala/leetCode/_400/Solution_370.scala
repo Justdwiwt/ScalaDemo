@@ -3,11 +3,12 @@ package leetCode._400
 object Solution_370 {
   def getModifiedArray(length: Int, updates: Array[Array[Int]]): Array[Int] = {
     val res = Array.fill(length)(0)
-    updates.foreach(i => {
-      res(i(1)) += i(2)
-      if (i.head > 0) res(i.head - 1) -= i(2)
-    })
-    (length - 2 to 0 by -1).foreach(i => res(i) += res(i + 1))
-    res
+
+    updates.foreach { case Array(start, end, value) =>
+      res(start) += value
+      if (end + 1 < length) res(end + 1) -= value
+    }
+
+    res.scanLeft(0)(_ + _).drop(1)
   }
 }

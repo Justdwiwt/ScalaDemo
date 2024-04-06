@@ -8,19 +8,16 @@ object Solution_379 {
     private val size = _maxNumbers
 
     def get(): Int = {
-      (0 until size).foreach(i => if (phone(i)) {
-        phone(i) = false
-        return i
-      })
-      -1
+      val index = (0 until size).find(phone(_))
+      index.foreach(phone(_) = false)
+      index.getOrElse(-1)
     }
 
-    def check(number: Int): Boolean = phone(number)
+    def check(number: Int): Boolean =
+      phone(number)
 
-    def release(number: Int) {
+    def release(number: Int): Unit =
       phone(number) = true
-    }
-
   }
 
 }

@@ -4,23 +4,24 @@ import scala.collection.mutable
 
 object Solution_373 {
   def kSmallestPairs(nums1: Array[Int], nums2: Array[Int], k: Int): List[List[Int]] = {
-    val res = mutable.ListBuffer.empty[List[Int]]
-    val st = mutable.Set.empty[(Int, Int)]
-    val pq = mutable.PriorityQueue.empty[(Int, Int)](Ordering.by { case (a, b) => nums1(a) + nums2(b) }).reverse
-    pq += ((0, 0))
-    st += ((0, 0))
-    while (res.size < k && pq.nonEmpty) {
-      val (idx1, idx2) = pq.dequeue()
-      if (idx1 < nums1.length - 1 && !st.contains((idx1 + 1, idx2))) {
-        st += ((idx1 + 1, idx2))
-        pq += ((idx1 + 1, idx2))
+    val init = nums1.indices.map(i => node(nums1(i), nums2.head, i, 0))
+    val pq = mutable.PriorityQueue[node](init: _*)(Ordering.by(node => -node.a - node.b))
+
+    @scala.annotation.tailrec
+    def f(k: Int, pq: mutable.PriorityQueue[node], ans: List[List[Int]]): List[List[Int]] = {
+      if (k <= 0 || pq.isEmpty) ans
+      else {
+        val top = pq.dequeue()
+        val newAns = ans :+ top.toList()
+        if (top.d + 1 < nums2.length) pq.enqueue(node(nums1(top.c), nums2(top.d + 1), top.c, top.d + 1))
+        f(k - 1, pq, newAns)
       }
-      if (idx2 < nums2.length - 1 && !st.contains((idx1, idx2 + 1))) {
-        st += ((idx1, idx2 + 1))
-        pq += ((idx1, idx2 + 1))
-      }
-      res += List(nums1(idx1), nums2(idx2))
     }
-    res.toList
+
+    f(k, pq, List.empty[List[Int]])
+  }
+
+  private case class node(a: Int, b: Int, c: Int, d: Int) {
+    def toList(): List[Int] = List(a, b)
   }
 }
