@@ -6,7 +6,7 @@ import scala.language.implicitConversions
 
 object Solution_328 {
 
-  object Converse {
+  private object Converse {
 
     implicit def nodeToList(x: ListNode): List[Int] = x match {
       case a if a == null => Nil
@@ -25,7 +25,7 @@ object Solution_328 {
   def oddEvenList(head: ListNode): ListNode = {
     import Converse._
 
-    val list = head.zipWithIndex.partition({ case (_, y) => (y + 1) % 2 == 1 })
+    val list = head.zipWithIndex.partition { case (_, y) => (y + 1) % 2 == 1 }
     list._1.map(_._1) ++ list._2.map(_._1)
   }
 }
