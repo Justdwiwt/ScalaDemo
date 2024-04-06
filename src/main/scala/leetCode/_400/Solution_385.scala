@@ -11,17 +11,17 @@ class Nested {
   def getInteger: Int = ???
 
   // Set this NestedInteger to hold a single integer.
-  def setInteger(i: Int) = {}
+  def setInteger(i: Int): Unit = {}
 
   // Return the nested list that this NestedInteger holds, if it holds a nested list
   def getList: Array[Nested] = ???
 
   // Set this NestedInteger to hold a nested list and adds a nested integer to it.
-  def add(ni: Nested) = {}
+  def add(ni: Nested): Unit = {}
 }
 
 object Solution_385 {
-  case class int(v: Int) extends Nested {
+  private case class int(v: Int) extends Nested {
     override def isInteger: Boolean = true
 
     override def getInteger: Int = v
@@ -34,7 +34,7 @@ object Solution_385 {
 
   }
 
-  case class list(nis: Array[Nested]) extends Nested {
+  private case class list(nis: Array[Nested]) extends Nested {
     override def isInteger: Boolean = false
 
     override def getInteger: Int = 0
