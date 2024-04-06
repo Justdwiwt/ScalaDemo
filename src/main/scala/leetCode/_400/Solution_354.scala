@@ -2,7 +2,7 @@ package leetCode._400
 
 object Solution_354 {
   def maxEnvelopes(envelopes: Array[Array[Int]]): Int = {
-    val sorted = envelopes.sortBy(x => x.head)
+    val sorted = envelopes.sortBy(_.head)
     val length = envelopes.length
     if (length < 2) length
     else {

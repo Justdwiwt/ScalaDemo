@@ -2,17 +2,16 @@ package leetCode._400
 
 object Solution_363 {
   def maxSumSubmatrix(matrix: Array[Array[Int]], k: Int): Int = {
-    val dp = Array.ofDim[Int](matrix.length + 1, matrix.head.length + 1)
-    dp(1)(1) = matrix.head.head
-    matrix.head.indices.drop(1).foreach(i => dp(1)(i + 1) = dp(1)(i) + matrix.head(i))
-    matrix.indices.drop(1).foreach(j => dp(j + 1)(1) = dp(j)(1) + matrix(j).head)
-    matrix.indices.drop(1).foreach(i => matrix.head.indices.drop(1).foreach(j => dp(i + 1)(j + 1) = dp(i)(j + 1) + dp(i + 1)(j) - dp(i)(j) + matrix(i)(j)))
-    var res = Int.MinValue
-    (0 to matrix.head.length).foreach(j1 => (j1 + 1 to matrix.head.length).foreach(j2 => (0 to matrix.length).foreach(i1 => (i1 + 1 to matrix.length).foreach(i2 => {
-      val t = dp(i2)(j2) + dp(i1)(j1) - dp(i1)(j2) - dp(i2)(j1)
-      if (t == k) return k
-      else if (t < k) res = res.max(t)
+    val rows = matrix.length
+    val cols = matrix.head.length
+    val prefixSum = Array.ofDim[Int](rows + 1, cols + 1)
+    matrix.indices.foreach(r => matrix.head.indices.foreach(c => prefixSum(r + 1)(c + 1) = prefixSum(r)(c + 1) + prefixSum(r + 1)(c) - prefixSum(r)(c) + matrix(r)(c)))
+    var max = Int.MinValue
+    matrix.indices.foreach(rowSize => matrix.head.indices.foreach(colSize => (0 until rows - rowSize).foreach(rStart => (0 until cols - colSize).foreach(cStart => {
+      val sum = prefixSum(rStart + rowSize + 1)(cStart + colSize + 1) + prefixSum(rStart)(cStart) - prefixSum(rStart)(cStart + colSize + 1) - prefixSum(rStart + rowSize + 1)(cStart)
+      if (sum == k) max = k
+      else if (sum < k) max = max.max(sum)
     }))))
-    res
+    max
   }
 }
