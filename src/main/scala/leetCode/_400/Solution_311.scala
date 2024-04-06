@@ -1,9 +1,8 @@
 package leetCode._400
 
 object Solution_311 {
-  def multiply(A: Array[Array[Int]], B: Array[Array[Int]]): Array[Array[Int]] = {
-    val res = Array.ofDim[Int](A.length, B.head.length)
-    A.indices.foreach(row => B.head.indices.foreach(c => B.indices.foreach(i => res(row)(c) += A(row)(i) * B(i)(c))))
-    res
-  }
+  def multiply(A: Array[Array[Int]], B: Array[Array[Int]]): Array[Array[Int]] = A
+    .indices.map(row =>
+      B.head.indices.map(c =>
+        B.indices.foldLeft(0)((acc, i) => acc + A(row)(i) * B(i)(c))).toArray).toArray
 }

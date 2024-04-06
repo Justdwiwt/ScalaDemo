@@ -2,13 +2,19 @@ package leetCode._400
 
 object Solution_313 {
   def nthSuperUglyNumber(n: Int, primes: Array[Int]): Int = {
-    val dp = Array.fill(n)(1)
-    val idx = Array.fill(primes.length)(0)
+    val ugly = Array.fill(n + 1)(0L)
+    ugly(0) = 1
+    val pointer = Array.fill(primes.length)(0)
     (1 until n).foreach(i => {
-      dp(i) = Int.MaxValue
-      primes.indices.foreach(j => dp(i) = dp(i).min(dp(idx(j)) * primes(j)))
-      primes.indices.foreach(j => if (dp(i) == dp(idx(j)) * primes(j)) idx(j) += 1)
+      var min: Long = Int.MaxValue
+      var minIndex = 0
+      primes.indices.foreach(j => if (ugly(pointer(j)) * primes(j) < min) {
+        min = ugly(pointer(j)) * primes(j)
+        minIndex = j
+      } else if (ugly(pointer(j)) * primes(j) == min) pointer(j) += 1)
+      ugly(i) = min
+      pointer(minIndex) += 1
     })
-    dp.last
+    ugly(n - 1).toInt
   }
 }

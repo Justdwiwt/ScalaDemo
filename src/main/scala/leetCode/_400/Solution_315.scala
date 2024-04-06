@@ -4,7 +4,6 @@ import scala.collection.mutable
 
 object Solution_315 {
   def countSmaller(nums: Array[Int]): List[Int] = {
-
     case class KV(idx: Int, value: Int)
     implicit object KVOrdering extends Ordering[KV] {
       override def compare(x: KV, y: KV): Int = {
@@ -14,7 +13,7 @@ object Solution_315 {
     }
     nums
       .zipWithIndex
-      .map({ case (value, idx) => KV(idx, value) })
+      .map { case (value, idx) => KV(idx, value) }
       .:\((mutable.TreeSet.empty[KV], List.empty[Int]))((ele, acc) => {
         val (ts: mutable.TreeSet[KV], res: List[Int]) = acc
         val next = ts + ele
