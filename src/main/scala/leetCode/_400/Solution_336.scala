@@ -2,8 +2,8 @@ package leetCode._400
 
 object Solution_336 {
 
-  type SDT = (List[Option[Word]], Option[Word], Int)
-  type ZDT = (Array[Int], Int, Int)
+  private type SDT = (List[Option[Word]], Option[Word], Int)
+  private type ZDT = (Array[Int], Int, Int)
 
   case class Word(v: Char, n: Option[Word])
 
@@ -19,26 +19,26 @@ object Solution_336 {
       .toList
   }
 
-  def convertWord(s: String): Option[Word] = s
+  private def convertWord(s: String): Option[Word] = s
     .toList
     ./:(Option.empty[Word])((prev: Option[Word], c: Char) => Some(Word(c, prev)))
 
-  def dict(words: Array[String]): Map[Option[Word], Int] = words
+  private def dict(words: Array[String]): Map[Option[Word], Int] = words
     .map(convertWord)
     .zipWithIndex
     .toMap
 
-  def getPairs(dict: Map[Option[Word], Int], s: String): List[Int] = getPolindroms(s)
+  private def getPairs(dict: Map[Option[Word], Int], s: String): List[Int] = getPolindroms(s)
     .:\((List.empty[Option[Word]], convertWord(s), s.length - 1))(getPrefixes)
     ._1
     .flatMap(dict.get)
 
   @scala.annotation.tailrec
-  def getPrefixes(idx: Int, d: SDT): SDT =
+  private def getPrefixes(idx: Int, d: SDT): SDT =
     if (d._3 < idx) (d._1 :+ d._2, d._2, d._3)
     else getPrefixes(idx, (d._1, d._2.get.n, d._3 - 1))
 
-  def getPolindroms(s: String): Array[Int] = {
+  private def getPolindroms(s: String): Array[Int] = {
     val n = s.length * 2 + 1
     (1 until n)
       ./:(Array(n), 0, 0)(getZElem(s.reverse + "\u0000" + s))
@@ -48,7 +48,7 @@ object Solution_336 {
       .map(_._2 - n / 2 - 1) :+ n / 2
   }
 
-  def getZElem(s: String)(d: ZDT, i: Int): ZDT = d match {
+  private def getZElem(s: String)(d: ZDT, i: Int): ZDT = d match {
     case (res, l, r) if i > r =>
       val rN = getR(s, i, i)
       (res :+ (rN - l), i, rN)
@@ -59,7 +59,7 @@ object Solution_336 {
   }
 
   @scala.annotation.tailrec
-  def getR(s: String, L: Int, R: Int): Int =
+  private def getR(s: String, L: Int, R: Int): Int =
     if (R == s.length || s(R - L) != s(R)) R - 1
     else getR(s, L, R + 1)
 

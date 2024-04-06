@@ -1,12 +1,8 @@
 package leetCode._400
 
 object Solution_335 {
-  def isSelfCrossing(x: Array[Int]): Boolean = {
-    (3 until x.length).foreach(i => {
-      if (x(i) >= x(i - 2) && x(i - 3) >= x(i - 1)) return true
-      if (i >= 4 && (x(i - 1) == x(i - 3)) && x(i) >= x(i - 2) - x(i - 4)) return true
-      if (i >= 5 && x(i - 2) >= x(i - 4) && x(i - 3) >= x(i - 1) && x(i - 1) >= x(i - 3) - x(i - 5) && x(i) >= x(i - 2) - x(i - 4)) return true
-    })
-    false
-  }
+  def isSelfCrossing(distance: Array[Int]): Boolean =
+    distance.padTo(6, 0).sliding(6).exists { case Array(a, b, c, d, e, f) =>
+      d >= b && b > 0 && (a >= c || (a >= c - e && c - e >= 0 && f >= d - b))
+    }
 }

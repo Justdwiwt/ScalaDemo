@@ -20,7 +20,7 @@ object Solution_351 {
       visited((idx + pre) / 2)
     }
 
-    (0 until 9).foreach(i => (m to n).foreach(j => f(i, Array.fill(9)(false), j)))
+    (0 until 9).foreach(i => (m to n).foreach(f(i, Array.fill(9)(false), _)))
     res
   }
 }
