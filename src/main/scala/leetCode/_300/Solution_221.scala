@@ -2,15 +2,22 @@ package leetCode._300
 
 object Solution_221 {
   def maximalSquare(matrix: Array[Array[Char]]): Int = {
-    if (matrix.length < 1) return 0
-    var mx = 0
-    val dp = Array.ofDim[Int](matrix.length + 1, matrix(0).length + 1)
-    (1 to matrix.length).foreach(i => (1 to matrix(0).length).foreach(j => {
-      if (matrix(i - 1)(j - 1) == '1') {
-        dp(i)(j) = 1 + dp(i - 1)(j - 1).min(dp(i - 1)(j).min(dp(i)(j - 1)))
-        mx = mx.max(dp(i)(j))
-      }
+    if (matrix.isEmpty) return 0
+    val mem = Array.fill(matrix.length)(Array.fill(matrix.head.length)(0))
+    var biggest = 0
+    matrix.indices.foreach(r => matrix.head.indices.foreach(c => matrix(r)(c) match {
+      case '1' =>
+        val cur = checkNeighbors(mem, r, c)
+        biggest = biggest.max(cur)
+        mem(r)(c) = cur
+      case _ => ()
     }))
-    mx * mx
+    math.pow(biggest, 2).toInt
+  }
+
+  private def checkNeighbors(mem: Array[Array[Int]], row: Int, col: Int): Int = {
+    val neighborLocs = List((0, -1), (-1, -1), (-1, 0)).map { case (rowOffset, colOffset) => (rowOffset + row, colOffset + col) }
+    if (neighborLocs.exists { case (r, c) => r < 0 | c < 0 }) 1
+    else neighborLocs.map { case (r, c) => mem(r)(c) }.min + 1
   }
 }

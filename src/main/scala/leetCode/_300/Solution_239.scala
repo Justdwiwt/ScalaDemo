@@ -1,17 +1,17 @@
 package leetCode._300
 
-import scala.collection.mutable
-import scala.collection.mutable.ArrayBuffer
+import scala.collection.immutable.SortedSet
 
 object Solution_239 {
   def maxSlidingWindow(nums: Array[Int], k: Int): Array[Int] = {
-    val res = new ArrayBuffer[Int]()
-    val q = new mutable.PriorityQueue[(Int, Int)]()
-    nums.indices.foreach(i => {
-      while (q.nonEmpty && q.head._2 <= i - k) q.dequeue
-      q.enqueue((nums(i), i))
-      if (i >= k - 1) res.append(q.head._1)
-    })
-    res.toArray
+    @scala.annotation.tailrec
+    def f(q: SortedSet[(Int, Int)], i: Int, acc: Seq[Int]): Seq[Int] = {
+      lazy val newAcc = q.last._1 +: acc
+      if (q.last._2 < i - k) f(q - q.last, i, acc)
+      else if (i >= nums.length) newAcc
+      else f(q + (nums(i) -> i), i + 1, newAcc)
+    }
+
+    f(SortedSet.empty[(Int, Int)] ++ nums.iterator.take(k).zipWithIndex, k, Nil).reverse.toArray
   }
 }

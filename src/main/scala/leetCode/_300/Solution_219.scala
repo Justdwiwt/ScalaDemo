@@ -5,10 +5,11 @@ object Solution_219 {
     def f(indices: Array[Int]): Boolean =
       indices
         .sliding(2)
-        .map({
+        .map {
           case Array(x, y) => y - x <= maxDiff
           case _ => false
-        }).exists(identity)
+        }
+        .exists(identity)
 
     nums
       .zipWithIndex
