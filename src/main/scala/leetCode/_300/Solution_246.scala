@@ -9,18 +9,8 @@ object Solution_246 {
       '8' -> '8',
       '9' -> '6'
     )
-    var l = 0
-    var r = num.length - 1
-    var c1, c2 = ' '
-    while (l <= r) {
-      c1 = num(l)
-      if (!diff.contains(c1)) return false
-      c1 = diff(c1)
-      c2 = num(r)
-      if (c1 != c2) return false
-      l += 1
-      r -= 1
+    num.zipWithIndex.forall { case (c, i) =>
+      diff.get(c).contains(num(num.length - 1 - i))
     }
-    true
   }
 }
