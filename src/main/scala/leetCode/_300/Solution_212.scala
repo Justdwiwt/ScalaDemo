@@ -9,7 +9,7 @@ object Solution_212 {
     var endsWord: Option[String] = None
   }
 
-  class Trie {
+  private class Trie {
     val root = new TrieNode()
 
     def add(word: String): Unit = {
@@ -19,9 +19,9 @@ object Solution_212 {
     }
   }
 
-  def buildTrie(words: Array[String]): Trie = {
+  private def buildTrie(words: Array[String]): Trie = {
     val trie = new Trie()
-    words.foreach(word => trie.add(word))
+    words.foreach(trie.add)
     trie
   }
 

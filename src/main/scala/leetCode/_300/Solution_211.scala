@@ -8,7 +8,7 @@ object Solution_211 {
 
     val head = new TrieDataNode()
 
-    def addWord(word: String) {
+    def addWord(word: String): Unit = {
       head.add(word.toList)
     }
 
@@ -38,8 +38,8 @@ object Solution_211 {
       case Nil => m.get('\u0000')
       case '.' :: tail => m
         .values
-        .collect({ case x: TrieDataNode => x.search(tail) })
-        .collectFirst({ case Some(TrieWordEndNode) => TrieWordEndNode })
+        .collect { case x: TrieDataNode => x.search(tail) }
+        .collectFirst { case Some(TrieWordEndNode) => TrieWordEndNode }
       case head :: tail => m.get(head) match {
         case Some(x: TrieDataNode) => x.search(tail)
         case _ => None
@@ -48,6 +48,6 @@ object Solution_211 {
 
   }
 
-  object TrieWordEndNode extends TrieNode
+  private object TrieWordEndNode extends TrieNode
 
 }
