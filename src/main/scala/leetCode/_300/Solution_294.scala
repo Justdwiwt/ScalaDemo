@@ -1,13 +1,13 @@
 package leetCode._300
 
 object Solution_294 {
-  def canWin(s: String): Boolean = {
-    s.indices.foreach(i => if (i + 1 < s.length && s(i) == '+' && s(i + 1) == '+') {
-      val t = s.toCharArray
-      t(i) = '-'
-      t(i + 1) = '-'
-      if (!canWin(t.mkString)) return true
-    })
-    false
+  def canWin(currentState: String): Boolean = {
+    def f(state: String): Boolean = {
+      val indices = state.indices.dropRight(1).filter(i => state(i) == state(i + 1) && state(i) == '+')
+      val replaced = indices.map(i => state.substring(0, i) + "--" + state.substring(i + 2, state.length))
+      replaced.exists(!f(_))
+    }
+
+    f(currentState)
   }
 }

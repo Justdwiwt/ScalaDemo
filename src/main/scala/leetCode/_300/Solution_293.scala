@@ -1,18 +1,14 @@
 package leetCode._300
 
 object Solution_293 {
-  def generatePossibleNextMoves(s: String): List[String] = {
-    var res = List.empty[String]
-    (0 until s.length - 1).foreach(i => {
+  def generatePossibleNextMoves(s: String): List[String] = s
+    .indices
+    .dropRight(1)
+    .flatMap(i => {
       if (s(i) == s(i + 1) && s(i) == '+') {
-        val sb = new StringBuilder(s)
-        if (s(i) == '+') {
-          sb.setCharAt(i, '-')
-          sb.setCharAt(i + 1, '-')
-        }
-        res ::= sb.toString()
-      }
+        val updatedString = s.updated(i, '-').updated(i + 1, '-')
+        Some(updatedString)
+      } else None
     })
-    res
-  }
+    .toList
 }

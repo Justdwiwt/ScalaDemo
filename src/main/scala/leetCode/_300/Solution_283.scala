@@ -8,6 +8,6 @@ object Solution_283 {
         acc + 1
       } else acc
     }
-    (cnt until nums.length).foreach(i => nums(i) = 0)
+    (cnt until nums.length).foreach(nums(_) = 0)
   }
 }
