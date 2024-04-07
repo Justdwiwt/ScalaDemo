@@ -4,9 +4,8 @@ object Solution_277 {
   def knows(a: Int, b: Int): Boolean = ???
 
   def findCelebrity(n: Int): Int = {
-    var res = 0
-    (1 until n).foreach(i => if (knows(res, i)) res = i)
-    (0 until n).foreach(i => if (res != i && (knows(res, i) || !knows(i, res))) return -1)
-    res
+    val candidate = (1 until n).foldLeft(0)((res, i) => if (knows(res, i)) i else res)
+    if ((0 until n).exists(i => candidate != i && (knows(candidate, i) || !knows(i, candidate)))) -1
+    else candidate
   }
 }
