@@ -4,7 +4,7 @@ import scala.collection.mutable
 
 object Solution_267 {
   def generatePalindromes(s: String): List[String] = {
-    var set = mutable.HashSet.empty[String]
+    val set = mutable.HashSet.empty[String]
     val m = Array.fill(128)(0)
     val st = new Array[Char](s.length / 2)
 

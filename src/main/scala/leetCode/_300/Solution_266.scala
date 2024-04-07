@@ -1,11 +1,8 @@
 package leetCode._300
 
-import scala.collection.mutable
+import scala.collection.immutable.HashSet
 
 object Solution_266 {
-  def canPermutePalindrome(s: String): Boolean = {
-    var st = mutable.HashSet.empty[Char]
-    s.indices.foreach(i => if (st.contains(s(i))) st -= s(i) else st += s(i))
-    st.size <= 1
-  }
+  def canPermutePalindrome(s: String): Boolean =
+    s.foldLeft(HashSet.empty[Char])((set, char) => if (set.contains(char)) set - char else set + char).size <= 1
 }
