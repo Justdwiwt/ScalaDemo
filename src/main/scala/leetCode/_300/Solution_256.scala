@@ -8,6 +8,6 @@ object Solution_256 {
       if (i == 0) dp(i)(j) = 0
       else dp(i)(j) = dp(i - 1)((j + 1) % 3).min(dp(i - 1)((j + 2) % 3)) + costs(i - 1)(j)
     }))
-    dp(costs.length)(0).min(dp(costs.length)(1).min(dp(costs.length)(2)))
+    dp(costs.length).head.min(dp(costs.length)(1).min(dp(costs.length)(2)))
   }
 }

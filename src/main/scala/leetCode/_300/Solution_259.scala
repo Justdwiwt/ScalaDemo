@@ -3,20 +3,14 @@ package leetCode._300
 object Solution_259 {
   def threeSumSmaller(nums: Array[Int], target: Int): Int = {
     if (nums.isEmpty) return 0
-    var res = 0
-    val sort = nums.sorted
-    var sum = 0
-    sort.indices.foreach(i => {
-      var l = i + 1
-      var r = sort.length - 1
-      while (l < r) {
-        sum = sort(i) + sort(l) + sort(r)
-        if (sum < target) {
-          res += (r - l)
-          l += 1
-        } else r -= 1
-      }
-    })
-    res
+    val sorted = nums.sorted
+
+    @scala.annotation.tailrec
+    def f(left: Int, right: Int, target: Int, acc: Int): Int =
+      if (left >= right) acc
+      else if (sorted(left) + sorted(right) < target) f(left + 1, right, target, acc + right - left)
+      else f(left, right - 1, target, acc)
+
+    sorted.indices.dropRight(2).foldLeft(0)((count, i) => count + f(i + 1, sorted.length - 1, target - sorted(i), 0))
   }
 }
