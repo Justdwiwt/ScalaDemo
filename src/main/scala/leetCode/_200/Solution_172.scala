@@ -2,6 +2,11 @@ package leetCode._200
 
 object Solution_172 {
   def trailingZeroes(n: Int): Int = {
-    if (n / 5 < 5) n / 5 else n / 5 + trailingZeroes(n / 5)
+    @scala.annotation.tailrec
+    def f(num: Int, acc: Int): Int =
+      if (num < 5) acc
+      else f(num / 5, acc + num / 5)
+
+    f(n, 0)
   }
 }

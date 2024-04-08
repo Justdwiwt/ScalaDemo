@@ -2,13 +2,23 @@ package leetCode._200
 
 object Solution_174 {
   def calculateMinimumHP(dungeon: Array[Array[Int]]): Int = {
-    val dp = Array.ofDim[Int](dungeon.length + 1, dungeon.head.length + 1)
-    (0 to dungeon.length).foreach(i => dp(i) = Array.fill(dp(i).length)(Int.MaxValue))
-    dp(dungeon.length)(dungeon.head.length - 1) = 1
-    dp(dungeon.length - 1)(dungeon.head.length) = 1
-    dungeon.indices.reverse.foreach(i => dungeon.head.indices.reverse.foreach(j => {
-      dp(i)(j) = (dp(i + 1)(j).min(dp(i)(j + 1)) - dungeon(i)(j)).max(1)
-    }))
-    dp.head.head
+    val m = dungeon.length
+    val n = dungeon.head.length
+
+    val v = (m - 1 to 0 by -1).foldLeft(Vector.fill(n)(Int.MaxValue))((downRow, i) => {
+      (n - 1 to 0 by -1).scanLeft(Integer.MAX_VALUE) {
+        (rightCell, j) => {
+          val downCell = downRow(j)
+          val cur = dungeon(i)(j)
+          val nextCell = rightCell.min(downCell)
+          if (nextCell == Integer.MAX_VALUE)
+            if (cur < 0) 1 - cur
+            else 1
+          else 1.max(nextCell - cur)
+        }
+      }.toVector.reverse
+    })
+
+    v.head
   }
 }
