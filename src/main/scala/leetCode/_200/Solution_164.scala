@@ -3,12 +3,10 @@ package leetCode._200
 object Solution_164 {
   def maximumGap(nums: Array[Int]): Int = {
     if (nums.length < 2) return 0
-    val t = nums.sorted
-    var res = t(1) - t(0)
-    (2 until t.length).foreach(i => {
-      val v = t(i) - t(i - 1)
-      res = res.max(v)
-    })
-    res
+    val sorted = nums.sorted
+    sorted.tail.foldLeft(sorted.head, 0)((acc, num) => {
+      val maxDiff = num - acc._1
+      (num, acc._2.max(maxDiff))
+    })._2
   }
 }

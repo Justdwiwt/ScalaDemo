@@ -1,18 +1,19 @@
 package leetCode._200
 
-import scala.collection.mutable.ListBuffer
-
 object Solution_163 {
-  def findMissingRanges(nums: Array[Int], lower: Int, upper: Int): List[String] = {
-    var res = ListBuffer.empty[String]
-    var pre = lower.toLong - 1L
-    nums.indices.foreach(i => {
-      if (nums(i) - pre == 2) res += (pre + 1).toString
-      else if (nums(i) - pre > 2) res += ((pre + 1) + "->" + (nums(i) - 1))
-      pre = nums(i)
+  def findMissingRanges(nums: Array[Int], lower: Int, upper: Int): List[List[Int]] = {
+    val nums2 = (lower - 1) +: nums :+ (upper + 1)
+    val res = nums2.indices.dropRight(1).flatMap(i => {
+      if (nums2(i) >= nums2(i + 1) - 1) None
+      else if (nums2(i) == nums2(i + 1) - 2) Some(List(nums2(i) + 1))
+      else Some(List(nums2(i) + 1, nums2(i + 1) - 1))
     })
-    if (upper - pre == 1) res += (pre + 1).toString
-    else if (upper - pre > 1) res += ((pre + 1) + "->" + upper)
-    res.toList
+
+    res
+      .collect {
+        case List(x) => List(x, x)
+        case List(x, y) => List(x, y)
+      }
+      .toList
   }
 }

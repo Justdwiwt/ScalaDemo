@@ -4,7 +4,7 @@ import scala.collection.mutable
 
 object Solution_159 {
   def lengthOfLongestSubstringTwoDistinct(s: String): Int = {
-    var m = mutable.HashMap.empty[Char, Int]
+    val m = mutable.HashMap.empty[Char, Int]
     var res = 0
     var l = 0
     var r = 0
