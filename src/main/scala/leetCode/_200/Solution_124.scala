@@ -10,18 +10,15 @@ object Solution_124 {
 
       val connectedMaximum = (
         Seq(root.value) ++
-          leftMx.map(v => v._1 + root.value).toSeq ++
-          rightMx.map(v => v._1 + root.value).toSeq
+          leftMx.map(_._1 + root.value).toSeq ++
+          rightMx.map(_._1 + root.value).toSeq
         ).max
 
       val localMaximum = (
         leftMx.map(v => Seq(v._1, v._2)).getOrElse(Seq.empty) ++
           rightMx.map(v => Seq(v._1, v._2)).getOrElse(Seq.empty) ++
           Seq(root.value) ++
-          leftMx
-            .map(_._1)
-            .flatMap(left => rightMx.map(_._1)
-              .map(right => left + right + root.value)).toSeq
+          leftMx.map(_._1).flatMap(left => rightMx.map(_._1).map(left + _ + root.value)).toSeq
         ).max
 
       (connectedMaximum, localMaximum)

@@ -20,6 +20,6 @@ object Solution_123 {
           (profit :: acc, newMx)
       }._1.reverse
 
-      left.zip(right).map({ case (left, right) => left + right }).max
+      left.zip(right).map { case (left, right) => left + right }.max
     }
 }

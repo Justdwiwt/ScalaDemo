@@ -1,30 +1,23 @@
 package leetCode._200
 
 object Solution_127 {
-  def ladderLength(beginWord: String, endWord: String, wordList: List[String]): Int = {
-    var q = scala.collection.immutable.Queue[String](beginWord)
-    var m = Map[String, Int](wordList.toStream.map((_, Integer.MAX_VALUE)): _*) + (beginWord -> 1)
-    while (q.nonEmpty) {
-      val curWord = q.dequeue._1
-      val curDist = m.getOrElse(curWord, Integer.MAX_VALUE)
-      q = q.dequeue._2
-      if (curWord == endWord) return m(endWord)
-      val ch = curWord.toCharArray
-      ('a' to 'z').foreach(t => {
-        (0 until ch.length).foreach(i => {
-          val old = ch(i)
-          ch(i) = t
-          val nextNode = ch./:("")(_ + _)
-          m.get(nextNode).foreach(d => {
-            if (d > curDist + 1) {
-              m = m + (nextNode -> (curDist + 1))
-              q = q.enqueue(nextNode)
-            }
-          })
-          ch(i) = old
-        })
-      })
+  private def getOptions(string: String, words: Set[String]): Set[String] = string
+    .indices
+    .flatMap(i => ('a' to 'z')
+      .filter(_ != string(i))
+      .map(c => string.substring(0, i) + c + string.substring(i + 1, string.length)))
+    .filter(words.contains)
+    .toSet
+
+  @scala.annotation.tailrec
+  private def path(start: Set[String], visited: Set[String], end: String, words: Set[String], count: Int): Option[Int] =
+    if (start.isEmpty) None
+    else if (start.contains(end)) Some(count)
+    else {
+      val next = start.flatMap(getOptions(_, words)) -- visited
+      path(next, visited ++ start, end, words, count + 1)
     }
-    0
-  }
+
+  def ladderLength(beginWord: String, endWord: String, wordList: List[String]): Int =
+    path(Set(beginWord), Set(), endWord, wordList.toSet, 1).getOrElse(0)
 }
