@@ -5,8 +5,8 @@ object Solution_131 {
     if (s.isEmpty) List(List[String]())
     else s
       .zipWithIndex
-      .map({ case (_, i) => s.slice(0, i + 1) })
+      .map { case (_, i) => s.slice(0, i + 1) }
       .filter(pre => pre == pre.reverse)
-      .map(pre => partition(s.slice(pre.length, s.length)).map(rs => pre +: rs))
+      .map(pre => partition(s.slice(pre.length, s.length)).map(pre +: _))
       .reduce((a, b) => a ++ b)
 }
