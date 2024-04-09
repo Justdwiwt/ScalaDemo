@@ -1,17 +1,15 @@
 package leetCode._100
 
+import scala.collection.mutable
+
 object Solution_97 {
   def isInterleave(s1: String, s2: String, s3: String): Boolean = {
-    if (s1.length + s2.length != s3.length) return false
-    val dp = Array.ofDim[Boolean](s1.length + 1, s2.length + 1)
-    (0 to s1.length).foreach(i => {
-      (0 to s2.length).foreach(j => {
-        if (i == 0 && j == 0) dp(i)(j) = true
-        else if (i == 0) dp(i)(j) = dp(i)(j - 1) && (s2(j - 1) == s3(i + j - 1))
-        else if (j == 0) dp(i)(j) = dp(i - 1)(j) && (s1(i - 1) == s3(i + j - 1))
-        else dp(i)(j) = (dp(i - 1)(j) && (s1(i - 1) == s3(i + j - 1))) || (dp(i)(j - 1) && (s2(j - 1) == s3(i + j - 1)))
-      })
-    })
-    dp(s1.length)(s2.length)
+    def f(i: Int, j: Int, k: Int, dp: mutable.HashMap[(Int, Int), Boolean]): Boolean = (i == s1.length, j == s2.length) match {
+      case (true, _) => s2.substring(j) == s3.substring(k)
+      case (_, true) => s1.substring(i) == s3.substring(k)
+      case _ => dp.getOrElseUpdate((i, j), ((s3(k) == s1(i)) && f(i + 1, j, k + 1, dp)) || ((s3(k) == s2(j)) && f(i, j + 1, k + 1, dp)))
+    }
+
+    (s1.length + s2.length == s3.length) && f(0, 0, 0, mutable.HashMap.empty[(Int, Int), Boolean])
   }
 }
