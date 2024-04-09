@@ -1,20 +1,19 @@
 package leetCode._100
 
+import scala.collection.mutable
+
 object Solution_44 {
   def isMatch(s: String, p: String): Boolean = {
-    val arr = f(s, p)
-    (1 to s.length).foreach(i => (1 to p.length).foreach(j => p(j - 1) match {
-      case c if c == s(i - 1) || c == '?' => arr(i)(j) = arr(i - 1)(j - 1)
-      case '*' => arr(i)(j) = arr(i - 1)(j - 1) || arr(i - 1)(j) || arr(i)(j - 1)
-      case _ =>
-    }))
-    arr(s.length)(p.length)
-  }
+    val mem = mutable.Map.empty[(Int, Int), Boolean]
 
-  def f(s: String, p: String): Array[Array[Boolean]] = {
-    val arr = Array.fill(s.length + 1)(Array.ofDim[Boolean](p.length + 1))
-    arr(0)(0) = true
-    p.indices.withFilter(i => p(i) == '*').foreach(i => arr(0)(i + 1) = arr(0)(i))
-    arr
+    def dfs(i: Int, j: Int): Boolean = mem.getOrElseUpdate((i, j), {
+      if (i == s.length) j == p.length || p.substring(j).forall(_ == '*')
+      else if (j == p.length) i == s.length
+      else if (p(j) == '?') dfs(i + 1, j + 1)
+      else if (p(j) == '*') dfs(i + 1, j) || dfs(i, j + 1) || dfs(i + 1, j + 1)
+      else s(i) == p(j) && dfs(i + 1, j + 1)
+    })
+
+    dfs(i = 0, j = 0)
   }
 }

@@ -6,6 +6,6 @@ object Solution_28 {
     else haystack
       .sliding(needle.length)
       .zipWithIndex
-      .collectFirst({ case (`needle`, y) => y })
+      .collectFirst { case (`needle`, y) => y }
       .getOrElse(-1)
 }
