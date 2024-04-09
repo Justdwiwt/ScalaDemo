@@ -14,10 +14,10 @@ object Solution_85 {
       else if (col == matrix.head.length) check(row + 1, 0, Nil, maxArea)
       else if (matrix(row)(col) == ZERO) check(row, col + 1, Nil, maxArea)
       else {
-        val height = (row until matrix.length).find(r1 => matrix(r1)(col) == ZERO).getOrElse(matrix.length) - row
+        val height = (row until matrix.length).find(matrix(_)(col) == ZERO).getOrElse(matrix.length) - row
         val heights = height +: heights0
         val area = largestRectangleArea(heights.reverse)
-        check(row, col + 1, heights, area max maxArea)
+        check(row, col + 1, heights, area.max(maxArea))
       }
     }
 

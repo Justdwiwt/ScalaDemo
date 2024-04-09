@@ -12,7 +12,7 @@ object Solution_92 {
     val (start, body, end) = (diff.slice(0, m - 1), diff.slice(m - 1, n), diff.slice(n, diff.length))
     val arr = (start ++ body.reverse ++ end).map(new ListNode(_))
     val res = arr.head
-    arr.reduceLeft({ (x, y) => x.next = y; y })
+    arr.reduceLeft { (x, y) => x.next = y; y }
     res
   }
 }
