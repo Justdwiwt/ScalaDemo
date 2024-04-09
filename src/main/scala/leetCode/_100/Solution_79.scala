@@ -2,19 +2,13 @@ package leetCode._100
 
 object Solution_79 {
   def exist(board: Array[Array[Char]], word: String): Boolean = {
+    lazy val wordSeq = word.toList
 
-    def dfs(y: Int, x: Int, pos: Int): Boolean =
-      if (pos == word.length) true
-      else if (y < 0 || y == board.length || x < 0 || x == board(0).length || board(y)(x) != word(pos)) false
-      else {
-        val char = board(y)(x)
-        board(y)(x) = ' '
-        val exist = dfs(y, x + 1, pos + 1) || dfs(y, x - 1, pos + 1) || dfs(y + 1, x, pos + 1) || dfs(y - 1, x, pos + 1)
-        board(y)(x) = char
-        exist
-      }
+    def f(x: Int, y: Int, s: Seq[Char], visited: Set[(Int, Int)]): Boolean =
+      if (s.isEmpty) true
+      else if (visited.contains((x, y)) || x < 0 || y < 0 || x >= board.length || y >= board.head.length || s.head != board(x)(y)) false
+      else Seq((1, 0), (-1, 0), (0, 1), (0, -1)).exists { case (a, b) => f(x + a, y + b, s.tail, visited + ((x, y))) }
 
-    board.indices.foreach(y => board.head.indices.foreach(x => if (dfs(y, x, 0)) return true))
-    false
+    board.indices.exists(x => board.head.indices.exists(f(x, _, wordSeq, Set())))
   }
 }
