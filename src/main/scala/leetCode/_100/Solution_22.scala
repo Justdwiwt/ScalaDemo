@@ -7,6 +7,6 @@ object Solution_22 {
       .toList
       .flatMap(m => generateParenthesis(m)
         .flatMap(x => generateParenthesis(n - 1 - m)
-          .map(y => "(" ++ x ++ ")" ++ y)))
+          .map("(" ++ x ++ ")" ++ _)))
   }
 }

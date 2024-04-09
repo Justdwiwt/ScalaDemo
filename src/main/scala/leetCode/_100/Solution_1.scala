@@ -2,7 +2,15 @@ package leetCode._100
 
 object Solution_1 {
   def twoSum(nums: Array[Int], target: Int): Array[Int] = {
-    nums.zipWithIndex./:(Map[Int, Int]()) { case (m, p@(x, j)) => m.get(target - x).map(i => return Array(i, j)).getOrElse(m + p) }
-    Array(0, 0)
+    @scala.annotation.tailrec
+    def f(needed: Map[Int, Int], cur: Int): Array[Int] = {
+      val n = nums(cur)
+      needed.get(n) match {
+        case Some(idx) => Array(idx, cur)
+        case None => f(needed + (target - n -> cur), cur + 1)
+      }
+    }
+
+    f(Map(), 0)
   }
 }
