@@ -5,7 +5,7 @@ object Solution_68 {
     format(words.toList./:(List[String]()) { case (acc, s) => acc ++ s.trim.split("\\s+").toList }, maxWidth, Nil, Nil)
 
   @scala.annotation.tailrec
-  def format(words: List[String], limit: Int, acc: List[String], tmp: List[String]): List[String] = words match {
+  private def format(words: List[String], limit: Int, acc: List[String], tmp: List[String]): List[String] = words match {
     case Nil if tmp.isEmpty => acc
     case Nil =>
       val tmpStr = tmp.mkString(" ")
@@ -14,7 +14,7 @@ object Solution_68 {
     case w :: tailWords => format(tailWords, limit, acc :+ justify(limit, tmp).mkString, List(w))
   }
 
-  def justify(limit: Int, tmp: List[String]): List[String] = {
+  private def justify(limit: Int, tmp: List[String]): List[String] = {
     val spacesAvail = limit - tmp.map(_.length).sum
     if (tmp.length <= 1) tmp :+ fillSpace(spacesAvail)
     else {
@@ -26,7 +26,7 @@ object Solution_68 {
   }
 
   @scala.annotation.tailrec
-  def justify(limit: Int, tmp: List[String], acc: List[String], baseGap: Int, remainders: Int): List[String] = tmp match {
+  private def justify(limit: Int, tmp: List[String], acc: List[String], baseGap: Int, remainders: Int): List[String] = tmp match {
     case Nil => throw new Exception("never happen")
     case word :: Nil => acc :+ word
     case word :: tail =>
@@ -34,5 +34,5 @@ object Solution_68 {
       justify(limit, tail, acc :+ word :+ fillSpace(spaces), baseGap, if (remainders > 0) remainders - 1 else 0)
   }
 
-  def fillSpace(n: Int): String = List.fill(n)(" ").mkString
+  private def fillSpace(n: Int): String = List.fill(n)(" ").mkString
 }

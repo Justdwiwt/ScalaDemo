@@ -7,8 +7,8 @@ object Solution_64 {
       (1 to m + n).foreach(k => (0.max((m - 1) - k) to (m - 1).min(m + n - k - 2)).foreach(i => {
         val j = m + n - i - k - 2
         dp(i)(j) = grid(i)(j) + Seq((i + 1, j), (i, j + 1))
-          .collect({ case (x, y) if dp.isDefinedAt(x) && dp(x).isDefinedAt(y) => dp(x)(y) }).min
+          .collect { case (x, y) if dp.isDefinedAt(x) && dp(x).isDefinedAt(y) => dp(x)(y) }.min
       }))
-      dp(0)(0)
+      dp.head.head
   }
 }

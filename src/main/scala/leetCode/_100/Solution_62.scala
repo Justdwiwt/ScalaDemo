@@ -1,9 +1,6 @@
 package leetCode._100
 
 object Solution_62 {
-  def uniquePaths(m: Int, n: Int): Int = {
-    val dp = Array.fill(n)(1)
-    (1 until m).foreach(_ => (1 until n).foreach(j => dp(j) += dp(j - 1)))
-    dp(n - 1)
-  }
+  def uniquePaths(m: Int, n: Int): Int =
+    (0 until n - 1).foldLeft(Seq.fill(m)(1))((acc, _) => acc.scanLeft(0)(_ + _)).last
 }
