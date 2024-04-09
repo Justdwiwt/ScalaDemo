@@ -5,9 +5,8 @@ object Solution_60 {
     f((1 until n).scan(1)(_ * _).tail.reverse, 1 to n, k - 1, "")
 
   @scala.annotation.tailrec
-  def f(seq: Seq[Int], idxSq: IndexedSeq[Int], k: Int, permutation: String): String = seq match {
+  private def f(seq: Seq[Int], idxSq: IndexedSeq[Int], k: Int, permutation: String): String = seq match {
     case Seq() => permutation + idxSq.head
-    case Seq(head, tail@_*) =>
-      f(tail, idxSq.filterNot(_ == idxSq(k / head)), k % head, permutation + idxSq(k / head))
+    case Seq(head, tail@_*) => f(tail, idxSq.filterNot(_ == idxSq(k / head)), k % head, permutation + idxSq(k / head))
   }
 }

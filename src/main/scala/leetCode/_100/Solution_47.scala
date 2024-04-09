@@ -12,7 +12,7 @@ object Solution_47 {
       .toList
       .map(num => (num, nums.diff(Seq(num)).toList))
       .distinct
-      .map({ case (i, j) => val pre = permuteUnique(j.toArray); ((i, j), pre) })
-      .map({ case ((i, j), pre) => val res = pre.map(List(i) ++ _); ((i, j), pre, res) })
-      .flatMap({ case ((_, _), _, res) => res })
+      .map { case (i, j) => val pre = permuteUnique(j.toArray); ((i, j), pre) }
+      .map { case ((i, j), pre) => val res = pre.map(List(i) ++ _); ((i, j), pre, res) }
+      .flatMap { case ((_, _), _, res) => res }
 }
