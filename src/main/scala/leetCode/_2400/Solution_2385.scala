@@ -2,37 +2,30 @@ package leetCode._2400
 
 import leetCode.TreeNode
 
-import scala.collection.mutable
-
 object Solution_2385 {
   def amountOfTime(root: TreeNode, start: Int): Int = {
-    val adjacent = buildAdjacent(root)
-    val visited = scala.collection.mutable.Set(start)
-    var visit = List(start)
-    var minutes = -1
-    while (visit.nonEmpty) {
-      visit = visit.flatMap(adjacent(_)).filter(visited.add)
-      minutes += 1
-    }
-    minutes
-  }
+    def getConnections(root: TreeNode): Map[Int, Set[Int]] = {
+      @scala.annotation.tailrec
+      def g(rem: List[TreeNode], m: Map[Int, Set[Int]]): Map[Int, Set[Int]] = rem match {
+        case Nil => m
+        case h :: t =>
+          val children = List(h.left, h.right).filter(_ != null)
+          val m1 = children.map(n => (n.value, Set(n.left, n.right).filter(_ != null).map(_.value) + h.value)).toMap
+          g(children ++ t, m ++ m1)
+      }
 
-  def buildAdjacent(root: TreeNode): mutable.Map[Int, List[Int]] = {
-    val adjacent = scala.collection.mutable.Map.empty[Int, List[Int]].withDefaultValue(List.empty)
-
-    def dfs(parent: TreeNode): Unit = {
-      def go(child: TreeNode): Unit =
-        if (child != null) {
-          adjacent(parent.value) ::= child.value
-          adjacent(child.value) ::= parent.value
-          dfs(child)
-        }
-
-      go(parent.left)
-      go(parent.right)
+      g(List(root), Map.empty) ++ Map(root.value -> Set(root.left, root.right).filter(_ != null).map(_.value))
     }
 
-    dfs(root)
-    adjacent
+    @scala.annotation.tailrec
+    def f(current: Set[Int], visited: Set[Int], connections: Map[Int, Set[Int]], acc: Int = 0): Int =
+      if (current.isEmpty) acc
+      else {
+        val currUpd = current.flatMap(connections).filter(!visited.contains(_))
+        f(currUpd, visited ++ current, connections, acc + 1)
+      }
+
+    val connections = getConnections(root)
+    f(connections(start), Set(start), connections)
   }
 }
