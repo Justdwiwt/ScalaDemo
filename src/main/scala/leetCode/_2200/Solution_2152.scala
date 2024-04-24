@@ -1,23 +1,16 @@
 package leetCode._2200
 
-import scala.collection.mutable.ListBuffer
-
 object Solution_2152 {
   def minimumLines(points: Array[Array[Int]]): Int = {
     val n = points.length
     if (n <= 2) 1
     else {
-      var res = n
-      (0 until n).foreach(i => (i + 1 until n).foreach(j => {
-        val l = ListBuffer.empty[Array[Int]]
-        (0 until n).foreach(k => if (k != i && k != j && !valid(points, i, j, k)) l += Array(points(k).head, points(k)(1)))
-        if (l.isEmpty) res = 1
-        else if (l.length == 1) res = res.min(2)
-        else {
-          val minLines = minimumLines(l.toArray)
-          res = res.min(1 + minLines)
-        }
-      }))
+      val res = points.indices.flatMap(i => (i + 1 until n).map(j => {
+        val l = points.indices.filter(k => k != i && k != j && !valid(points, i, j, k)).map(k => Array(points(k).head, points(k)(1)))
+        if (l.isEmpty) 1
+        else if (l.length == 1) 2
+        else 1 + minimumLines(l.toArray)
+      })).min
       res
     }
   }
