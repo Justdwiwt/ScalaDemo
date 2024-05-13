@@ -1,20 +1,44 @@
 package leetCode._3200
 
-import scala.collection.mutable
+import java.util
 
 object Solution_3113 {
-  // fixme: case 888/889 data overflow
-  def numberOfSubarrays(nums: Array[Int]): Int = {
-    var res = BigInt(nums.length)
-    val st = mutable.Stack[(Int, BigInt)]((Int.MaxValue, 0))
-    nums.foreach(x => {
-      while (x > st.top._1) st.pop()
-      if (x == st.top._1) {
-        val (value, count) = st.pop()
-        res += count
-        st.push((value, count + 1))
-      } else st.push((x, 1))
+  def numberOfSubarrays(nums: Array[Int]): Long = {
+    val n = nums.length
+    val count = Array.ofDim[Int](n)
+    val queue = new util.ArrayDeque[Int]()
+    nums.indices.foreach(i => {
+      val currentValue = nums(i)
+      var previousIndex = -1
+      while (!queue.isEmpty && currentValue > nums(queue.getLast)) {
+        val pollIndex = queue.removeLast()
+        if (previousIndex == -1) {
+          count(pollIndex) = 1
+          previousIndex = pollIndex
+        } else {
+          if (nums(pollIndex) == nums(previousIndex)) {
+            count(pollIndex) = count(previousIndex) + 1
+            previousIndex = pollIndex
+          } else {
+            count(pollIndex) = 1
+            previousIndex = pollIndex
+          }
+        }
+      }
+      queue.addLast(i)
     })
-    res.toInt
+
+    var idx = -1
+    while (!queue.isEmpty) {
+      val pollIndex = queue.removeLast()
+      if (idx == -1) count(pollIndex) = 1
+      else {
+        if (nums(pollIndex) == nums(idx)) count(pollIndex) = count(idx) + 1
+        else count(pollIndex) = 1
+      }
+      idx = pollIndex
+    }
+
+    nums.indices.foldLeft(0L)((acc, i) => acc + count(i))
   }
 }
