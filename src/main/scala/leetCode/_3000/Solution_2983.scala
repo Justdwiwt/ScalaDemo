@@ -33,16 +33,16 @@ object Solution_2983 {
 
     def check(l1: Int, r1: Int, l2: Int, r2: Int, sumS: Array[Array[Int]], sumT: Array[Array[Int]], sumNe: Array[Int]): Boolean = {
       if (sumNe(l1) > 0 || sumNe.last - sumNe(r1.max(r2) + 1) > 0) return false
-      if (r2 <= r1) return count(sumS, l1, r1) sameElements count(sumT, l1, r1)
+      if (r2 <= r1) return count(sumS, l1, r1).sameElements(count(sumT, l1, r1))
       if (r1 < l2) return sumNe(l2) - sumNe(r1 + 1) <= 0 &&
-        (count(sumS, l1, r1) sameElements count(sumT, l1, r1)) &&
-        (count(sumS, l2, r2) sameElements count(sumT, l2, r2))
+        count(sumS, l1, r1).sameElements(count(sumT, l1, r1)) &&
+        count(sumS, l2, r2).sameElements(count(sumT, l2, r2))
 
       val s1Opt = subtract(count(sumS, l1, r1), count(sumT, l1, l2 - 1))
       val s2Opt = subtract(count(sumT, l2, r2), count(sumS, r1 + 1, r2))
 
       (s1Opt, s2Opt) match {
-        case (Some(s1), Some(s2)) => s1 sameElements s2
+        case (Some(s1), Some(s2)) => s1.sameElements(s2)
         case _ => false
       }
     }
