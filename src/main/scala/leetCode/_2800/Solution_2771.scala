@@ -13,8 +13,8 @@ object Solution_2771 {
         val prevTarget = if (pre == 1) nums1(i - 1) else nums2(i - 1)
         Seq((nums1(i), 1), (nums2(i), 2))
           .collect { case (n, arr) if n >= prevTarget => 1 + dfs(i + 1, pre = arr) }
-          .max
-        //          .getOrElse(0)
+          .reduceOption(_.max(_))
+          .getOrElse(0)
       })
 
     dfs(0, 0)
