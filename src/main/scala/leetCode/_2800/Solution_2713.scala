@@ -1,24 +1,30 @@
 package leetCode._2800
 
 import scala.collection.mutable
+import scala.collection.mutable.ArrayBuffer
 
 object Solution_2713 {
-  def maxIncreasingCells(mat: Array[Array[Int]]): Int = {
-    val (m, n) = (mat.length, mat.head.length)
+  def maxIncreasingCells(M: Array[Array[Int]]): Int = {
+    val m = M.length
+    val n = M.head.length
 
-    val tm = mutable.TreeMap.empty[Int, Seq[(Int, Int)]].withDefaultValue(Seq.empty)
-    mat.indices.flatMap(i => mat.head.indices.map(j => tm.update(mat(i)(j), tm(mat(i)(j)) :+ (i, j))))
+    val book = mutable.HashMap.empty[Int, ArrayBuffer[(Int, Int)]]
 
-    val dp = Array.fill(m, n)(0)
-    val res = Array.fill(m + n)(0)
-    tm.foreach { case (_, pos) =>
-      pos.foreach { case (i, j) => dp(i)(j) = res(i).max(res(m + j)) + 1 }
-      pos.foreach { case (i, j) =>
-        res(m + j) = res(m + j).max(dp(i)(j))
-        res(i) = res(i).max(dp(i)(j))
+    M.indices.foreach(i => M.head.indices.foreach(j => {
+      val value = M(i)(j)
+      book.getOrElseUpdate(value, ArrayBuffer[(Int, Int)]()) += ((i, j))
+    }))
+
+    val R = Array.fill(m)(0)
+    val C = Array.fill(n)(0)
+
+    book.keys.toArray.sorted.foreach(x => {
+      val mem = book(x).map { case (i, j) => (i, j) -> (1 + R(i).max(C(j))) }.toMap
+      mem.foreach { case ((i, j), v) =>
+        R(i) = v.max(R(i))
+        C(j) = v.max(C(j))
       }
-    }
-
-    res.max
+    })
+    (R ++ C).max
   }
 }
