@@ -4,20 +4,35 @@ import scala.collection.mutable
 
 object Solution_2246 {
   def longestPath(parent: Array[Int], s: String): Int = {
-    val childMap = mutable.Map.empty[Int, List[Int]].withDefaultValue(List.empty)
-    parent.indices.foreach(i => childMap(parent(i)) ::= i)
+    var res = 0
+    val n = parent.length
+    val degree = Array.fill(n)(0)
+    val bests = Array.fill(n)(0)
+    val queue = mutable.Queue.empty[Int]
 
-    def f(nodeIndex: Int): (Int, Int) = {
-      val nodeChar = s(nodeIndex)
-      childMap.get(nodeIndex) match {
-        case None => (1, 1)
-        case Some(childIndices) =>
-          val (closed, open) = childIndices.map(f).unzip
-          val unitable = open.zip(childIndices).filter(pair => s(pair._2) != nodeChar).map(_._1).sorted.reverse
-          (closed.max.max(unitable.take(2).sum + 1), unitable.take(1).sum + 1)
+    parent.indices.drop(1).foreach(i => degree(parent(i)) += 1)
+
+    parent.indices.foreach(i => if (degree(i) == 0) {
+      queue.enqueue(i)
+      res = 1
+    })
+
+    while (queue.nonEmpty) {
+      val index = queue.dequeue()
+      val v = bests(index) + 1
+      val p = parent(index)
+
+      if (p != -1) {
+        degree(p) -= 1
+        if (s.charAt(p) != s.charAt(index)) {
+          res = res.max(bests(p) + v + 1)
+          bests(p) = v.max(bests(p))
+        }
+
+        if (degree(p) == 0) queue.enqueue(p)
       }
     }
 
-    f(0)._1
+    res
   }
 }
