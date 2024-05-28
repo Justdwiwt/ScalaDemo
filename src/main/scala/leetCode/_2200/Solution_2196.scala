@@ -2,19 +2,32 @@ package leetCode._2200
 
 import leetCode.TreeNode
 
+import scala.collection.mutable
+
 object Solution_2196 {
   def createBinaryTree(descriptions: Array[Array[Int]]): TreeNode = {
-    val (nodes, children) = descriptions./:(Map.empty[Int, TreeNode], Set.empty[Int]) {
-      case ((nodes, children), Array(parent, child, isLeft)) =>
-        val newNodes = nodes
-          .updated(parent, nodes.getOrElse(parent, new TreeNode(parent)))
-          .updated(child, nodes.getOrElse(child, new TreeNode(child)))
+    val map = mutable.Map.empty[Int, TreeNode]
+    val childFlag = Array.fill(100001)(0)
 
-        if (isLeft == 1) newNodes(parent).left = newNodes(child)
-        else newNodes(parent).right = newNodes(child)
+    descriptions.foreach(description => {
+      val parentVal = description.head
+      val childVal = description(1)
+      val isLeft = description(2)
 
-        (newNodes, children + child)
-    }
-    nodes(nodes.keySet.diff(children).head)
+      if (!map.contains(parentVal)) map(parentVal) = new TreeNode(parentVal)
+
+      if (!map.contains(childVal)) map(childVal) = new TreeNode(childVal)
+
+      childFlag(childVal) = 1
+
+      val parent = map(parentVal)
+      val child = map(childVal)
+
+      if (isLeft == 1) parent.left = child
+      else parent.right = child
+    })
+
+    val rootVal = map.keys.find(childFlag(_) == 0).getOrElse(-1)
+    map(rootVal)
   }
 }

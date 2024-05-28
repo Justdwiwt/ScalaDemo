@@ -1,23 +1,45 @@
 package leetCode._2200
 
-import leetCode.Common.neighbours
-
-import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 object Solution_2146 {
-  def highestRankedKItems(grid: Array[Array[Int]], pricing: Array[Int], start: Array[Int], k: Int): List[List[Int]] = {
-    val toVisit = mutable.Queue((start.head, start.last, 0))
-    val visited = mutable.Set((start.head, start.last))
-    val items = mutable.ListBuffer.empty[(Int, Int, Int, Int)]
+  private val dirs = Array(Array(-1, 0), Array(1, 0), Array(0, -1), Array(0, 1))
 
-    while (toVisit.nonEmpty) {
-      val (x, y, distance) = toVisit.dequeue
-      if (grid(x)(y) >= pricing.head && grid(x)(y) <= pricing.last) items.append((distance, grid(x)(y), x, y))
-      neighbours(x, y, grid).foreach { case (nx, ny) =>
-        if (!visited.contains((nx, ny)) && grid(nx)(ny) != 0) visited.add((nx, ny))
-        toVisit.enqueue((nx, ny, distance + 1))
+  def highestRankedKItems(grid: Array[Array[Int]], pricing: Array[Int], start: Array[Int], k: Int): List[List[Int]] = {
+    val ans = ListBuffer.empty[List[Int]]
+    val m = grid.length
+    val n = grid.head.length
+    val vis = Array.ofDim[Boolean](m, n)
+    vis(start.head)(start(1)) = true
+    var q = List(start)
+    var found = false
+    while (q.nonEmpty && !found) {
+      q = q.sortWith { (a, b) =>
+        val pa = grid(a.head)(a(1))
+        val pb = grid(b.head)(b(1))
+        if (pa != pb) pa < pb
+        else if (a.head != b.head) a.head < b.head
+        else a(1) < b(1)
+      }
+      q.foreach(p => {
+        val (x, y) = (p.head, p(1))
+        if (pricing.head <= grid(x)(y) && grid(x)(y) <= pricing(1)) {
+          ans += List(x, y)
+          if (ans.size == k) found = true
+        }
+      })
+      if (!found) {
+        val tmp = ListBuffer.empty[List[Int]]
+        q.foreach(p => dirs.foreach(d => {
+          val (x, y) = (p.head + d.head, p(1) + d(1))
+          if (0 <= x && x < m && 0 <= y && y < n && !vis(x)(y) && grid(x)(y) > 0) {
+            vis(x)(y) = true
+            tmp += List(x, y)
+          }
+        }))
+        q = tmp.map(_.toArray).toList
       }
     }
-    items.sorted.take(k).map { case (_, _, x, y) => List(x, y) }.toList
+    ans.toList.take(k)
   }
 }
