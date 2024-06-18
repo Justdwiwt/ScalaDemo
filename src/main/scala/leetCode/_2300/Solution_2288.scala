@@ -8,7 +8,7 @@ object Solution_2288 {
         val rest = word.substring(1)
         if (rest.forall(_.isDigit)) {
           val nv = rest.toDouble - (rest.toDouble * (discount.toDouble / 100.0))
-          "$" ++ nv.formatted("%1.2f")
+          "$" ++ "%1.2f".format(nv)
         }
         else word
       }
