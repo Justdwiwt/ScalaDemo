@@ -1,21 +1,19 @@
 package leetCode._1000
 
 object Solution_995 {
-  def minKBitFlips(a: Array[Int], k: Int): Int = {
+  def minKBitFlips(nums: Array[Int], k: Int): Int = {
     @scala.annotation.tailrec
-    def minKBitFlips(i: Int, numFlips: Int): Int = {
-      if (a.length - i <= k)
-        if ((i until a.length).forall(a(_) == 0)) numFlips + 1
-        else if ((i until a.length).forall(a(_) == 1)) numFlips
-        else -1
-      else if (a(i) == 0) {
-        f(a, i, i + k)
-        minKBitFlips(i + 1, numFlips + 1)
-      } else minKBitFlips(i + 1, numFlips)
-    }
+    def f(index: Int, flipped: Int, res: Int, isFlipped: Vector[Int]): (Int, Boolean) =
+      if (index >= nums.length) (res, true)
+      else {
+        val newFlipped = if (index >= k) flipped ^ isFlipped(index - k) else flipped
+        if (newFlipped == nums(index)) {
+          if (index + k > nums.length) (res, false)
+          else f(index + 1, newFlipped ^ 1, res + 1, isFlipped.updated(index, 1))
+        } else f(index + 1, newFlipped, res, isFlipped)
+      }
 
-    minKBitFlips(0, 0)
+    val (res, valid) = f(0, 0, 0, Vector.fill(nums.length)(0))
+    if (valid) res else -1
   }
-
-  def f(bits: Array[Int], start: Int, end: Int): Unit = (start until end).foreach(i => bits(i) = 1 - bits(i))
 }
