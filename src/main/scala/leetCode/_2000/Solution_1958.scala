@@ -1,7 +1,7 @@
 package leetCode._2000
 
 object Solution_1958 {
-  val dirs: Array[Array[Int]] = Array[Array[Int]](Array(-1, -1), Array(-1, 0), Array(-1, 1), Array(0, 1), Array(1, 1), Array(1, 0), Array(1, -1), Array(0, -1))
+  val dirs: Array[Array[Int]] = Array(Array(-1, -1), Array(-1, 0), Array(-1, 1), Array(0, 1), Array(1, 1), Array(1, 0), Array(1, -1), Array(0, -1))
 
   def checkMove(board: Array[Array[Char]], rMove: Int, cMove: Int, color: Char): Boolean = {
     var m = 0
@@ -26,8 +26,8 @@ object Solution_1958 {
     n = board.head.length
 
     val opColor = if (color == 'W') 'B' else 'W'
-    dirs.foreach(dir => if (f(board, rMove, cMove, dir(0), dir(1), color, opColor)) return true)
-
-    false
+    var res = false
+    dirs.foreach(dir => if (f(board, rMove, cMove, dir(0), dir(1), color, opColor)) res = true)
+    res
   }
 }
