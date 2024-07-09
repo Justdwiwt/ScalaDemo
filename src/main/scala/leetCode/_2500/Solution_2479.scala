@@ -1,66 +1,87 @@
 package leetCode._2500
 
-import scala.collection.mutable.ListBuffer
+import scala.collection.mutable.ArrayBuffer
+import scala.util.control.Breaks._
 
 object Solution_2479 {
-  // fixme: wrong answer
-  case class TrieNode(child: Array[TrieNode] = Array.fill(2)(null))
 
-  val root: TrieNode = TrieNode()
-  val bits: Int = 46
-  var s: Array[Long] = _
-  var res: Long = 0
-  val adj: ListBuffer[ListBuffer[Int]] = ListBuffer.fill(100)(ListBuffer.empty)
-
-  private def add(value: Long): Unit = {
-    var node: TrieNode = root
-    (bits to 0 by -1).foreach(i => {
-      val cur: Int = ((value >> i) & 1).toInt
-      if (node.child(cur) == null) node.child(cur) = TrieNode()
-      node = node.child(cur)
-    })
+  class TrieNode {
+    var isEnd: Boolean = false
+    val son: Array[TrieNode] = Array.fill(2)(null)
   }
 
-  private def query(value: Long): Long = {
-    var node: TrieNode = root
-    var res: Long = 0
-    var i = bits
-    while (i >= 0) {
-      val cur: Int = ((value >> i) & 1).toInt
-      if (node.child(1 - cur) != null) {
-        res += (1L << i)
-        node = node.child(1 - cur)
+  object Solution {
+    private type Trie = TrieNode
+
+    def maxXor(n: Int, edges: Array[Array[Int]], values: Array[Int]): Long = {
+      val g = Array.fill(n)(new ArrayBuffer[Int]())
+      edges.foreach(e => {
+        val a = e(0)
+        val b = e(1)
+        g(a).append(b)
+        g(b).append(a)
+      })
+
+      val f = Array.fill(n)(0L)
+      val son = Array.fill(n)(0)
+
+      def check(u: Int, fa: Int): Unit = {
+        f(u) += values(u)
+        for (ne <- g(u)) {
+          if (ne != fa) {
+            check(ne, u)
+            f(u) += f(ne)
+            son(u) += 1
+          }
+        }
       }
-      else if (node.child(cur) != null) node = node.child(cur)
-      else i = -1
-      i -= 1
+
+      check(0, -1)
+      var ok = true
+      (0 until n).foreach(i => if (son(i) > 1) ok = false)
+      if (ok) return 0
+
+      var ans = 0L
+      val root = new Trie
+
+      def insert(x: Long): Unit = {
+        var p = root
+        for (i <- 45 to 0 by -1) {
+          val c = (x >> i & 1).toInt
+          if (p.son(c) == null) p.son(c) = new Trie
+          p = p.son(c)
+        }
+        p.isEnd = true
+      }
+
+      def query(x: Long): Long = {
+        var res = 0L
+        var p = root
+        breakable {
+          (45 to 0 by -1).foreach(i => {
+            val c = (x >> i & 1).toInt
+            if (p.son(1 - c) != null) {
+              res += 1L << i
+              p = p.son(1 - c)
+            } else if (p.son(c) != null) p = p.son(c)
+            else {
+              res = -1
+              break()
+            }
+          })
+        }
+        res
+      }
+
+      def dfs(u: Int, fa: Int): Unit = {
+        val t = query(f(u))
+        ans = math.max(ans, t)
+        g(u).foreach(ne => if (ne != fa) dfs(ne, u))
+        insert(f(u))
+      }
+
+      dfs(0, -1)
+      ans
     }
-    res
-  }
-
-  private def dfs(node: Int, prev: Int, values: Array[Int]): Long = {
-    var result: Long = values(node)
-    adj(node).foreach(e => if (e != prev) result += dfs(e, node, values))
-    s(node) = result
-    result
-  }
-
-  private def process(node: Int, prev: Int): Unit = {
-    val ans: Long = query(s(node))
-    if (ans > res) res = ans
-    adj(node).foreach(next => if (next != prev) process(next, node))
-    add(s(node))
-  }
-
-  def maxXor(n: Int, edges: Array[Array[Int]], values: Array[Int]): Long = {
-    s = Array.fill(n)(0)
-    (0 until n).foreach(adj(_) = ListBuffer.empty)
-    edges.foreach(edge => {
-      adj(edge.head).append(edge(1))
-      adj(edge(1)).append(edge.head)
-    })
-    dfs(0, -1, values)
-    process(0, -1)
-    res
   }
 }
