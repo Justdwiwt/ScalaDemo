@@ -1,44 +1,71 @@
 package leetCode._2500
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
+import scala.util.control.Breaks._
 
 object Solution_2440 {
   def componentValue(nums: Array[Int], edges: Array[Array[Int]]): Int = {
-    val (sum, n) = (nums.sum, nums.length)
+    val n = nums.length
     if (n == 1) return 0
-    val graph = mutable.Map.empty[Int, mutable.ListBuffer[Int]]
-    val deg = Array.fill(n)(0)
-    edges.foreach { case Array(a, b) =>
-      graph.getOrElseUpdate(a, mutable.ListBuffer.empty).append(b)
-      graph.getOrElseUpdate(b, mutable.ListBuffer.empty).append(a)
-      deg(a) += 1
-      deg(b) += 1
+
+    val v = Array.fill(n)(false)
+    val map = edges.foldLeft(mutable.Map[Int, ListBuffer[Int]]()) {
+      case (m, Array(a, b)) =>
+        m.getOrElseUpdate(a, ListBuffer()) += b
+        m.getOrElseUpdate(b, ListBuffer()) += a
+        m
     }
 
-    def bfs(target: Int): Boolean = {
-      val values = Array(nums: _*)
-      val degree = Array(deg: _*)
-      val toVisit = mutable.Queue(nums.indices.filter(n => degree(n) == 1): _*)
-      while (toVisit.nonEmpty) {
-        val curr = toVisit.dequeue()
-        if (degree(curr) != 0) degree(curr) = 0
-        if (values(curr) == target) graph(curr).foreach(next => {
-          degree(next) -= 1
-          if (degree(next) == 0) return values(next) == target
-          else if (degree(next) == 1) toVisit += next
-        })
-        else graph(curr).foreach(next => {
-          if (degree(next) > 0) degree(next) -= 1
-          values(next) += values(curr)
-          if (degree(next) == 0) return values(next) == target
-          else if (degree(next) == 1) toVisit += next
-        })
-      }
-      false
-    }
+    val sum = nums.sum
+    val min = nums.min
+    val list = (min to math.sqrt(sum).toInt).flatMap(i => if (sum % i == 0) Seq(i, sum / i) else Seq()).sorted
 
-    (1 until sum)
-      .collectFirst { case candidate if sum % candidate == 0 && bfs(candidate) => sum / candidate - 1 }
-      .getOrElse(0)
+    val level = buildLevels(map, n, v)
+
+    var res = 0
+    breakable {
+      list.foreach(x => {
+        val w = nums.clone()
+        var flag = false
+        var t = 0
+        breakable {
+          level.reverse.foreach(l => {
+            l.foreach { case Array(c, p) =>
+              if (w(c) > x) {
+                flag = true
+                break
+              } else if (w(c) == x) t += 1 else w(p) += w(c)
+            }
+            if (flag) break
+          })
+        }
+        if (!flag) {
+          res = res.max(t)
+          if (res > 0) break
+        }
+      })
+    }
+    res
+  }
+
+  def buildLevels(map: mutable.Map[Int, ListBuffer[Int]], n: Int, v: Array[Boolean]): ListBuffer[ListBuffer[Array[Int]]] = {
+    val level = ListBuffer.empty[ListBuffer[Array[Int]]]
+    val zero = ListBuffer(Array(0, 0))
+    val que = mutable.Queue(0)
+
+    while (que.nonEmpty) {
+      val tmp = ListBuffer.empty[Array[Int]]
+      que.indices.foreach(_ => {
+        val p = que.dequeue()
+        v(p) = true
+        map(p).foreach(x => if (!v(x)) {
+          tmp += Array(x, p)
+          que += x
+        })
+      })
+      if (tmp.nonEmpty) level += tmp
+    }
+    level
   }
 }
