@@ -10,6 +10,6 @@ object Solution_3215 {
   }
 
   private def countEvenOdd(arr: Array[Int]): (Long, Long) = arr
-    .map(num => if (Integer.bitCount(num) % 2 == 0) (1L, 0L) else (0L, 1L))
-    .reduce { case ((even1, odd1), (even2, odd2)) => (even1 + even2, odd1 + odd2) }
+    .map(num => if (Integer.bitCount(num) % 2 == 0) (1L, 0L)
+    else (0L, 1L)).reduce[(Long, Long)] { case ((even1, odd1), (even2, odd2)) => (even1 + even2, odd1 + odd2) }
 }
