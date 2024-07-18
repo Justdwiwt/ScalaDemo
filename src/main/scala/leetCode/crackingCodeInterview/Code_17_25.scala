@@ -55,7 +55,7 @@ object Code_17_25 {
     breakable {
       (0 until n).foreach(j => {
         val sb = new StringBuilder()
-        for (i <- 0 to r) sb.append(matrix(i)(j))
+        (0 to r).foreach(i => sb.append(matrix(i)(j)))
         if (colWords.range(sb.toString(), sb.append('{').toString()).isEmpty) {
           isValid = false
           break
