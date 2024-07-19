@@ -1,33 +1,50 @@
 package leetCode._2100
 
 import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 object Solution_2097 {
   def validArrangement(pairs: Array[Array[Int]]): Array[Array[Int]] = {
-    val degree = mutable.HashMap.empty[Int, Int]
-    val graph = mutable.HashMap.empty[Int, mutable.Queue[Int]]
-    pairs.foreach(p => {
-      degree += p.head -> (degree.getOrElse(p.head, 0) + 1)
-      degree += p(1) -> (degree.getOrElse(p(1), 0) - 1)
-      val edge: mutable.Queue[Int] = graph.getOrElse(p.head, mutable.Queue.empty[Int])
-      edge += p(1)
-      graph += p.head -> edge
-    })
-    var first = pairs.head.head
-    degree.keySet.foreach(v => if (degree.getOrElse(v, 0) == 1) first = v)
-    val route = mutable.ArrayBuffer.empty[Array[Int]]
-    dfs(first, graph, route)
-    val res = Array.fill(pairs.length, 2)(0)
-    route.indices.foreach(i => res(i) = route(pairs.length - i - 1))
-    res
-  }
+    val res = Array.ofDim[Int](pairs.length, 2)
+    val outDegree = mutable.Map.empty[Int, Int]
+    val out = mutable.Map.empty[Int, ListBuffer[Int]]
 
-  def dfs(in: Int, graph: mutable.HashMap[Int, mutable.Queue[Int]], route: mutable.ArrayBuffer[Array[Int]]): Unit = {
-    while (graph.keySet.contains(in) && graph(in).nonEmpty) {
-      val out = graph(in).head
-      graph(in) = graph(in).tail
-      dfs(out, graph, route)
-      route += Array(in, out)
+    pairs.foreach(pair => {
+      val (from, to) = (pair(0), pair(1))
+      outDegree.update(from, outDegree.getOrElse(from, 0) + 1)
+      outDegree.update(to, outDegree.getOrElse(to, 0) - 1)
+
+      if (!out.contains(from)) out(from) = ListBuffer.empty[Int]
+      if (!out.contains(to)) out(to) = ListBuffer.empty[Int]
+
+      out(from) += to
+    })
+
+    var start = pairs.head.head
+    outDegree.foreach { case (key, value) => if (value == 1) start = key }
+
+    val buffer = mutable.ArrayBuffer.empty[Int]
+
+    def dfs(node: Int): Unit = {
+      val st = mutable.Stack[Int]()
+      st.push(node)
+
+      while (st.nonEmpty) {
+        val u = st.top
+        if (out(u).isEmpty) {
+          buffer.prepend(u)
+          st.pop()
+        } else {
+          val v = out(u).remove(0)
+          st.push(v)
+        }
+      }
     }
+
+    dfs(start)
+
+    pairs.indices.foreach(i => res(i) = Array(buffer(i), buffer(i + 1)))
+
+    res
   }
 }
