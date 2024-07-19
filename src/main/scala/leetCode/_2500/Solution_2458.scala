@@ -4,33 +4,53 @@ import leetCode.TreeNode
 
 import scala.collection.mutable
 
-// fixme: case 37/40 stack overflow
 object Solution_2458 {
-  private val height = mutable.Map[TreeNode, Int]()
-  private var res: Array[Int] = _
+  private def calculateHeights(root: TreeNode): mutable.Map[TreeNode, Int] = {
+    val heights = mutable.Map.empty[TreeNode, Int]
+    val stack = mutable.Stack[(TreeNode, Boolean)]()
+    stack.push((root, false))
 
-  def treeQueries(root: TreeNode, queries: Array[Int]): Array[Int] = {
-    getHeight(root)
-    height(null) = 0
-    res = new Array[Int](height.size)
-    dfs(root, -1, 0)
-    queries.indices.foreach(i => queries(i) = res(queries(i)))
-    queries
+    while (stack.nonEmpty) {
+      val (node, processed) = stack.pop()
+      if (node != null) {
+        if (processed) {
+          val leftHeight = heights.getOrElse(node.left, 0)
+          val rightHeight = heights.getOrElse(node.right, 0)
+          heights(node) = 1 + leftHeight.max(rightHeight)
+        } else {
+          stack.push((node, true))
+          stack.push((node.right, false))
+          stack.push((node.left, false))
+        }
+      }
+    }
+    heights
   }
 
-  private def getHeight(node: TreeNode): Int =
-    if (node == null) 0
-    else {
-      val h = 1 + Math.max(getHeight(node.left), getHeight(node.right))
-      height(node) = h
-      h
+  private def calculateAnswers(root: TreeNode, heights: mutable.Map[TreeNode, Int]): Array[Int] = {
+    val res = mutable.Map.empty[Int, Int]
+    val stack = mutable.Stack[(TreeNode, Int, Int)]()
+    stack.push((root, 0, -1))
+
+    while (stack.nonEmpty) {
+      val (node, d, ans) = stack.pop()
+      if (node != null) {
+        res(node.value) = ans
+        val rightHeight = heights.getOrElse(node.right, 0)
+        val leftHeight = heights.getOrElse(node.left, 0)
+
+        stack.push((node.left, d + 1, math.max(ans, rightHeight + d)))
+        stack.push((node.right, d + 1, math.max(ans, leftHeight + d)))
+      }
     }
 
-  private def dfs(node: TreeNode, depth: Int, restH: Int): Unit =
-    if (node != null) {
-      val newDepth = depth + 1
-      res(node.value) = restH
-      dfs(node.left, newDepth, math.max(restH, newDepth + height.getOrElse(node.right, 0)))
-      dfs(node.right, newDepth, math.max(restH, newDepth + height.getOrElse(node.left, 0)))
-    }
+    val maxVal = heights.keys.map(_.value).max
+    (0 to maxVal).map(res.getOrElse(_, 0)).toArray
+  }
+
+  def treeQueries(root: TreeNode, queries: Array[Int]): Array[Int] = {
+    val heights = calculateHeights(root)
+    val res = calculateAnswers(root, heights)
+    queries.map(res)
+  }
 }
