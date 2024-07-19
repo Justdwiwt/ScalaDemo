@@ -39,8 +39,8 @@ object Solution_2458 {
         val rightHeight = heights.getOrElse(node.right, 0)
         val leftHeight = heights.getOrElse(node.left, 0)
 
-        stack.push((node.left, d + 1, math.max(ans, rightHeight + d)))
-        stack.push((node.right, d + 1, math.max(ans, leftHeight + d)))
+        stack.push((node.left, d + 1, ans.max(rightHeight + d)))
+        stack.push((node.right, d + 1, ans.max(leftHeight + d)))
       }
     }
 
