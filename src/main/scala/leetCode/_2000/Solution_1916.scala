@@ -1,53 +1,53 @@
 package leetCode._2000
 
-// fixme: case 64/66 timeout
+import scala.collection.mutable
+
 object Solution_1916 {
-  val M = 1000000007
+  private val M = (1e9 + 7).toInt
 
   def waysToBuildRooms(prevRoom: Array[Int]): Int = {
-    val n = prevRoom.length
-    val adj = Array.fill(n)(List[Int]())
+    val g = Array.fill(prevRoom.length)(mutable.ArrayBuffer.empty[Int])
+    prevRoom.indices.drop(1).foreach(i => g(prevRoom(i)).append(i))
 
-    prevRoom.indices.drop(1).foreach(i => adj(prevRoom(i)) = i :: adj(prevRoom(i)))
+    val subTreeCount = Array.fill(prevRoom.length)(-1)
 
-    def comb(n: Int, k: Int): Long = {
-      if (k > n) return 0
-      var num = 1L
-      var denom = 1L
-      (0 until k).foreach(i => {
-        num = num * (n - i) % M
-        denom = denom * (i + 1) % M
-      })
-      num * powMod(denom, M - 2) % M
-    }
+    def getSubTreeCount(): Unit = {
+      val stack = mutable.Stack[Int]()
+      val visited = Array.fill(prevRoom.length)(false)
 
-    def powMod(x: Long, y: Long): Long = {
-      if (y == 0) return 1
-      val p = powMod(x, y / 2) % M
-      if (y % 2 == 0) p * p % M else p * p % M * x % M
-    }
-
-    def dfs(node: Int): (Int, Long) = {
-      val stack = scala.collection.mutable.Stack[(Int, Int)]()
-      val size = Array.fill(n)(0)
-      val dp = Array.fill(n)(1L)
-      stack.push((node, 0))
+      g.indices.foreach(i => stack.push(i))
 
       while (stack.nonEmpty) {
-        val (u, state) = stack.pop()
-        if (state == 0) {
-          size(u) = 1
-          dp(u) = 1L
-          stack.push((u, 1))
-          adj(u).foreach(v => stack.push((v, 0)))
-        } else adj(u).foreach(v => {
-          size(u) += size(v)
-          dp(u) = (dp(u) * dp(v) % M * comb(size(u) - 1, size(v)) % M) % M
-        })
+        val current = stack.pop()
+        if (!visited(current)) {
+          visited(current) = true
+          stack.push(current)
+          g(current).foreach(next => if (!visited(next)) stack.push(next))
+        } else if (subTreeCount(current) == -1) {
+          val total = 1 + g(current).map(subTreeCount).sum
+          subTreeCount(current) = total
+        }
       }
-      (size(node), dp(node))
     }
 
-    dfs(0)._2.toInt
+    getSubTreeCount()
+
+    var res = 1L
+    prevRoom.indices.drop(1).foreach(i => res = (res * i) % M)
+    val nF = Array.fill(prevRoom.length)(0L)
+    prevRoom.indices.drop(1).foreach(i => nF(i) = pow(i, M - 2))
+    prevRoom.indices.drop(1).foreach(i => res = (res * nF(subTreeCount(i))) % M)
+
+    res.toInt
+  }
+
+  private def pow(a: Long, b: Int): Long = {
+    @scala.annotation.tailrec
+    def loop(a: Long, b: Int, res: Long): Long =
+      if (b == 0) res
+      else if ((b & 1) > 0) loop((a * a) % M, b / 2, (res * a) % M)
+      else loop((a * a) % M, b / 2, res)
+
+    loop(a, b, 1)
   }
 }
