@@ -1,33 +1,39 @@
 package leetCode._2200
 
-import leetCode.TreeNode
-
 import scala.collection.mutable
+
+class TreeNode(_value: Int = 0, _left: TreeNode = null, _right: TreeNode = null) {
+  var value: Int = _value
+  var left: TreeNode = _left
+  var right: TreeNode = _right
+}
 
 object Solution_2196 {
   def createBinaryTree(descriptions: Array[Array[Int]]): TreeNode = {
-    val map = mutable.Map.empty[Int, TreeNode]
-    val childFlag = Array.fill(100001)(0)
+    val children = mutable.Map.empty[Int, Boolean]
+    val nodes = mutable.Map.empty[Int, TreeNode]
 
     descriptions.foreach(description => {
-      val parentVal = description.head
-      val childVal = description(1)
+      val parent = description.head
+      val child = description(1)
       val isLeft = description(2)
 
-      if (!map.contains(parentVal)) map(parentVal) = new TreeNode(parentVal)
+      val parentNode = nodes.getOrElseUpdate(parent, new TreeNode(parent))
+      val childNode = nodes.getOrElseUpdate(child, new TreeNode(child))
 
-      if (!map.contains(childVal)) map(childVal) = new TreeNode(childVal)
+      if (isLeft == 1) parentNode.left = childNode
+      else parentNode.right = childNode
 
-      childFlag(childVal) = 1
+      children.get(parent) match {
+        case Some(_) =>
+        case None => children.update(parent, false)
+      }
 
-      val parent = map(parentVal)
-      val child = map(childVal)
-
-      if (isLeft == 1) parent.left = child
-      else parent.right = child
+      children.update(child, true)
     })
 
-    val rootVal = map.keys.find(childFlag(_) == 0).getOrElse(-1)
-    map(rootVal)
+    val rootIndex = children.find(!_._2).get
+
+    nodes.getOrElse(rootIndex._1, null)
   }
 }
