@@ -1,29 +1,53 @@
 package leetCode._3200
 
-import scala.collection.mutable
+import scala.util.control.Breaks._
 
 object Solution_3117 {
-  // fixme: case 499/509 stack overflow
   def minimumValueSum(nums: Array[Int], andValues: Array[Int]): Int = {
-    val memo = mutable.Map.empty[Long, Int]
-    val res = dfs(0, 0, -1, nums, andValues, memo)
-    if (res < Int.MaxValue / 2) res else -1
-  }
-
-  private def dfs(i: Int, j: Int, andVal: Int, nums: Array[Int], andValues: Array[Int], memo: mutable.Map[Long, Int]): Int = {
+    val INF = Int.MaxValue / 2
     val n = nums.length
-    val m = andValues.length
-    if (m - j > n - i) return Int.MaxValue / 2
-    if (j == m) return if (i == n) 0 else Int.MaxValue / 2
-    val andResult = if (andVal == -1) nums(i) else andVal & nums(i)
-    if (andResult < andValues(j)) return Int.MaxValue / 2
-    val mask: Long = (i.toLong << 36) | (j.toLong << 32) | andResult.toLong
-    if (memo.contains(mask)) return memo(mask)
-    var res = dfs(i + 1, j, andResult, nums, andValues, memo)
-    if (andResult == andValues(j)) {
-      res = res.min(dfs(i + 1, j + 1, -1, nums, andValues, memo) + nums(i))
-    }
-    memo(mask) = res
-    res
+    var arr = Array.fill(n + 1)(INF)
+    arr(0) = 0
+    var newF = Array.fill(n + 1)(INF)
+    val q = Array.fill(n + 1)(0)
+
+    andValues.foreach(target => {
+      val a = nums.clone()
+      var left, right = 0
+      var ql, qr, qi = 0
+
+      newF(0) = INF
+      nums.indices.foreach(i => {
+        var x = a(i)
+
+        breakable((0 until i).reverse.foreach(j => {
+          if ((a(j) & x) == a(j)) break()
+          a(j) &= x
+        }))
+
+        while (left <= i && a(left) < target) left += 1
+
+        while (right <= i && a(right) <= target) right += 1
+
+        if (left < right) {
+          while (qi < right) {
+            while (qr > ql && arr(q(qr - 1)) >= arr(qi)) qr -= 1
+            q(qr) = qi
+            qr += 1
+            qi += 1
+          }
+
+          while (ql < qr && q(ql) < left) ql += 1
+
+          newF(i + 1) = arr(q(ql)) + x
+        } else newF(i + 1) = INF
+      })
+
+      val temp = arr
+      arr = newF
+      newF = temp
+    })
+
+    if (arr(n) < INF) arr(n) else -1
   }
 }
