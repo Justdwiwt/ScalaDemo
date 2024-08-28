@@ -2,12 +2,10 @@ package leetCode._400
 
 object Solution_339 {
   def depthSum(nestedList: List[NestedInteger]): Int = {
-
-    def f(nestedList: List[NestedInteger], depth: Int): Int = {
-      var sum = 0
-      nestedList.foreach(v => sum += (if (v.isInteger) v.getInteger * depth else f(v.getList, depth + 1)))
-      sum
-    }
+    def f(nestedList: List[NestedInteger], level: Int): Int = nestedList.foldLeft(0)((acc, ni) => {
+      if (ni.isInteger) acc + level * ni.getInteger
+      else acc + f(ni.getList, level + 1)
+    })
 
     f(nestedList, 1)
   }
