@@ -1,4 +1,4 @@
-package leetCode._3200
+package leetCode._3300
 
 object Solution_3269 {
   def minLargest(nums1: Array[Int], nums2: Array[Int]): Int = {
