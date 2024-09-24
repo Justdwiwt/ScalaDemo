@@ -12,6 +12,6 @@ object Solution_2207 {
       res
     }
 
-    f(pattern.head + text).max(f(text + pattern(1)))
+    f(s"${pattern.head}$text").max(f(text + pattern(1)))
   }
 }
