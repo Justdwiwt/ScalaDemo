@@ -1,28 +1,18 @@
 package leetCode._800
 
-import scala.collection.mutable
+import scala.collection.mutable.ListBuffer
 
 object Solution_731 {
-
   class MyCalendarTwo() {
+    private val calendar: ListBuffer[(Int, Int)] = ListBuffer()
+    private val overlaps: ListBuffer[(Int, Int)] = ListBuffer()
 
-    private val cal = new mutable.TreeMap[Int, Int]()
-
-    def book(start: Int, end: Int): Boolean = {
-      cal.put(start, cal.getOrElse(start, 0) + 1)
-      cal.put(end, cal.getOrElse(end, 0) - 1)
-      var active = 0
-      cal.values.foreach(i => {
-        active += i
-        if (active >= 3) {
-          cal.put(start, cal(start) - 1)
-          cal.put(end, cal(end) + 1)
-          if (cal(start) == 0) cal.remove(start)
-          return false
-        }
-      })
-      true
-    }
+    def book(start: Int, end: Int): Boolean =
+      if (overlaps.exists(overlap => start < overlap._2 && end > overlap._1)) false
+      else {
+        calendar.foreach(event => if (start < event._2 && end > event._1) overlaps.append((start.max(event._1), end.min(event._2))))
+        calendar.append((start, end))
+        true
+      }
   }
-
 }
