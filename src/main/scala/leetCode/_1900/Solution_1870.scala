@@ -2,25 +2,22 @@ package leetCode._1900
 
 object Solution_1870 {
   def minSpeedOnTime(dist: Array[Int], hour: Double): Int = {
-    var l = 1
-    var r = 10000000
-    while (l < r - 1) {
-      val mid = (l + r) >>> 1
-      if (check(dist, hour, mid)) r = mid
-      else l = mid + 1
+    def time(speed: Int): Double = {
+      val ts = dist.map(_.toDouble / speed)
+      ts.init.map(Math.ceil).sum + ts.last
     }
-    if (check(dist, hour, l)) l
-    else if (check(dist, hour, r)) r
-    else -1
-  }
 
-  def check(dist: Array[Int], hour: Double, speed: Int): Boolean = {
-    var totalHour = 0.0
-    dist.indices.foreach(i => {
-      if (i < dist.length - 1) totalHour += (dist(i).toDouble / speed).ceil
-      else totalHour += dist(i).toDouble / speed
-      if (totalHour > hour) return false
-    })
-    totalHour <= hour
+    @scala.annotation.tailrec
+    def binarySearch(low: Int, high: Int, best: Int): Int =
+      if (low > high) best
+      else {
+        val mid = low + (high - low) / 2
+        if (time(mid) <= hour) binarySearch(low, mid - 1, mid)
+        else binarySearch(mid + 1, high, best)
+      }
+
+    val mx = 10000000
+    val res = binarySearch(1, mx, -1)
+    if (res == -1) -1 else res
   }
 }
