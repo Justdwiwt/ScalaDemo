@@ -1,24 +1,38 @@
 package leetCode._3300
 
-// fixme: case 723/725 timeout
+import scala.collection.mutable.ArrayBuffer
+import scala.util.Sorting
+
 object Solution_3288 {
   def maxPathLength(coordinates: Array[Array[Int]], k: Int): Int = {
-    val (kx, ky) = (coordinates(k).head, coordinates(k)(1))
+    val (ncx, ncy) = (coordinates(k).head, coordinates(k)(1))
+    val n = coordinates.length
 
-    val sorted = coordinates.sortBy { case Array(x, y) => (x, -y) }
+    Sorting.quickSort(coordinates)(Ordering.fromLessThan((a, b) => if (a.head == b.head) b(1) < a(1) else a.head < b.head))
 
-    def bisectLeft(g: List[Int], y: Int): (List[Int], Int) = {
-      val (left, right) = g.span(_ < y)
-      (left ::: y :: right.drop(1), left.length)
+    val (coordinates1, coordinates2) = coordinates.foldLeft((ArrayBuffer.empty[Int], ArrayBuffer.empty[Int])) {
+      case ((left, right), Array(x, y)) =>
+        if (x < ncx && y < ncy) (left += y, right)
+        else if (x > ncx && y > ncy) (left, right += y)
+        else (left, right)
     }
 
-    val res = sorted.foldLeft(List.empty[Int]) {
-      case (acc, Array(x, y)) if (x < kx && y < ky) || (x > kx && y > ky) =>
-        val (updatedG, _) = bisectLeft(acc, y)
-        updatedG
-      case (acc, _) => acc
-    }
+    val dp = Array.ofDim[Int](n)
 
-    res.length + 1
+    val size1 = cal(coordinates1.toArray, dp)
+    val size2 = cal(coordinates2.toArray, dp)
+
+    size1 + size2 + 1
+  }
+
+  private def cal(coordinates: Array[Int], dp: Array[Int]): Int = {
+    var size = 0
+    coordinates.foreach(y => {
+      val pos = java.util.Arrays.binarySearch(dp, 0, size, y)
+      val insertPos = if (pos < 0) -(pos + 1) else pos
+      dp(insertPos) = y
+      if (insertPos == size) size += 1
+    })
+    size
   }
 }
