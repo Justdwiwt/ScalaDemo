@@ -2,21 +2,24 @@ package leetCode._3200
 
 object Solution_3171 {
   def minimumDifference(nums: Array[Int], k: Int): Int = {
-    @scala.annotation.tailrec
-    def f(i: Int, res: Int): Int =
-      if (i >= nums.length) res
-      else {
-        val x = nums(i)
-        var newRes = res.min((x - k).abs)
-        var j = i - 1
-        while (j >= 0 && (nums(j) & x) != nums(j)) {
-          nums(j) &= x
-          newRes = newRes.min((nums(j) - k).abs)
-          j -= 1
-        }
-        f(i + 1, newRes)
-      }
+    var res = Int.MaxValue
+    var left = 0
+    var bottom = 0
+    var rightOr = 0
 
-    f(0, Int.MaxValue)
+    nums.indices.foreach(right => {
+      rightOr |= nums(right)
+      while (left <= right && (nums(left) | rightOr) > k) {
+        res = res.min((nums(left) | rightOr) - k)
+        left += 1
+        if (bottom < left) {
+          (right - 1 to left by -1).foreach(i => nums(i) |= nums(i + 1))
+          bottom = right
+          rightOr = 0
+        }
+      }
+      if (left <= right) res = res.min(k - (nums(left) | rightOr))
+    })
+    res
   }
 }
