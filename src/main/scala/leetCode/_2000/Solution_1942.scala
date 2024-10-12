@@ -1,26 +1,24 @@
 package leetCode._2000
 
-import scala.collection.mutable
-
 object Solution_1942 {
   def smallestChair(times: Array[Array[Int]], targetFriend: Int): Int = {
+    val targetArrive = times(targetFriend).head
+    val timesSorted = times.sortBy(_.head)
+    val available = scala.collection.mutable.PriorityQueue[Int]()(Ordering.by(-_))
+    times.indices.foreach(available.+=)
 
-    val pq = mutable.PriorityQueue[(Int, Int)]().reverse
-    val availableChair = mutable.PriorityQueue[Int](0 to times.length + 1: _*).reverse
+    val pq = scala.collection.mutable.PriorityQueue[Array[Int]]()(Ordering.by(-_.head))
 
-    times
-      .zipWithIndex
-      .sortBy(_._1.head)
-      .withFilter({ case (Array(_, _), _) => true; case _ => false })
-      .foreach({ case (Array(start, end), friend) =>
-        while (pq.nonEmpty && pq.head._1 <= start) {
-          val (_, chair) = pq.dequeue()
-          availableChair += chair
-        }
-        if (friend == targetFriend) return availableChair.head
-        pq += (end -> availableChair.dequeue())
-      })
+    @scala.annotation.tailrec
+    def f(i: Int): Int = {
+      while (pq.nonEmpty && pq.head.head <= timesSorted(i).head) available += pq.dequeue()(1)
+      if (timesSorted(i)(0) == targetArrive) available.head
+      else {
+        pq += Array(timesSorted(i)(1), available.dequeue())
+        f(i + 1)
+      }
+    }
 
-    times.length - 1
+    f(0)
   }
 }
