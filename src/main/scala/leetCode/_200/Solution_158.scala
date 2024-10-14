@@ -16,6 +16,7 @@ object Solution_158 {
         if (len >= n) len
         else if (next2Read == buf2Read) {
           buf2Read = read4(buf4)
+          next2Read = 0
           if (buf2Read == 0) len
           else readRecursively(buf, n, len)
         } else {
