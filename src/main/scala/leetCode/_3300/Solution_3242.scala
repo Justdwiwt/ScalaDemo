@@ -1,7 +1,7 @@
 package leetCode._3300
 
 object Solution_3242 {
-  class neighborSum(grid: Array[Array[Int]]) {
+  class NeighborSum(grid: Array[Array[Int]]) {
     private val dirs: Array[(Int, Int)] = Array((-1, 0), (1, 0), (0, -1), (0, 1), (1, 1), (-1, 1), (-1, -1), (1, -1))
 
     private val arr: Array[Array[Int]] = {
