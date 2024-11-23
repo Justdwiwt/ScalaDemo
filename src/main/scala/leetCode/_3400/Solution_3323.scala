@@ -1,22 +1,38 @@
 package leetCode._3400
 
+// fixme: case 563/581 time limit exceeded
 object Solution_3323 {
   def minConnectedGroups(intervals: Array[Array[Int]], k: Int): Int = {
-    val sortedIntervals = intervals.sortBy(_.head)
-    val refined = scala.collection.mutable.ArrayBuffer[Array[Int]]()
+    val sorted = intervals.sortBy(a => (a.head, -a(1)))
 
-    sortedIntervals.foreach(v =>
-      if (refined.isEmpty || refined.last(1) < v.head) refined.append(v)
+    val mergedIntervals = sorted.foldLeft(List[Array[Int]]())((acc, cur) => {
+      acc match {
+        case Nil => List(cur)
+        case prev :: rest if cur.head <= prev(1) =>
+          val merged = Array(prev.head, prev(1).max(cur(1)))
+          merged :: rest
+        case _ => cur :: acc
+      }
+    }).reverse
+
+    val size = mergedIntervals.length
+
+    mergedIntervals.indices.foldLeft(size)((minGroups, idx) => {
+      val nextIndex = binarySearch(mergedIntervals, mergedIntervals(idx)(1) + k + 1)
+      minGroups.min(idx + (size - nextIndex) + 1)
+    })
+  }
+
+  private def binarySearch(mergedIntervals: List[Array[Int]], minStart: Int): Int = {
+    @scala.annotation.tailrec
+    def search(low: Int, high: Int): Int =
+      if (low >= high) low
       else {
-        val cur = refined.remove(refined.length - 1)
-        refined.append(Array(cur.head, cur(1).max(v(1))))
-      })
+        val mid = low + (high - low) / 2
+        if (mergedIntervals(mid)(0) >= minStart) search(low, mid)
+        else search(mid + 1, high)
+      }
 
-    val toSearch = refined.map(_.head).toArray
-    refined.zipWithIndex.map { case (v, k1) =>
-      val pos = java.util.Arrays.binarySearch(toSearch, v(1) + k)
-      val idx = if (pos < 0) -pos - 1 else pos
-      refined.length - idx + k1 + 1
-    }.min
+    search(0, mergedIntervals.size)
   }
 }
