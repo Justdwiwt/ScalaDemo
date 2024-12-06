@@ -2,25 +2,21 @@ package leetCode._1000
 
 object Solution_999 {
   def numRookCaptures(board: Array[Array[Char]]): Int = {
-    val (row, col) = rookPosition(board)
-    val directions = Array((-1, 0), (0, +1), (+1, 0), (0, -1))
-    directions.map(pawnsHitThisDirection(row, col, board, _)).sum
+    val directions = Array((0, 1), (0, -1), (1, 0), (-1, 0))
+    val rookPos = (0 until 8).flatMap(i => (0 until 8).withFilter(board(i)(_) == 'R').map((i, _)))
+
+    val (rookX, rookY) = rookPos.head
+
+    directions.count { case (dx, dy) => Iterator
+      .from(1)
+      .map(i => (rookX + i * dx, rookY + i * dy))
+      .takeWhile { case (x, y) => inRange(x, y) }
+      .map { case (x, y) => board(x)(y) }
+      .collectFirst { case ch if ch != '.' => ch }
+      .contains('p')
+    }
   }
 
-  private def rookPosition(board: Array[Array[Char]]): (Int, Int) = {
-    (0 until 8)
-      .foreach(row => (0 until 8)
-        .foreach(col => if (board(row)(col) == 'R') return (row, col)))
-    throw new IllegalArgumentException("Rook not found on board")
-  }
-
-  @scala.annotation.tailrec
-  private def pawnsHitThisDirection(row: Int, col: Int, board: Array[Array[Char]], direction: (Int, Int)): Int = {
-    if (outOfBoard(col, row) || board(row)(col) == 'B') return 0
-    if (board(row)(col) == 'p') return 1
-    pawnsHitThisDirection(row + direction._1, col + direction._2, board, direction)
-  }
-
-  private def outOfBoard(col: Int, row: Int): Boolean =
-    col < 0 || col > 7 || row < 0 || row > 7
+  private def inRange(x: Int, y: Int): Boolean =
+    0 <= x && x <= 7 && 0 <= y && y <= 7
 }
