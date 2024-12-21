@@ -1,16 +1,9 @@
 package leetCode._3400
 
 object Solution_3386 {
-  def buttonWithLongestTime(events: Array[Array[Int]]): Int = {
-    var res = events.head.head
-    var max = events.head(1)
-    events.indices.drop(1).foreach(i => {
-      val gap = events(i)(1) - events(i - 1)(1)
-      if (gap > max) {
-        max = gap
-        res = events(i).head
-      } else if (gap == max) res = res.min(events(i).head)
-    })
-    res
-  }
+  def buttonWithLongestTime(events: Array[Array[Int]]): Int = (Array(Array(0, 0)).iterator ++ events.iterator)
+    .sliding(2)
+    .collect { case Seq(Array(_, t1), Array(id, t2)) => (id, t2 - t1) }
+    .maxBy(x => (x._2, -x._1))
+    ._1
 }
