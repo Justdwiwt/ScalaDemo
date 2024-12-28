@@ -1,35 +1,34 @@
 package leetCode._2400
 
-// fixme: case 43/44 stack overflow
+import scala.collection.mutable.ArrayBuffer
+
 object Solution_2378 {
-  class Edge(val to: Int, val weight: Int)
-
-  var adj: Array[List[Edge]] = _
-
   def maxScore(edges: Array[Array[Int]]): Long = {
-    adj = Array.fill(edges.length)(List.empty[Edge])
-
+    val n = edges.length
+    if (n == 0) return 0L
+    val g = Array.fill(n)(ArrayBuffer[(Int, Int)]())
     edges.indices.drop(1).foreach(i => {
-      val from = edges(i).head
-      val weight = edges(i)(1)
-      adj(from) ::= new Edge(i, weight)
+      val x = edges(i)(0)
+      val y = edges(i)(1)
+      g(x) += ((i, y))
     })
 
-    dfs(0).head
-  }
+    def dfs(x: Int): (Long, Long) = {
+      val first = new ArrayBuffer[Long]()
+      val second = new ArrayBuffer[Long]()
+      val edge = new ArrayBuffer[Int]()
+      g(x).foreach { case (j, e) =>
+        val (f, s) = dfs(j)
+        first += f
+        second += s
+        edge += e
+      }
+      val ss = first.sum
+      var res = ss
+      (first, second, edge).zipped.foreach { case (f, s, e) => res = res.max(e.toLong + s + ss - f) }
+      (res, ss)
+    }
 
-  private def dfs(from: Int): Array[Long] = {
-    if (adj(from).isEmpty) return Array(0L, 0L)
-
-    var sum = 0L
-    var diff = 0L
-
-    adj(from).foreach(edge => {
-      val child = dfs(edge.to)
-      sum += child.head
-      diff = diff.max(edge.weight - child.head + child(1))
-    })
-
-    Array(sum.max(sum + diff), sum)
+    dfs(0)._1
   }
 }
