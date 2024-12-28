@@ -3,7 +3,6 @@ package leetCode._1300
 import scala.collection.mutable
 
 object Solution_1273 {
-  // fixme: case 20/21 stack overflow
   def deleteTreeNodes(nodes: Int, parent: Array[Int], value: Array[Int]): Int = {
     val child = mutable.Map[Int, Array[Int]]().withDefaultValue(Array.emptyIntArray)
 
