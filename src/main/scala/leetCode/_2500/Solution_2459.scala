@@ -1,29 +1,32 @@
 package leetCode._2500
 
+import scala.collection.mutable
+
 object Solution_2459 {
-  // fixme: case 63/87 time limit exceeded
   def sortArray(nums: Array[Int]): Int = {
     val n = nums.length
+    if (n == 0) return 0
+    val a = getMinCnt(nums, 0)
+    val nums2 = nums.map(x => (x + n - 1) % n)
+    val b = getMinCnt(nums2, n - 1)
+    a.min(b)
+  }
 
-    def f(nums: List[Int], z: Int): Int = {
-      val vis = Array.fill(n)(false)
-      val cir = nums.indices.foldLeft(0)((acc, i) => {
-        if (i == nums(i) || vis(i)) acc
-        else {
-          var count = 1
-          var j = nums(i)
-          while (j != i && !vis(j)) {
-            vis(j) = true
-            count += 1
-            j = nums(j)
-          }
-          acc + count
+  private def getMinCnt(nums: Array[Int], dis: Int): Int = {
+    var res = 0
+    val visSet = mutable.HashSet.empty[Int]
+    nums.indices.foreach(i => {
+      var j = i
+      if (j != nums(j) && !visSet.contains(j)) {
+        val tmpVisSet = mutable.HashSet.empty[Int]
+        while (!tmpVisSet.contains(j)) {
+          tmpVisSet += j
+          j = nums(j)
         }
-      })
-
-      cir - 2 * (if (nums(z) != z) 1 else 0)
-    }
-
-    f(nums.toList, 0) min f(nums.toList.map(x => (x - 1 + n) % n), n - 1)
+        res += tmpVisSet.size + (if (tmpVisSet.contains(dis)) -1 else 1)
+        visSet ++= tmpVisSet
+      }
+    })
+    res
   }
 }
