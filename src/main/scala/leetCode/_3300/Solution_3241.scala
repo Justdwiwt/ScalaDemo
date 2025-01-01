@@ -1,49 +1,51 @@
 package leetCode._3300
 
-// fixme: case 803/804 stack overflow
+import scala.collection.mutable.ListBuffer
+
 object Solution_3241 {
   def timeTaken(edges: Array[Array[Int]]): Array[Int] = {
     val n = edges.length + 1
-    val e = Array.fill[List[Int]](n)(List.empty)
+    val g = Array.fill(n)(new ListBuffer[Int]())
+    edges.foreach(e => {
+      val x = e.head
+      val y = e(1)
+      g(x) += y
+      g(y) += x
+    })
 
-    edges.foreach { case Array(u, v) =>
-      e(u) ::= v
-      e(v) ::= u
-    }
+    val nodes = Array.ofDim[Int](g.length, 3)
+    dfs(0, -1, g, nodes)
 
-    val f = Array.fill(n)(0)
+    val res = Array.ofDim[Int](g.length)
+    reRoot(0, -1, 0, g, nodes, res)
+    res
+  }
 
-    def dfs1(sn: Int, fa: Int): Int = {
-      f(sn) = 0
-      e(sn).foreach(fn => {
-        if (fn != fa) {
-          val t = dfs1(fn, sn) + (if (fn % 2 == 1) 1 else 2)
-          f(sn) = math.max(f(sn), t)
-        }
-      })
-      f(sn)
-    }
+  private def dfs(x: Int, fa: Int, g: Array[ListBuffer[Int]], nodes: Array[Array[Int]]): Int = {
+    var maxD = 0
+    var maxD2 = 0
+    var my = 0
 
-    dfs1(0, -1)
+    g(x).foreach(y => if (y != fa) {
+      val depth = dfs(y, x, g, nodes) + 2 - y % 2
+      if (depth > maxD) {
+        maxD2 = maxD
+        maxD = depth
+        my = y
+      } else if (depth > maxD2) maxD2 = depth
+    })
 
-    val ans = Array.fill(n)(0)
+    nodes(x)(0) = maxD
+    nodes(x)(1) = maxD2
+    nodes(x)(2) = my
+    maxD
+  }
 
-    def dfs2(sn: Int, fa: Int, fv: Int): Unit = {
-      ans(sn) = math.max(fv, f(sn))
-      val (max1, max2, fn1, _) = e(sn).filter(_ != fa).foldLeft((-1, -1, -1, -1)) { case ((mx1, mx2, f1, f2), fn) =>
-        val t = f(fn) + (if (fn % 2 == 1) 1 else 2)
-        if (t > mx1) (t, mx1, fn, f1)
-        else if (t > mx2) (mx1, t, f1, fn)
-        else (mx1, mx2, f1, f2)
-      }
-
-      e(sn).filter(_ != fa).foreach(fn => {
-        val t = if (fn == fn1) math.max(fv, max2) else math.max(fv, max1)
-        dfs2(fn, sn, t + (if (sn % 2 == 1) 1 else 2))
-      })
-    }
-
-    dfs2(0, -1, 0)
-    ans
+  private def reRoot(x: Int, fa: Int, fromUp: Int, g: Array[ListBuffer[Int]], nodes: Array[Array[Int]], res: Array[Int]): Unit = {
+    val maxD = nodes(x)(0)
+    val maxD2 = nodes(x)(1)
+    val my = nodes(x)(2)
+    res(x) = fromUp.max(maxD)
+    g(x).foreach(y => if (y != fa) reRoot(y, x, fromUp.max(if (y == my) maxD2 else maxD) + 2 - x % 2, g, nodes, res))
   }
 }
