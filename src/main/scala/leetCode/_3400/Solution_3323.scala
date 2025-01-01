@@ -1,18 +1,15 @@
 package leetCode._3400
 
-// fixme: case 563/581 time limit exceeded
 object Solution_3323 {
   def minConnectedGroups(intervals: Array[Array[Int]], k: Int): Int = {
     val sorted = intervals.sortBy(a => (a.head, -a(1)))
 
-    val mergedIntervals = sorted.foldLeft(List[Array[Int]]())((acc, cur) => {
-      acc match {
-        case Nil => List(cur)
-        case prev :: rest if cur.head <= prev(1) =>
-          val merged = Array(prev.head, prev(1).max(cur(1)))
-          merged :: rest
-        case _ => cur :: acc
-      }
+    val mergedIntervals = sorted.foldLeft(Vector[Array[Int]]())((acc, cur) => acc match {
+      case Vector() => Vector(cur)
+      case prev +: rest if cur.head <= prev(1) =>
+        val merged = Array(prev.head, prev(1).max(cur(1)))
+        merged +: rest
+      case _ => cur +: acc
     }).reverse
 
     val size = mergedIntervals.length
@@ -23,13 +20,13 @@ object Solution_3323 {
     })
   }
 
-  private def binarySearch(mergedIntervals: List[Array[Int]], minStart: Int): Int = {
+  private def binarySearch(mergedIntervals: Vector[Array[Int]], minStart: Int): Int = {
     @scala.annotation.tailrec
     def search(low: Int, high: Int): Int =
       if (low >= high) low
       else {
         val mid = low + (high - low) / 2
-        if (mergedIntervals(mid)(0) >= minStart) search(low, mid)
+        if (mergedIntervals(mid).head >= minStart) search(low, mid)
         else search(mid + 1, high)
       }
 
