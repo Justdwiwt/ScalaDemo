@@ -1,20 +1,23 @@
 package leetCode._3200
 
-import scala.collection.mutable
+import scala.collection.Searching._
 
 object Solution_3109 {
-  private val M: Int = 1000000007
-  private val fact: Array[Long] = Array.fill(100001)(1)
+  val M = 1000000007L
+  val fact: Array[Long] = Array.ofDim[Long](100001)
+  fact(0) = 1L
+  fact(1) = 1L
+  (2 to 100000).foreach(p => fact(p) = (fact(p - 1) * p) % M)
 
-  // fixme: case 436 memory limit is exceeded
-  def getPermutationIndex(perm: List[Int]): Int = {
-    val n: Int = perm.length
-    val st = mutable.SortedSet(1 to n: _*)
+  def getPermutationIndex(perm: Array[Int]): Int = {
+    val n = perm.length
+    val tmp = (1 to n).toBuffer
     var res = 0L
-    perm.indices.foreach(p => {
-      res = (res + st.rangeImpl(Some(1), Some(perm(p))).size.toLong * fact(n - 1 - p)) % M
-      st -= perm(p)
+    perm.indices.foreach(i => {
+      val b = tmp.search(perm(i)).insertionPoint
+      res += fact(n - 1 - i) * b
+      tmp.remove(b)
     })
-    res.toInt
+    (res % M).toInt
   }
 }
