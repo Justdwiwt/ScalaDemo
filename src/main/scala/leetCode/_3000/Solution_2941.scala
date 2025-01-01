@@ -1,28 +1,31 @@
 package leetCode._3000
 
-import scala.collection.mutable
-
 object Solution_2941 {
-  // fixme: case 1036/1059 data limit exceeded
-  @scala.annotation.tailrec
-  private def gcd(a: Long, b: Long): Long =
-    if (b == 0) a else gcd(b, a % b)
+  def maxGcdSum(nums: Array[Int], k: Int): Long = {
+    val initialAnswer = if (k == 1) nums.max.toLong * nums.max else 0L
 
-  def maxGcdSum(nums: Array[Int], k: Int): Int = {
-    var res = if (k == 1) nums.map(_.toLong).max * nums.map(_.toLong).max else 0L
-    var m = mutable.Map.empty[Long, (Long, Int)]
-
-    nums.map(_.toLong).foreach(num => {
-      val g2 = mutable.Map(num -> (num, 1))
-      for ((g, (gSum, gLen)) <- m) {
-        val gNext = gcd(g, num)
-        if (!(g2.contains(gNext) && g2(gNext)._1 > num + gSum))
-          g2(gNext) = (num + gSum, gLen + 1)
-        if (g2(gNext)._2 >= k && g2(gNext)._1 * gNext > res)
-          res = g2(gNext)._1 * gNext
+    def updateGcdMap(g1: Map[Int, (Long, Int)], num: Int): Map[Int, (Long, Int)] = {
+      val newGcdMap = g1.foldLeft(Map(num -> (num.toLong, 1))) { case (g2, (g, (sum, length))) =>
+        val gnew = BigInt(g).gcd(BigInt(num)).toInt
+        val newSum = sum + num
+        val newLength = length + 1
+        g2.get(gnew) match {
+          case Some((existingSum, _)) if existingSum >= newSum => g2
+          case _ => g2 + (gnew -> (newSum, newLength))
+        }
       }
-      m = g2
-    })
-    res.toInt
+      newGcdMap
+    }
+
+    @scala.annotation.tailrec
+    def cal(g1: Map[Int, (Long, Int)], remainingNums: List[Int], curr: Long): Long = remainingNums match {
+      case Nil => curr
+      case num :: tail =>
+        val g2 = updateGcdMap(g1, num)
+        val newAnswer = g2.collect { case (g, (sum, length)) if length >= k => sum * g }.foldLeft(curr)(math.max)
+        cal(g2, tail, newAnswer)
+    }
+
+    cal(Map(), nums.toList, initialAnswer)
   }
 }
