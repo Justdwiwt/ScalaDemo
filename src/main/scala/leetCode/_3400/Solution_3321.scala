@@ -1,37 +1,63 @@
 package leetCode._3400
 
-import scala.collection.mutable
-
-// fixme: case 776/784 memory limit exceeded
 object Solution_3321 {
   def findXSum(nums: Array[Int], k: Int, x: Int): Array[Long] = {
-    val n = nums.length
-    val res = new Array[Long](n - k + 1)
+    val L = collection.mutable.TreeSet.empty[(Int, Int)](Ordering.by[(Int, Int), (Int, Int)](t => (t._1, t._2)))
+    val R = collection.mutable.TreeSet.empty[(Int, Int)](L.ordering)
+    val cnt = collection.mutable.Map.empty[Int, Int].withDefaultValue(0)
+    var sumL = 0L
 
-    val frequencyMap = mutable.Map.empty[Int, Int]
+    def add(value: Int): Unit = {
+      val count = cnt(value)
+      if (count == 0) return
+      val pair = (count, value)
+      if (L.nonEmpty && L.ordering.compare(pair, L.head) > 0) {
+        sumL += pair._1.toLong * pair._2
+        L.add(pair)
+      } else R.add(pair)
+    }
 
-    (0 until k).foreach(i => frequencyMap(nums(i)) = frequencyMap.getOrElse(nums(i), 0) + 1)
+    def delete(value: Int): Unit = {
+      val count = cnt.getOrElse(value, 0)
+      if (count == 0) return
+      val pair = (count, value)
+      if (L.contains(pair)) {
+        sumL -= pair._1.toLong * pair._2
+        L.remove(pair)
+      } else R.remove(pair)
+    }
 
-    def calculateXSum(): Long = frequencyMap
-      .toSeq
-      .sortBy { case (num, freq) => (-freq, -num) }
-      .take(x)
-      .map { case (num, freq) => num.toLong * freq }
-      .sum
+    def l2r(): Unit = {
+      val pair = L.head
+      L.remove(pair)
+      sumL -= pair._1.toLong * pair._2
+      R.add(pair)
+    }
 
-    res(0) = calculateXSum()
+    def r2l(): Unit = {
+      val pair = R.last
+      R.remove(pair)
+      sumL += pair._1.toLong * pair._2
+      L.add(pair)
+    }
 
-    (1 until n - k + 1).foreach(i => {
-      val outgoingElement = nums(i - 1)
-      frequencyMap(outgoingElement) -= 1
-      if (frequencyMap(outgoingElement) == 0) frequencyMap.remove(outgoingElement)
-
-      val incomingElement = nums(i + k - 1)
-      frequencyMap(incomingElement) = frequencyMap.getOrElse(incomingElement, 0) + 1
-
-      res(i) = calculateXSum()
+    val res = Array.fill(nums.length - k + 1)(0L)
+    nums.indices.foreach(r => {
+      val in = nums(r)
+      delete(in)
+      cnt(in) += 1
+      add(in)
+      val l = r + 1 - k
+      if (l >= 0) {
+        while (R.nonEmpty && L.size < x) r2l()
+        while (L.size > x) l2r()
+        res(l) = sumL
+        val out = nums(l)
+        delete(out)
+        cnt(out) -= 1
+        add(out)
+      }
     })
-
     res
   }
 }
