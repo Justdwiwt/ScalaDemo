@@ -1,32 +1,31 @@
 package leetCode._3000
 
-import scala.collection.mutable.ListBuffer
-
-// fixme: case 612/614 stack overflow
 object Solution_2973 {
   def placedCoins(edges: Array[Array[Int]], cost: Array[Int]): Array[Long] = {
-    val n = cost.length
-    val g = Array.fill[ListBuffer[Int]](n)(ListBuffer.empty)
-    edges.foreach(e => {
-      val x = e.head
-      val y = e(1)
-      g(x) += y
-      g(y) += x
+    val graph: Map[Int, List[Int]] = edges.foldLeft(Map.empty[Int, List[Int]])((g, edge) => {
+      val Array(from, to) = edge
+      g.updated(from, g.getOrElse(from, Nil) :+ to).updated(to, g.getOrElse(to, Nil) :+ from)
     })
 
-    val res = Array.fill(n)(0L)
-    dfs(0, -1, cost, g, res)
-    res
-  }
+    def dfs(node: Int, parent: Int, cur: Array[Long]): (List[Int], Array[Long]) = {
+      val neighbors = graph.getOrElse(node, Nil).filter(_ != parent)
 
-  private def dfs(x: Int, fa: Int, cost: Array[Int], g: Array[ListBuffer[Int]], res: Array[Long]): List[Int] = {
-    var a = ListBuffer(cost(x))
-    g(x).foreach(y => if (y != fa) a ++= dfs(y, x, cost, g, res))
-    a = a.sorted
-    val m = a.length
-    if (m < 3) res(x) = 1
-    else res(x) = List(a(m - 3).toLong * a(m - 2) * a(m - 1), a.head.toLong * a(1) * a(m - 1), 0).max
-    if (m > 5) a = ListBuffer(a.head, a(1), a(m - 3), a(m - 2), a(m - 1))
-    a.toList
+      val (allNodes, updatedRet) = neighbors.foldLeft((List(cost(node)), cur)) { case ((accNodes, accRet), neighbor) =>
+        val (childNodes, childRet) = dfs(neighbor, node, accRet)
+        (accNodes ++ childNodes, childRet)
+      }
+
+      val sortedNodes = allNodes.sorted
+      val n = sortedNodes.size
+      val newRet = if (n >= 3) {
+        val prod1 = 1L * sortedNodes(n - 1) * sortedNodes(n - 2) * sortedNodes(n - 3)
+        val prod2 = 1L * sortedNodes.head * sortedNodes(1) * sortedNodes(n - 1)
+        updatedRet.updated(node, 0L.max(prod1.max(prod2)))
+      } else updatedRet
+
+      (if (sortedNodes.size > 5) sortedNodes.take(2) ++ sortedNodes.drop(sortedNodes.size - 3) else sortedNodes, newRet)
+    }
+
+    dfs(0, -1, Array.fill(cost.length)(1L))._2
   }
 }
