@@ -7,7 +7,6 @@ object Solution_2792 {
     var right: TreeNode = _right
   }
 
-  // fixme: case 2520/2546 stack overflow
   def countGreatEnoughNodes(root: TreeNode, k: Int): Int = {
     var res = 0
 
