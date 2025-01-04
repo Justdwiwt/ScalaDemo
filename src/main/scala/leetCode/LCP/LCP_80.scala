@@ -1,7 +1,6 @@
 package leetCode.LCP
 
 object LCP_80 {
-  // fixme: case 62/86 stack overflow
   private var g: Map[Int, List[Int]] = _
 
   def evolutionaryRecord(parents: Array[Int]): String = {

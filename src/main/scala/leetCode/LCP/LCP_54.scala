@@ -2,7 +2,6 @@ package leetCode.LCP
 
 import scala.collection.mutable.ListBuffer
 
-// fixme: case 39/55 stack overflow
 object LCP_54 {
   def minimumCost(cost: Array[Int], roads: Array[Array[Int]]): Long = {
     val n = cost.length
