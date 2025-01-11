@@ -17,7 +17,7 @@ object Solution_3408 {
 
     _tasks.foreach(task => add(task.head, task(1), task(2)))
 
-    private def add(userId: Int, taskId: Int, priority: Int): Unit = {
+    def add(userId: Int, taskId: Int, priority: Int): Unit = {
       val newTask = Task(userId, taskId, priority)
       st.add(newTask)
       taskIdMapping(taskId) = newTask
@@ -29,7 +29,7 @@ object Solution_3408 {
       add(previousTask.userId, previousTask.tkId, newPriority)
     }
 
-    private def rmv(taskId: Int): Unit = {
+    def rmv(taskId: Int): Unit = {
       val previousTask = taskIdMapping(taskId)
       taskIdMapping.remove(taskId)
       st.remove(previousTask)
