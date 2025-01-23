@@ -1,31 +1,51 @@
 package leetCode._3000
 
-import scala.util.control.Breaks._
+import scala.collection.mutable
 
 object Solution_2920 {
   def maximumPoints(edges: Array[Array[Int]], coins: Array[Int], k: Int): Int = {
     val n = coins.length
-    val arr = Array.fill(n)(List.empty[Int])
+    val g = Array.fill(n)(List.empty[Int])
     edges.foreach(e => {
       val x = e.head
       val y = e(1)
-      arr(x) = y :: arr(x)
-      arr(y) = x :: arr(y)
+      g(x) = y :: g(x)
+      g(y) = x :: g(y)
     })
-    val memo = Array.fill(n, 14)(-1)
-    dfs(0, 0, -1, memo, arr, coins, k)
-  }
 
-  private def dfs(i: Int, j: Int, fa: Int, memo: Array[Array[Int]], g: Array[List[Int]], coins: Array[Int], k: Int): Int = {
-    if (memo(i)(j) != -1) return memo(i)(j)
-    var res1 = (coins(i) >> j) - k
-    var res2 = coins(i) >> (j + 1)
-    g(i).foreach(ch => breakable({
-      if (ch == fa) break
-      res1 += dfs(ch, j, i, memo, g, coins, k)
-      if (j < 13) res2 += dfs(ch, j + 1, i, memo, g, coins, k)
-    }))
-    memo(i)(j) = res1.max(res2)
-    memo(i)(j)
+    val memo = mutable.Map[(Int, Int), Int]()
+    val stack = mutable.Stack[(Int, Int, Int)]()
+
+    stack.push((0, 0, -1))
+
+    while (stack.nonEmpty) {
+      val (i, j, fa) = stack.pop()
+
+      if (!memo.contains((i, j))) {
+        var res1 = (coins(i) >> j) - k
+        var res2 = coins(i) >> (j + 1)
+        var allChildrenCalculated = true
+
+        g(i).foreach(ch => if (ch != fa) {
+          if (!memo.contains((ch, j))) {
+            stack.push((i, j, fa))
+            stack.push((ch, j, i))
+            allChildrenCalculated = false
+          }
+          if (j < 13 && !memo.contains((ch, j + 1))) {
+            stack.push((i, j, fa))
+            stack.push((ch, j + 1, i))
+            allChildrenCalculated = false
+          }
+
+          if (memo.contains((ch, j))) res1 += memo((ch, j))
+          if (j < 13 && memo.contains((ch, j + 1))) res2 += memo((ch, j + 1))
+        })
+
+        if (allChildrenCalculated) memo((i, j)) = res1.max(res2)
+      }
+    }
+
+    memo((0, 0))
   }
 }
