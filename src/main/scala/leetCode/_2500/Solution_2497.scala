@@ -4,7 +4,7 @@ object Solution_2497 {
   implicit val ord: Ordering[Long] = Ordering.Long
 
   def maxStarSum(vals: Array[Int], edges: Array[Array[Int]], k: Int): Int = {
-    val bestEdges = edges./:(Map.empty[Int, Array[Int]].withDefaultValue(Array.empty)) {
+    val bestEdges = edges.foldLeft(Map.empty[Int, Array[Int]].withDefaultValue(Array.empty[Int])) {
       case (bestEdges, Array(a, b)) => bestEdges
         .updated(a, bestEdges(a) :+ vals(b))
         .updated(b, bestEdges(b) :+ vals(a))
