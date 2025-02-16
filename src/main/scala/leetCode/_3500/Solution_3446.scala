@@ -2,19 +2,22 @@ package leetCode._3500
 
 object Solution_3446 {
   def sortMatrix(grid: Array[Array[Int]]): Array[Array[Int]] = {
-    val m = grid.length
-    val n = grid.head.length
-
-    (1 until m + n).foldLeft(grid)((cur, k) => {
-      val minJ = 0.max(n - k)
-      val maxJ = (n - 1).min(m + n - 1 - k)
-
-      val a = (minJ to maxJ).map(j => cur(k + j - n)(j)).sorted(if (minJ == 0) Ordering.Int.reverse else Ordering.Int)
-
-      (minJ to maxJ).zip(a).foldLeft(cur)((updatedGrid, tuple) => {
-        val (j, value) = tuple
-        updatedGrid.updated(k + j - n, updatedGrid(k + j - n).updated(j, value))
-      })
-    })
+    (grid
+      .indices
+      .reverse
+      .toList
+      .map(r => List.range(0, grid.length - r).map(c => (r + c, c))) ++ grid
+      .indices
+      .toList
+      .drop(1)
+      .map(c => List.range(0, grid.length - c).map(r => (r, c + r))))
+      .foreach(diag => diag
+        .map { case (r, c) => grid(r)(c) -> (r, c) }
+        .sortBy { case (x, (r, c)) => ((math.signum(c - r) * 2).max(0) - 1) * x }
+        .map(_._1)
+        .zip(diag)
+        .foreach { case (x, (r, c)) => grid(r)(c) = x }
+      )
+    grid
   }
 }
