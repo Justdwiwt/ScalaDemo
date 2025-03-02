@@ -1,19 +1,13 @@
 package leetCode._3500
 
 object Solution_3461 {
-  def hasSameDigits(s: String): Boolean = {
-    @scala.annotation.tailrec
-    def f(cur: String): Boolean =
-      if (cur.length <= 2) cur.distinct.length == 1
-      else {
-        val next = cur.sliding(2).map(pair => {
-          val a = pair(0).asDigit
-          val b = pair(1).asDigit
-          ((a + b) % 10).toString
-        }).mkString
-        f(next)
-      }
-
-    f(s)
-  }
+  def hasSameDigits(s: String): Boolean = Stream
+    .iterate(s)(cur => cur
+      .sliding(2)
+      .map(pair => ((pair.head.asDigit + pair(1).asDigit) % 10).toString)
+      .mkString)
+    .dropWhile(_.length > 2)
+    .head
+    .distinct
+    .length == 1
 }
