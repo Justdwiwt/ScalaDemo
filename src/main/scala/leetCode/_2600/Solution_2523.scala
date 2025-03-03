@@ -1,28 +1,23 @@
 package leetCode._2600
 
-import scala.collection.mutable.ArrayBuffer
-
 object Solution_2523 {
+  private def isPrime(n: Int): Boolean =
+    if (n <= 1) false
+    else !(2 to Math.sqrt(n).toInt).exists(n % _ == 0)
+
+  private def primesInRange(right: Int): List[Int] =
+    (2 to right).filter(isPrime).toList
+
   def closestPrimes(left: Int, right: Int): Array[Int] = {
-    val primes = ArrayBuffer.empty[Int]
-    val check = Array.fill(right + 1)(0)
-    check(0) = 1
-    check(1) = 1
-    (2 to right).foreach(i => {
-      if (check(i) == 0) primes += i
-      var j = 1L * i * i
-      while (j <= right) {
-        check(j.toInt) = 1
-        j += i
-      }
-    })
-    var num = Int.MaxValue
-    var res = Array(-1, -1)
-    primes.indices.dropRight(1).foreach(i => if (primes(i) < left) ()
-    else if (num > primes(i + 1) - primes(i)) {
-      num = primes(i + 1) - primes(i)
-      res = Array(primes(i), primes(i + 1))
-    })
-    res
+    val primes = primesInRange(right)
+    val closest = primes
+      .sliding(2)
+      .collect { case List(a, b) if a >= left => (a, b) }
+      .reduceLeftOption((p1, p2) =>
+        if ((p1._2 - p1._1) < (p2._2 - p2._1) ||
+          ((p1._2 - p1._1) == (p2._2 - p2._1) && p1._1 < p2._1)) p1 else p2
+      )
+      .getOrElse((-1, -1))
+    Array(closest._1, closest._2)
   }
 }
