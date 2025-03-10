@@ -18,8 +18,8 @@ object Solution_3470 {
 
     val cand: Array[ListBuffer[Int]] = Array.fill(2)(ListBuffer.empty[Int])
 
-    (2 to n by 2).foreach(i => cand(0) += i)
-    (1 to n by 2).foreach(i => cand(1) += i)
+    (2 to n by 2).foreach(cand(0) += _)
+    (1 to n by 2).foreach(cand(1) += _)
 
     val ans = new Array[Int](n)
     var parity = 1
