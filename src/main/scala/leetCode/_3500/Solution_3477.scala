@@ -1,4 +1,4 @@
-package leetCode._500
+package leetCode._3500
 
 object Solution_3477 {
   def numOfUnplacedFruits(fruits: Array[Int], baskets: Array[Int]): Int =

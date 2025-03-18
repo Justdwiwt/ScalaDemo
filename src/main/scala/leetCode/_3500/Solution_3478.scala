@@ -1,4 +1,4 @@
-package leetCode._500
+package leetCode._3500
 
 import scala.collection.mutable
 

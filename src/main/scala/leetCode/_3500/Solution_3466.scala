@@ -1,4 +1,4 @@
-package leetCode._500
+package leetCode._3500
 
 object Solution_3466 {
   def maxCoins(lane1: Array[Int], lane2: Array[Int]): Long = {

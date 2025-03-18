@@ -1,4 +1,4 @@
-package leetCode._500
+package leetCode._3500
 
 object Solution_3462 {
   def maxSum(grid: Array[Array[Int]], limits: Array[Int], k: Int): Long = grid

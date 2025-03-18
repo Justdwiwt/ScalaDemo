@@ -1,4 +1,4 @@
-package leetCode._500
+package leetCode._3500
 
 object Solution_3476 {
   def maxProfit(workers: Array[Int], tasks: Array[Array[Int]]): Long = {

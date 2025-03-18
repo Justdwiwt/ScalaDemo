@@ -1,4 +1,4 @@
-package leetCode._500
+package leetCode._3500
 
 object Solution_3480 {
   def maxSubarrays(n: Int, conflictingPairs: Array[Array[Int]]): Long = {
