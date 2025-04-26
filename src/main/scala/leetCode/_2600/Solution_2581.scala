@@ -1,41 +1,27 @@
 package leetCode._2600
 
-import scala.collection.mutable
-
 object Solution_2581 {
-  private var g = Array.empty[Array[Int]]
-  private val st = mutable.HashSet.empty[Long]
-  private var t, res, cnt0 = 0
-
   def rootCount(edges: Array[Array[Int]], guesses: Array[Array[Int]], k: Int): Int = {
-    t = k
-    g = Array.fill(edges.length + 1)(Array.empty[Int])
-    edges.foreach(e => {
-      val x = e.head
-      val y = e(1)
-      g(x) :+= y
-      g(y) :+= x
-    })
-    guesses.foreach(e => st += (e.head << 32 | e(1)).toLong)
-    dfs(0, -1)
-    reroot(0, -1, cnt0)
-    res
-  }
+    val n = edges.length + 1
+    val g: Array[List[Int]] = Array.fill(n)(Nil)
+    edges.foreach { case Array(x, y) =>
+      g(x) = y :: g(x)
+      g(y) = x :: g(y)
+    }
 
-  private def dfs(x: Int, fa: Int): Unit = {
-    g(x).foreach(y => if (y != fa) {
-      if (st.contains((x << 32 | y).toLong)) cnt0 += 1
-      dfs(y, x)
-    })
-  }
+    val s = guesses.map { case Array(x, y) => (x, y) }.toSet
 
-  private def reroot(x: Int, fa: Int, cnt: Int): Unit = {
-    if (cnt >= t) res += 1
-    g(x).foreach(y => if (y != fa) {
-      var c = cnt
-      if (st.contains((x << 32 | y).toLong)) c -= 1
-      if (st.contains((y << 32 | x).toLong)) c += 1
-      reroot(y, x, c)
-    })
+    def dfs(x: Int, fa: Int): Int =
+      g(x).filter(_ != fa).map(y => (if (s((x, y))) 1 else 0) + dfs(y, x)).sum
+
+    val cnt0 = dfs(0, -1)
+
+    def f(x: Int, fa: Int, cnt: Int): Int =
+      g(x).filter(_ != fa).foldLeft(if (cnt >= k) 1 else 0) { (acc, y) =>
+        val newCnt = cnt - (if (s((x, y))) 1 else 0) + (if (s((y, x))) 1 else 0)
+        acc + f(y, x, newCnt)
+      }
+
+    f(0, -1, cnt0)
   }
 }
