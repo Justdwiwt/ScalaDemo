@@ -1,5 +1,6 @@
 package leetCode._3600
 
+// fixme: case 153/812 wrong answer
 object Solution_3518 {
   private def factorial(n: Int): Int =
     (1 to n).product
