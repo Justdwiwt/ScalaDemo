@@ -2,9 +2,10 @@
 <project version="4">
   <component name="ScalaCompilerConfiguration">
     <option name="postfixOps" value="true" />
+    <option name="separateProdTestSources" value="true" />
     <profile name="sbt 1" modules="scalaproject">
       <option name="implicitConversions" value="true" />
     </profile>
-    <profile name="sbt 2" modules="ScalaProject" />
+    <profile name="sbt 2" modules="ScalaProject,ScalaProject.main,ScalaProject.test" />
   </component>
 </project>

@@ -4,6 +4,8 @@
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ScalaProject.iml" filepath="$PROJECT_DIR$/.idea/modules/ScalaProject.iml" />
       <module fileurl="file://$PROJECT_DIR$/.idea/modules/ScalaProject.ScalaProject-build.iml" filepath="$PROJECT_DIR$/.idea/modules/ScalaProject.ScalaProject-build.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ScalaDemo/ScalaProject.main.iml" filepath="$PROJECT_DIR$/.idea/modules/ScalaDemo/ScalaProject.main.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/ScalaDemo/ScalaProject.test.iml" filepath="$PROJECT_DIR$/.idea/modules/ScalaDemo/ScalaProject.test.iml" />
     </modules>
   </component>
 </project>
