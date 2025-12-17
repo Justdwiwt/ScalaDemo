@@ -1,5 +1,7 @@
 package leetCode._3700
 
+import breeze.linalg.InjectNumericOps
+
 object Solution_3634 {
   def minRemoval(nums: Array[Int], k: Int): Int = {
     val sorted = nums.sorted
