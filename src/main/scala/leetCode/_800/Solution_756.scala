@@ -2,15 +2,22 @@ package leetCode._800
 
 object Solution_756 {
   def pyramidTransition(bottom: String, allowed: List[String]): Boolean = {
-    def cross[A](a: List[List[A]]): List[List[A]] =
-      a.:\(List[List[A]](Nil))((l, kss) => kss.flatMap(k => l.map(_ :: k)))
+    val map = scala.collection.mutable.Map.empty[String, scala.collection.mutable.Set[Char]]
+    allowed.foreach(s => {
+      val key = s.substring(0, 2)
+      if (!map.contains(key)) map(key) = scala.collection.mutable.Set.empty[Char]
+      map(key) += s(2)
+    })
 
-    def nextRow(row: List[Char], allowed: List[List[Char]]): List[List[Char]] =
-      cross(row.sliding(2).map(x => allowed.filter(_.startsWith(x)).map(_ (2))).toList).distinct
+    def dfs(row: String, nextRow: String): Boolean =
+      if (row.length == 1) true
+      else if (nextRow.length == row.length - 1) dfs(nextRow, "")
+      else {
+        val key = row.substring(nextRow.length, nextRow.length + 2)
+        if (!map.contains(key)) false
+        else map(key).exists(e => dfs(row, nextRow + e))
+      }
 
-    def init(allowed: List[List[Char]])(row: List[Char]): Boolean =
-      row.length <= 1 || nextRow(row, allowed).exists(init(allowed))
-
-    init(allowed.map(_.toList))(bottom.toList)
+    dfs(bottom, "")
   }
 }
