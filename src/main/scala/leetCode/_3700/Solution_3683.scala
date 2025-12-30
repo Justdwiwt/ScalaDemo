@@ -1,5 +1,6 @@
 package leetCode._3700
 
 object Solution_3683 {
-
+  def earliestTime(tasks: Array[Array[Int]]): Int =
+    tasks.map(_.sum).min
 }
