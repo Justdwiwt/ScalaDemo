@@ -2,29 +2,20 @@ package leetCode._1600
 
 object Solution_1559 {
   def containsCycle(grid: Array[Array[Char]]): Boolean = {
-    val arr = Array.fill(grid.length * grid.head.length)(0)
+    def validXY(a: Int)(b: Int): Boolean = !(a < 0 || a >= grid.length || b < 0 || b >= grid.head.length)
 
-    def find(x: Int): Int = {
-      if (x != arr(x))
-        arr(x) = find(arr(x))
-      arr(x)
-    }
+    val visited = grid.indices.map(i => grid.head.indices.map(j => false).toArray).toArray
 
-    arr.indices.foreach(i => arr(i) = i)
-    grid.indices.foreach(i => grid.head.indices.foreach(j => {
-      if (j != grid.head.length - 1 && grid(i)(j) == grid(i)(j + 1)) {
-        val fx = find(i * grid.head.length + j)
-        val fy = find(i * grid.head.length + j + 1)
-        if (fx == fy) return true
-        else arr(fx) = fy
+    def impl(i: Int, j: Int, i0: Int, j0: Int, ch: Char): Boolean =
+      if (!validXY(i)(j) || grid(i)(j) != ch) false else {
+        visited(i)(j) = true
+
+        List((-1, 0), (1, 0), (0, -1), (0, +1))
+          .map { case (x: Int, y: Int) => (i + x) -> (j + y) }
+          .filterNot { case (a, b) => (a == i0 && b == j0) || !validXY(a)(b) || grid(a)(b) != ch }
+          .exists { case (a, b) => visited(a)(b) || impl(a, b, i, j, ch) }
       }
-      if (i != grid.length - 1 && grid(i)(j) == grid(i + 1)(j)) {
-        val fx = find(i * grid.head.length + j)
-        val fy = find((i + 1) * grid.head.length + j)
-        if (fx == fy) return true
-        else arr(fx) = fy
-      }
-    }))
-    false
+
+    grid.indices.exists(i => grid.head.indices.exists(j => !visited(i)(j) && impl(i, j, -1, -1, grid(i)(j))))
   }
 }
