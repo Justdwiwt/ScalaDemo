@@ -9,7 +9,7 @@ object Solution_3885 {
     private val pq = collection.mutable.PriorityQueue(_events: _*)(eventOrd)
 
     def updatePriority(eventId: Int, newPriority: Int): Unit =
-      priorities.get(eventId).foreach { priority =>
+      priorities.get(eventId).foreach { _ =>
         priorities.update(eventId, newPriority)
         pq.enqueue(Array(eventId, newPriority))
       }
