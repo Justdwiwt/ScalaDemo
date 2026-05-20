@@ -3,53 +3,41 @@ package leetCode._3900
 object Solution_3886 {
   def sortableIntegers(nums: Array[Int]): Int = {
     val n = nums.length
-    val divisorsBuildler = Array.newBuilder[Int]
-    var d = 1
-    while (d * d < n) {
-      if (n % d == 0) {
-        divisorsBuildler += d
-        divisorsBuildler += n / d
-      }
-      d += 1
-    }
-    if (d * d == n) divisorsBuildler += d
-    val divisors = divisorsBuildler.result()
 
-    def analizeSubarray(start: Int, end: Int): (Int, Int) = {
-      var drops = 0
-      var maximum = -1
-      var minimum = Int.MaxValue
-      (start until end).foreach(i => {
-        maximum = maximum max nums(i)
-        minimum = minimum min nums(i)
-        if (i == end - 1) {
-          if (nums(i) > nums(start)) drops += 1
-        } else {
-          if (nums(i) > nums(i + 1)) drops += 1
-        }
+    val divisors = (1 to math.sqrt(n).toInt)
+      .flatMap(d => {
+        if (n % d != 0) Nil
+        else if (d * d == n) List(d)
+        else List(d, n / d)
       })
-      if (drops <= 1) (maximum, minimum)
-      else (-1, -1)
+
+    def analyzeSubarray(start: Int, end: Int): Option[(Int, Int)] = {
+      val sub = nums.slice(start, end)
+
+      val drops = sub.indices.count(i => sub(i) > sub((i + 1) % sub.length))
+
+      if (drops <= 1) Some(sub.max -> sub.min)
+      else None
     }
 
-    var count = 0
-    divisors.foreach(k => {
-      var prev = Int.MinValue
-      var result = true
-      (0 until n / k)
-        .withFilter(_ => result)
-        .foreach(seqId => {
-          val seqStart = seqId * k
-          val seqEnd = (seqId + 1) * k
+    divisors.foldLeft(0)((sum, k) => {
+      val ok = (0 until n / k)
+        .foldLeft(Option(Int.MinValue)) {
+          case (None, _) => None
 
-          val (maximum, minimum) = analizeSubarray(seqStart, seqEnd)
-          if (maximum == -1 && minimum == -1) result = false
-          else if (minimum < prev) result = false
-          else prev = maximum
-        })
-      if (result) count += k
+          case (Some(prevMax), seqId) =>
+            val start = seqId * k
+            val end = start + k
+
+            analyzeSubarray(start, end).flatMap {
+              case (mx, mn) =>
+                if (mn < prevMax) None
+                else Some(mx)
+            }
+        }
+        .nonEmpty
+
+      if (ok) sum + k else sum
     })
-
-    count
   }
 }
