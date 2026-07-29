@@ -1,44 +1,65 @@
 package leetCode._3600
 
-// fixme: case 153/812 wrong answer
 object Solution_3518 {
-  private def factorial(n: Int): Int =
-    (1 to n).product
-
-  private def calculatePermutations(freq: Map[Char, Int]): Int = {
-    val total = freq.values.sum
-    val totalFactorial = factorial(total)
-    val denominator = freq.values.map(factorial).product
-    totalFactorial / denominator
-  }
-
   def smallestPalindrome(s: String, k: Int): String = {
-    val n = s.length
-    val m = n / 2
-
-    val total = s.take(m).foldLeft(Map.empty[Char, Int])((acc, c) => acc.updated(c, acc.getOrElse(c, 0) + 1))
-
-    val perm = calculatePermutations(total)
-    if (perm < k) return ""
-
-    val result = (0 until m).foldLeft((List.empty[Char], total, k)) { case ((leftS, freq, remainingK), _) =>
-      ('a' to 'z').foldLeft((leftS, freq, remainingK)) { case ((leftAcc, leftFreq, currentK), ch) =>
-        leftFreq.get(ch) match {
-          case Some(count) if count > 0 =>
-            val updatedFreq = leftFreq.updated(ch, count - 1)
-            val permLeft = calculatePermutations(updatedFreq)
-
-            if (permLeft >= currentK) (leftAcc :+ ch, updatedFreq, currentK)
-            else (leftAcc, leftFreq, currentK - permLeft)
-          case _ => (leftAcc, leftFreq, currentK)
-        }
+    def comb(n: Long, m: Long): Long = {
+      val choose = math.min(m, n - m)
+      var res = 1L
+      var i = 1L
+      while (i <= choose && res <= k) {
+        res = res * (n - i + 1) / i
+        if (res > k) res = k + 1L
+        i += 1
       }
+      res
     }
 
-    val (leftS, _, _) = result
+    def perms(rem: Int, cnt: Array[Int]): Long = {
+      var ways = 1L
+      var remain = rem
+      var i = 0
+      while (i < 26 && ways <= k) {
+        if (cnt(i) > 0) {
+          ways *= comb(remain, cnt(i))
+          remain -= cnt(i)
+        }
+        i += 1
+      }
+      ways
+    }
 
-    val rightS = leftS.reverse.mkString
-    val middle = if (n % 2 == 1) s(n / 2).toString else ""
-    leftS.mkString + middle + rightS
+    val half = s.length / 2
+    val cnt = Array.fill(26)(0)
+    s.take(half).foreach(c => cnt(c - 'a') += 1)
+
+    val left = new StringBuilder
+    var rank = 1L
+
+    (0 until half).foreach(pos => {
+      val pick = (0 until 26).find { c =>
+        if (cnt(c) == 0) false
+        else {
+          cnt(c) -= 1
+          val ways = perms(half - pos - 1, cnt)
+          val ok = rank + ways > k
+          if (!ok) {
+            rank += ways
+            cnt(c) += 1
+          }
+          ok
+        }
+      }
+
+      pick.foreach(c => left += (c + 'a').toChar)
+    })
+
+    if (left.length != half) ""
+    else {
+      val first = left.toString
+      val mid =
+        if ((s.length & 1) == 1) s(half).toString
+        else ""
+      first + mid + first.reverse
+    }
   }
 }
