@@ -1,17 +1,8 @@
 package leetCode._3000
 
 object Solution_2904 {
-  def shortestBeautifulSubstring(s: String, k: Int): String = {
-    if (s.replaceAll("0", "").length < k) return ""
-    (k to s.length).foreach(size => {
-      var res = ""
-      (size to s.length).foreach(i => {
-        val t = s.substring(i - size, i)
-        if ((res.isEmpty || t < res) && t.replaceAll("0", "").length == k)
-          res = t
-      })
-      if (res.nonEmpty) return res
-    })
-    ""
-  }
+  def shortestBeautifulSubstring(s: String, k: Int): String = (k to s.length)
+    .find(size => (0 to s.length - size).exists(i => s.substring(i, i + size).count(_ == '1') == k))
+    .map(size => (0 to s.length - size).map(i => s.substring(i, i + size)).filter(_.count(_ == '1') == k).min)
+    .getOrElse("")
 }
