@@ -7,10 +7,11 @@
         <option name="externalProjectPath" value="$PROJECT_DIR$" />
         <option name="modules">
           <set>
-            <option value="E:\workspace\idea\ScalaDemo" />
-            <option value="E:\workspace\idea\ScalaDemo\project" />
+            <option value="$PROJECT_DIR$" />
+            <option value="$PROJECT_DIR$/project" />
           </set>
         </option>
+        <option name="sbtVersion" value="1.2.3" />
       </SbtProjectSettings>
     </option>
   </component>
