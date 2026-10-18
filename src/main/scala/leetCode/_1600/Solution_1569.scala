@@ -64,6 +64,6 @@ object Solution_1569 {
       case _ => 1
     }
 
-    Fractional.minus(f(nums), 1).toInt
+    Fractional.minus(f(nums.toIndexedSeq), 1).toInt
   }
 }
