@@ -4,37 +4,25 @@ object Solution_3619 {
   def countIslands(grid: Array[Array[Int]], k: Int): Int = {
     val m = grid.length
     val n = grid.head.length
-    val original = grid.map(_.toVector).toVector
+    val dirs = List((0, 1), (0, -1), (1, 0), (-1, 0))
 
-    def updateGrid(g: Vector[Vector[Int]], i: Int, j: Int, v: Int): Vector[Vector[Int]] =
-      g.updated(i, g(i).updated(j, v))
-
-    def dfs(i: Int, j: Int, g: Vector[Vector[Int]]): (Int, Vector[Vector[Int]]) =
-      if (i < 0 || i >= m || j < 0 || j >= n || g(i)(j) == 0) (0, g)
+    def dfs(i: Int, j: Int): Long =
+      if (i < 0 || i >= m || j < 0 || j >= n || grid(i)(j) == 0) 0L
       else {
-        val value = g(i)(j)
-        val g0 = updateGrid(g, i, j, 0)
-        val neighbors = List((0, 1), (0, -1), (1, 0), (-1, 0))
-
-        neighbors.foldLeft((value, g0)) { case (acc, delta) =>
-          val (accSum, accGrid) = acc
-          val (dx, dy) = delta
-          val (s, newGrid) = dfs(i + dx, j + dy, accGrid)
-          (accSum + s, newGrid)
-        }
+        val v = grid(i)(j)
+        grid(i)(j) = 0
+        v.toLong + dirs.map { case (dx, dy) => dfs(i + dx, j + dy) }.sum
       }
 
-    @scala.annotation.tailrec
-    def loop(i: Int, j: Int, g: Vector[Vector[Int]], acc: Int): Int =
-      if (i == m) acc
-      else if (j == n) loop(i + 1, 0, g, acc)
-      else if (g(i)(j) == 0) loop(i, j + 1, g, acc)
-      else {
-        val (size, newGrid) = dfs(i, j, g)
-        val delta = if (size % k == 0) 1 else 0
-        loop(i, j + 1, newGrid, acc + delta)
-      }
-
-    loop(0, 0, original, 0)
+    grid
+      .indices
+      .flatMap(i => grid
+        .head
+        .indices
+        .withFilter(grid(i)(_) != 0)
+        .map { j => val sum = dfs(i, j); (j, sum) }
+        .withFilter { case (_, sum) => sum % k == 0 }
+        .map { case (_, _) => 1 }
+      ).sum
   }
 }
